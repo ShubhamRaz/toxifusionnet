@@ -30,3 +30,22 @@ def mcnemar(y_true, pred_a, pred_b) -> dict:
     b10 = int(((a != y) & (b == y)).sum())
     stat = (abs(b01 - b10) - 1) ** 2 / max(b01 + b10, 1)
     return {"a_only_correct": b01, "b_only_correct": b10, "chi2": float(stat), "p_value": float(chi2.sf(stat, 1))}
+
+
+def bootstrap_ci(y_true, y_pred, metric=None, n_boot: int = 1000, seed: int = 0) -> dict:
+    """Compute 95% bootstrap confidence interval for a single system metric."""
+    y, p = np.asarray(y_true), np.asarray(y_pred)
+    metric = metric or (lambda yt, yp: f1_score(yt, yp, average="macro", zero_division=0))
+    rng = np.random.default_rng(seed)
+    n = len(y)
+    if n == 0:
+        return {"estimate": 0.0, "ci95": [0.0, 0.0], "n": 0}
+    scores = np.empty(n_boot)
+    for i in range(n_boot):
+        idx = rng.integers(0, n, n)
+        scores[i] = metric(y[idx], p[idx])
+    return {
+        "estimate": float(metric(y, p)),
+        "ci95": [float(np.percentile(scores, 2.5)), float(np.percentile(scores, 97.5))],
+        "n": int(n)
+    }

@@ -187,7 +187,8 @@ def cmd_report(args):
 
 def cmd_cv(args):
     from .experiments.cv import run_cv
-    out = run_cv(args.config, args.override, args.data, args.out_dir, args.folds, args.seed)
+    out = run_cv(args.config, args.override, args.data, args.out_dir, args.folds, args.seed,
+                  grouped=args.grouped, folds_cache=args.folds_cache)
     for name, v in out.items():
         print(name, {k: round(x, 3) for k, x in v["pooled_flat"].items() if x == x})
 
@@ -236,7 +237,10 @@ def build_parser():
     s.add_argument("--baselines"); s.add_argument("--cv-dir"); s.add_argument("--data-report", default="results/data_report.md"); s.set_defaults(fn=cmd_report)
     s = sub.add_parser("cv", help="stratified k-fold cross-validation with pooled out-of-fold predictions"); add_cfg(s)
     s.add_argument("--data", default="data/processed/multibully.csv"); s.add_argument("--out-dir", default="runs/cv")
-    s.add_argument("--folds", type=int, default=5); s.add_argument("--seed", type=int, default=42); s.set_defaults(fn=cmd_cv)
+    s.add_argument("--folds", type=int, default=5); s.add_argument("--seed", type=int, default=42)
+    s.add_argument("--folds-cache", default="data/processed/multibully_v2_cv_folds.csv", help="path to persistent canonical fold mapping")
+    s.add_argument("--no-grouped", dest="grouped", action="store_false", default=True, help="disable group-aware text splitting")
+    s.set_defaults(fn=cmd_cv)
     s = sub.add_parser("serve", help="REST API"); add_run(s); s.add_argument("--host", default="0.0.0.0"); s.add_argument("--port", type=int, default=8000); s.set_defaults(fn=cmd_serve)
     return p
 

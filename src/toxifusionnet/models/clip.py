@@ -61,12 +61,20 @@ def build_clip_vision(cfg):
         log.info("Initialized offline/synthetic CLIP Vision model (%d parameters)", sum(p.numel() for p in vision_model.parameters()))
         return vision_model, processor, clip_cfg.hidden_size
 
+    allow_fallback = bool(cfg.get("clip_allow_random_fallback", False))
     try:
         processor = CLIPImageProcessor.from_pretrained(model_name)
         vision_model = CLIPVisionModel.from_pretrained(model_name, use_safetensors=False)
         log.info("Loaded pretrained CLIP Vision model '%s' (hidden_size=%d)", model_name, vision_model.config.hidden_size)
         return vision_model, processor, vision_model.config.hidden_size
     except Exception as e:
+        if not allow_fallback:
+            raise RuntimeError(
+                f"Failed to load pretrained CLIP model '{model_name}' from Hugging Face Hub: {e}. "
+                "Research runs require genuine pretrained weights to prevent frozen random noise. "
+                "Ensure network connectivity or pre-cache the checkpoint. "
+                "For synthetic/offline unit tests, explicitly set 'clip_offline: true'."
+            ) from e
         log.warning("Failed to load pretrained CLIP from Hub (%s). Falling back to offline architecture.", e)
         clip_cfg = CLIPVisionConfig(hidden_size=768, image_size=224, patch_size=32, num_hidden_layers=2, num_attention_heads=4)
         vision_model = CLIPVisionModel(clip_cfg)
