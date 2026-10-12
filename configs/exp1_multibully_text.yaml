@@ -1,0 +1,32 @@
+# Experiment 1: MultiBully Text-Only Baseline
+# Replicates the existing primary benchmark
+experiment_name: exp1_multibully_text
+data:
+  processed_path: data/processed/multibully.csv
+  max_length: 128
+labels:
+  target: [individual, organization, community, society]
+model:
+  encoder_name: xlm-roberta-base
+  tasks: [sarcasm, hate, target, severity]
+  dropout: 0.1
+  head_hidden: 256
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  use_clip: false                # Text-only baseline
+loss:
+  weighting: fixed
+  weights: {sarcasm: 1.0, hate: 1.0, target: 0.5, severity: 0.5}
+  class_weighting: balanced
+  focal_gamma: 2.0
+train:
+  epochs: 8
+  batch_size: 32
+  encoder_lr: 1.0e-5
+  head_lr: 5.0e-4
+  weight_decay: 0.01
+  patience: 3
+  fp16: true
+  device: auto

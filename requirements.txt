@@ -1,0 +1,18 @@
+torch>=2.1
+transformers>=4.40
+tokenizers>=0.15
+numpy
+pandas>=2.0
+scikit-learn>=1.3
+scipy
+pyyaml
+openpyxl       # read .xlsx annotation sheets
+emoji>=2.0
+tqdm
+matplotlib
+# optional
+lime            # LIME explanations (toxifusion explain --lime)
+fastapi         # REST API
+uvicorn
+httpx           # FastAPI test client
+pytest

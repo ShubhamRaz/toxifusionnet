@@ -1,0 +1,8 @@
+{
+  "faithfulness": {
+    "comprehensiveness": 0.3300816991198454,
+    "sufficiency": 0.21779332249936204,
+    "n": 237
+  },
+  "plausibility": "no gold rationales in data"
+}

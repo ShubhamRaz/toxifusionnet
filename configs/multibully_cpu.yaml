@@ -1,0 +1,23 @@
+# Small from-scratch encoder for CPU-only machines (NO pre-trained weights): overlay on configs/multibully.yaml.
+# This is what could be trained inside the build sandbox; for the paper use a pre-trained encoder
+# (configs/multibully.yaml + model.encoder_name=google/muril-base-cased on a GPU).
+extends: multibully.yaml
+experiment_name: multibully_cpu
+data:
+  max_length: 64
+model:
+  encoder_name: tiny          # random-init BERT + WordPiece tokenizer trained on the training split
+  tiny_vocab: 8000
+  glove_path: data/external/glove-twitter-100.gz   # pre-trained GloVe-Twitter vectors (scripts/get_glove.sh); hidden size = 100
+  tiny_layers: 3             # chosen on the VALIDATION split among 8 candidates (results/tuning_validation.csv)
+  head_hidden: 128
+  dropout: 0.2
+train:
+  epochs: 14
+  batch_size: 32
+  encoder_lr: 5.0e-4
+  embedding_lr_mult: 0.2     # keep the pre-trained vectors close to their initial values
+  head_lr: 1.0e-3
+  weight_decay: 0.01
+  patience: 4
+  fp16: false

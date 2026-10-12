@@ -1,0 +1,16 @@
+# Training config for the MultiBully text data  (used with configs/default.yaml as base):
+#   toxifusion train --config configs/multibully.yaml
+experiment_name: multibully
+data:
+  processed_path: data/processed/multibully.csv
+  max_length: 128
+labels:
+  target: [individual, organization, community, society]   # must match schema_multibully.yaml
+rationale:
+  enabled: false                   # MultiBully has no rationale spans -> attention supervision off
+loss:
+  class_weighting: balanced        # sarcasm is rare (<10% in the posts inspected) -> keep class weights
+train:
+  epochs: 8
+  batch_size: 32
+  patience: 3

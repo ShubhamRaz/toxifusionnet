@@ -1,0 +1,51 @@
+# SENSITIVITY schema: identical to schema_multibully.yaml but hate = Img-Text-Label (meme-level: image + text).
+# Official source: https://github.com/Jhaprince/MultiBully (annotation sheet "Cyberbully_corrected_emotion_sentiment.xlsx").
+# Kaggle copy: https://www.kaggle.com/datasets/pranee5/multi-bully  -- ASSUMED to be the same data; confirm with
+#   `toxifusion inspect --raw <file>` that the columns below exist (matching ignores case, spaces, hyphens, underscores).
+#
+# Columns seen in the official sheet:  Img-Name | Img-Text | Img-Text-Label | Img-Label | Text-Label | Sentiment |
+#                                      Emotion | Sarcasm | Harmful-Score | Target | Doubtful
+file: data/raw/multibully.csv           # the Kaggle export 'Cyberbully_corrected_emotion_sentiment.xlsx - cyberbully.csv'
+text_col: Img-Text                      # OCR text printed on the meme
+id_col: Img-Name
+
+# Target taxonomy of THIS dataset (differs from the flow chart's individual/caste/religion/gender/demography).
+labels:
+  target: [individual, organization, community, society]
+
+columns:
+  sarcasm: Sarcasm                      # Yes / No  (gold)
+  hate: null                            # derived below
+  target: Target                        # Individual / Organization / Community / Society / None
+  severity: Harmful-Score               # Harmless / Partially-Harmful / Very-Harmful
+  sarcasm_rationale: null
+  hate_rationale: null
+  narrative: null
+derive:
+  hate:
+    # IMPORTANT design choice. Img-Text-Label = label of the whole meme (image + text);  Text-Label = label of the text
+    # alone;  Img-Label = image alone.  A text-only model should be trained on Text-Label.  Switch to Img-Text-Label only
+    # if you deliberately want the meme-level label (then many "bully" labels are caused by the image, which text cannot see).
+    from: Img-Text-Label
+    non_hate_values: [Nonbully]
+
+value_maps:
+  severity:                             # ordinal harmfulness rating -> flow-chart severity
+    harmless: low
+    partially-harmful: moderate
+    very-harmful: high
+  target:
+    individual: individual
+    organization: organization
+    community: community
+    society: society
+    none: null
+
+# Real data: the file has 5,854 labelled memes. Annotator flags ("Doubtful" = 1 row; the unnamed note column holds
+# "amb"/"Review" for 3 rows) mark ambiguous items -> excluded (4 rows in total).
+exclude:
+  - {column: Doubtful, when_not_empty: true}
+  - {column: "Unnamed: 10", when_not_empty: true}
+
+# Splits: classes such as organization (82 hate posts) and society (69) are small, so validation/test get 15% each.
+split: {val_size: 0.15, test_size: 0.15, seed: 42}

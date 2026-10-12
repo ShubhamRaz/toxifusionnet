@@ -1,0 +1,41 @@
+# Optimized training config for MultiBully — tuned for maximum accuracy
+# Changes vs. default:
+#   - More epochs (20) with higher patience (5) to let the model converge fully
+#   - Lower encoder LR (1e-5) + 20% warmup to protect pre-trained MuRIL weights
+#   - Focal loss (gamma=2) to focus on hard/rare examples
+#   - Larger batch size (64) for smoother gradients
+experiment_name: multibully_optimized
+data:
+  processed_path: data/processed/multibully.csv
+  max_length: 128
+labels:
+  target: [individual, organization, community, society]
+rationale:
+  enabled: false
+model:
+  encoder_name: xlm-roberta-base     # stronger multilingual encoder than MuRIL
+  tasks: [sarcasm, hate, target, severity]
+  dropout: 0.15                       # slightly more regularization
+  head_hidden: 256
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  detach_gate_prob: false
+loss:
+  weighting: fixed
+  weights: {sarcasm: 1.0, hate: 1.5, target: 0.5, severity: 0.5}   # upweight hate task
+  class_weighting: balanced
+  focal_gamma: 2.0                    # focal loss: focus on hard examples
+train:
+  epochs: 20
+  batch_size: 64
+  encoder_lr: 1.0e-5                  # lower LR to preserve pre-trained weights
+  head_lr: 5.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.2                   # 20% warmup for stability
+  grad_clip: 1.0
+  patience: 5                         # give the model more chances before early stopping
+  fp16: true
+  device: auto
+  num_workers: 0

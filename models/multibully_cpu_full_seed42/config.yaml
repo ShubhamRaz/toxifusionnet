@@ -1,0 +1,66 @@
+seed: 42
+experiment_name: multibully_cpu
+output_dir: runs
+data:
+  processed_path: data/processed/multibully.csv
+  max_length: 64
+  val_size: 0.1
+  test_size: 0.1
+preprocess:
+  normalize: true
+  transliterate_devanagari: true
+  demojize: true
+  expand_slang: true
+  collapse_repeats: true
+  canonical_spelling: true
+model:
+  encoder_name: tiny
+  tasks:
+  - sarcasm
+  - hate
+  - target
+  - severity
+  dropout: 0.2
+  head_hidden: 128
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  detach_gate_prob: false
+  tiny_vocab: 8000
+  glove_path: data/external/glove-twitter-100.gz
+  tiny_layers: 3
+loss:
+  weighting: fixed
+  weights:
+    sarcasm: 1.0
+    hate: 1.0
+    target: 0.5
+    severity: 0.5
+  class_weighting: balanced
+  focal_gamma: 0.0
+  attention_lambda: 0.1
+rationale:
+  enabled: false
+  temperature: 0.5
+  mode: text
+  use_sarcasm_rationale: true
+train:
+  epochs: 14
+  batch_size: 32
+  encoder_lr: 0.0005
+  head_lr: 0.001
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_clip: 1.0
+  patience: 4
+  fp16: false
+  device: auto
+  num_workers: 0
+  embedding_lr_mult: 0.2
+labels:
+  target:
+  - individual
+  - organization
+  - community
+  - society

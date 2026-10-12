@@ -1,0 +1,19 @@
+# Offline smoke test: tiny random-init BERT + locally trained tokenizer, synthetic data. NOT a research result.
+experiment_name: smoke
+data:
+  processed_path: data/processed/synthetic.csv
+  max_length: 48
+model:
+  encoder_name: tiny
+  tiny_hidden: 64
+  tiny_layers: 2
+  head_hidden: 64
+rationale:
+  enabled: true
+train:
+  epochs: 6
+  batch_size: 32
+  encoder_lr: 3.0e-3
+  head_lr: 3.0e-3
+  patience: 6
+  fp16: false

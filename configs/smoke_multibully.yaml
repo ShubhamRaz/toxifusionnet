@@ -1,0 +1,21 @@
+# Offline smoke test of the REAL-DATA path (MultiBully layout + 4-class target taxonomy) on SYNTHETIC rows.
+experiment_name: smoke_multibully
+data:
+  processed_path: data/processed/multibully_synth.csv
+  max_length: 48
+labels:
+  target: [individual, organization, community, society]
+model:
+  encoder_name: tiny
+  tiny_hidden: 64
+  tiny_layers: 2
+  head_hidden: 64
+rationale:
+  enabled: false
+train:
+  epochs: 4
+  batch_size: 32
+  encoder_lr: 3.0e-3
+  head_lr: 3.0e-3
+  patience: 4
+  fp16: false

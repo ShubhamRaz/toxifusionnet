@@ -1,0 +1,55 @@
+# ToxiFusionNet default configuration (real experiments). Override anything from the CLI: key.sub=value
+seed: 42
+experiment_name: toxifusionnet
+output_dir: runs
+
+data:
+  processed_path: data/processed/dataset.csv   # canonical file produced by `toxifusion prepare`
+  max_length: 128
+  val_size: 0.1
+  test_size: 0.1
+
+preprocess:                      # flow chart: Preprocessing
+  normalize: true
+  transliterate_devanagari: true
+  demojize: true
+  expand_slang: true
+  collapse_repeats: true
+  canonical_spelling: true
+
+model:
+  encoder_name: google/muril-base-cased   # alternatives: xlm-roberta-base | l3cube-pune/hing-bert | bert-base-multilingual-cased
+  tasks: [sarcasm, hate, target, severity]
+  dropout: 0.1
+  head_hidden: 256
+  use_sarcasm_branch: true       # false -> single/multi-task WITHOUT sarcasm (ablation)
+  use_fusion: true               # false -> sarcasm is auxiliary only, not fused into hate head
+  use_cue_features: true         # false -> drop hand-crafted sarcasm cues
+  cue_hidden: 32
+  detach_gate_prob: false
+
+loss:
+  weighting: fixed               # fixed | uncertainty (Kendall et al., 2018)
+  weights: {sarcasm: 1.0, hate: 1.0, target: 0.5, severity: 0.5}
+  class_weighting: balanced      # balanced | none
+  focal_gamma: 0.0
+  attention_lambda: 0.1          # weight of rationale-attention supervision (needs rationale.enabled)
+
+rationale:                       # sarcasm-based rationales (Mamun et al., 2024). Needs rationale columns in the data.
+  enabled: false
+  temperature: 0.5
+  mode: text                     # text | algorithm  (see explain/rationale.py docstring)
+  use_sarcasm_rationale: true
+
+train:
+  epochs: 5
+  batch_size: 16
+  encoder_lr: 2.0e-5
+  head_lr: 5.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_clip: 1.0
+  patience: 3
+  fp16: true
+  device: auto
+  num_workers: 0
