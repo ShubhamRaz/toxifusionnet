@@ -35,11 +35,13 @@ run_exp() {
 run_cv_exp() {
     local cfg=$1
     local out=$2
+    local bs=${BATCH_SIZE:-64}
     echo ""
     echo "=========================================================="
-    echo " Launching 5-Fold Grouped CV: $cfg -> $out"
+    echo " Launching 5-Fold Grouped CV: $cfg -> $out (batch_size=$bs)"
     echo "=========================================================="
     python -m toxifusionnet.cli cv --config "$cfg" \
+        --override train.batch_size=$bs \
         --data data/processed/multibully.csv \
         --folds-cache data/processed/multibully_v2_cv_folds.csv \
         --out-dir "$out" \
