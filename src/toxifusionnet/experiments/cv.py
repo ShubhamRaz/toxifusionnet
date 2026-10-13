@@ -7,11 +7,14 @@ exactly one prediction from a model that never saw it.
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, train_test_split
+
+log = logging.getLogger("toxifusionnet")
 
 from ..config import load_config
 from ..data.grouped_splits import audit_fold_integrity, make_grouped_cv_splits
@@ -40,9 +43,27 @@ def make_fold_splits(df: pd.DataFrame, k: int, seed: int, val_frac: float = 0.15
 
 
 def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Path, folds: int = 5, seed: int = 42,
-           include_tfidf: bool = True, grouped: bool = True, folds_cache: str | Path | None = None) -> dict:
+           include_tfidf: bool = True, grouped: bool = True, folds_cache: str | Path | None = None,
+           aux_data_path: str | Path | None = None) -> dict:
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
     df = load_processed_csv(data_path)
+    if "source_dataset" not in df:
+        df["source_dataset"] = "multibully"
+
+    # Check auxiliary data path from parameter or preview config
+    if not aux_data_path:
+        try:
+            cfg_prev = load_config(config, overrides)
+            aux_data_path = cfg_prev.data.get("aux_path")
+        except Exception:
+            pass
+
+    aux_df = None
+    if aux_data_path and Path(aux_data_path).exists():
+        aux_df = pd.read_csv(aux_data_path)
+        if "source_dataset" not in aux_df:
+            aux_df["source_dataset"] = "aux"
+        log.info("Loaded auxiliary training dataset: %d rows from %s", len(aux_df), aux_data_path)
 
     if grouped:
         if folds_cache and Path(folds_cache).exists():
@@ -54,9 +75,20 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
                     fold_assign[fold_assign["fold"] == f][["id", "split"]], on="id"
                 )
                 d["fold"] = f
+                if aux_df is not None:
+                    aux_copy = aux_df.copy()
+                    aux_copy["split"] = "train"   # Auxiliary data strictly in train partition
+                    aux_copy["fold"] = f
+                    d = pd.concat([d, aux_copy], ignore_index=True)
                 fold_dfs.append(d)
         else:
             _, fold_dfs = make_grouped_cv_splits(df, n_splits=folds, seed=seed)
+            if aux_df is not None:
+                for f, d in enumerate(fold_dfs):
+                    aux_copy = aux_df.copy()
+                    aux_copy["split"] = "train"
+                    aux_copy["fold"] = f
+                    fold_dfs[f] = pd.concat([d, aux_copy], ignore_index=True)
             if folds_cache:
                 Path(folds_cache).parent.mkdir(parents=True, exist_ok=True)
                 cached = pd.concat([d[["id", "split", "fold", "group_id"]] for d in fold_dfs])
@@ -99,7 +131,12 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             "pooled": res,
             "pooled_flat": flatten_metrics(res),
             "bootstrap_ci95": cis,
-            "per_fold_hate_macro_f1": [float(x.get("hate_macro_f1", np.nan)) for x in per_fold]
+            "per_fold_hate_macro_f1": [float(x.get("hate_macro_f1", np.nan)) for x in per_fold],
+            "per_fold_mean_macro_f1": [float(x.get("mean_macro_f1", np.nan)) for x in per_fold],
+            "per_fold_sarcasm_macro_f1": [float(x.get("sarcasm_macro_f1", np.nan)) for x in per_fold],
+            "per_fold_target_macro_f1": [float(x.get("target_macro_f1", np.nan)) for x in per_fold],
+            "per_fold_severity_macro_f1": [float(x.get("severity_macro_f1", np.nan)) for x in per_fold],
+            "per_fold_flat": per_fold,
         }
     (out_dir / "cv_metrics.json").write_text(json.dumps(out, indent=2, default=float))
     return out
