@@ -174,25 +174,37 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
     total_steps = int(cfg.train.get("max_steps", steps_per_epoch * epochs))
     warmup_steps = int(float(cfg.train.get("warmup_ratio", 0.10)) * total_steps)
     sched = get_linear_schedule_with_warmup(opt, warmup_steps, total_steps)
-    use_amp = device.type == "cuda" and bool(cfg.train.get("fp16", True))
-    scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
+    use_amp = (device.type == "cuda" or bool(cfg.train.get("use_cpu_amp", False))) and bool(cfg.train.get("fp16", True))
+    scaler_device = device.type if device.type in ("cuda", "cpu") else "cuda"
+    scaler = torch.amp.GradScaler(scaler_device, enabled=use_amp)
 
     best, best_epoch, best_step, bad, history = -1.0, -1, -1, 0, []
     global_step = 0
+    attempted_batches = 0
+    skipped_updates = 0
     train_iter = iter(dl_tr)
     use_early_stopping = bool(cfg.train.get("early_stopping", True)) and int(cfg.train.get("patience", 0)) > 0
     if not use_early_stopping:
         log.info("Fixed-budget mode active: early stopping is DISABLED. Training will complete all %d planned optimizer updates.", total_steps)
 
+    max_consecutive_skipped = int(cfg.train.get("max_consecutive_skipped", 50))
+    consecutive_skipped = 0
+
     for epoch in range(epochs):
         model.train(); t0 = time.time(); run_loss = 0.0
-        n_steps = steps_per_epoch
-        for _ in range(n_steps):
+        epoch_successful = 0
+        epoch_attempted = 0
+        epoch_skipped = 0
+
+        while epoch_successful < steps_per_epoch and global_step < total_steps:
             try:
                 b = next(train_iter)
             except StopIteration:
                 train_iter = iter(dl_tr)
                 b = next(train_iter)
+            attempted_batches += 1
+            epoch_attempted += 1
+
             batch = {k: (v.to(device) if torch.is_tensor(v) else v) for k, v in b.items() if k != "labels"}
             batch["labels"] = {t: v.to(device) for t, v in b["labels"].items()}
             pix = batch.get("pixel_values")
@@ -209,13 +221,31 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
             scale_before = scaler.get_scale()
             scaler.step(opt)
             scaler.update()
-            if scale_before <= scaler.get_scale():
+            scale_after = scaler.get_scale()
+
+            step_successful = (not scaler.is_enabled()) or (scale_before <= scale_after)
+            if step_successful:
                 sched.step()
-            global_step += 1
-            run_loss += float(loss.detach())
-            if global_step >= total_steps:
-                break
-        epoch_loss = run_loss / max(1, n_steps)
+                global_step += 1
+                epoch_successful += 1
+                consecutive_skipped = 0
+                run_loss += float(loss.detach())
+            else:
+                skipped_updates += 1
+                epoch_skipped += 1
+                consecutive_skipped += 1
+                log.warning(
+                    "GradScaler skipped optimizer update due to inf/nan gradients (scale: %.1f -> %.1f). "
+                    "Attempted: %d, successful: %d/%d, epoch skipped: %d.",
+                    scale_before, scale_after, attempted_batches, global_step, total_steps, epoch_skipped
+                )
+                if consecutive_skipped >= max_consecutive_skipped:
+                    raise RuntimeError(
+                        f"GradScaler skipped {consecutive_skipped} consecutive updates due to inf/nan gradients. "
+                        "Training diverged; aborting."
+                    )
+
+        epoch_loss = run_loss / max(1, epoch_successful)
         pred = predict_loader(model, dl_va, device)
         va_res = evaluate_predictions(predictions_frame(va_df, ds_va, pred), model.tasks)
         score = va_res["mean_macro_f1"]
@@ -232,6 +262,12 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
         history.append({
             "epoch": epoch + 1,
             "global_step": global_step,
+            "successful_updates": global_step,
+            "attempted_batches": attempted_batches,
+            "skipped_updates": skipped_updates,
+            "epoch_attempted": epoch_attempted,
+            "epoch_successful": epoch_successful,
+            "epoch_skipped": epoch_skipped,
             "train_loss": epoch_loss,
             "val_mean_macro_f1": score,
             "is_best": is_best,
@@ -239,8 +275,8 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
             "seconds": time.time() - t0
         })
         log.info(
-            "epoch %d (step %d/%d)  loss %.4f  val mean macro-F1 %.4f %s (%.1fs)",
-            epoch + 1, global_step, total_steps, epoch_loss, score,
+            "epoch %d (step %d/%d, attempted %d, skipped %d)  loss %.4f  val mean macro-F1 %.4f %s (%.1fs)",
+            epoch + 1, global_step, total_steps, attempted_batches, skipped_updates, epoch_loss, score,
             "[BEST]" if is_best else "", history[-1]["seconds"]
         )
 
@@ -254,6 +290,9 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
         "best_step": best_step,
         "best_val_score": best,
         "total_steps": global_step,
+        "successful_updates": global_step,
+        "attempted_batches": attempted_batches,
+        "skipped_updates": skipped_updates,
         "steps_budget": total_steps,
         "eval_checkpoint": str(run_dir / "model.pt"),
         "eval_checkpoint_type": "best_val_macro_f1",

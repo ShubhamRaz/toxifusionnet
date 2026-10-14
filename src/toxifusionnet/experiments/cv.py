@@ -190,6 +190,7 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
         fold_training_meta[f"fold_{f}"] = {
             k: res[k] for k in (
                 "best_epoch", "best_step", "best_val_score", "total_steps",
+                "successful_updates", "attempted_batches", "skipped_updates",
                 "steps_budget", "eval_checkpoint", "eval_checkpoint_type"
             ) if k in res
         }

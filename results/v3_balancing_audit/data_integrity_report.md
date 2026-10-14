@@ -111,9 +111,9 @@ To ensure that differences between E1d (MultiBully-only) and E6b (MultiBully + H
 ## 6. Guaranteed Controlled Training Budget & Dataset Exposure Accounting
 
 To eliminate confounding experimental factors across E1c, E1d, and E6b:
-- **Optimizer Updates:** All three experiments are configured with `steps_per_epoch: 61` and `max_steps: 488`. Exactly 488 successful optimizer updates are executed across 8 epochs.
+- **Optimizer Updates & Strict Step Accounting:** All three experiments are configured with `steps_per_epoch: 61` and `max_steps: 488`. Exactly 488 successful optimizer updates are executed across 8 epochs. Attempted batches and successful updates are tracked separately. If CUDA `GradScaler` detects inf/nan overflow and skips an update, the step counter does not increment, the learning rate scheduler does not advance, and the loop processes another batch until the 488-update budget is satisfied.
 - **Disabled Early Stopping:** `early_stopping: false` and `patience: 0` prevent premature termination. Checkpoint selection tracks and loads the model corresponding to the best validation Mean Macro-F1 (`eval_checkpoint_type: best_val_macro_f1`).
-- **Learning-Rate Schedule:** Identical 48-step linear warmup (`warmup_ratio: 0.10`) followed by linear decay to 0 at step 488.
+- **Learning-Rate Schedule:** Identical 48-step linear warmup (`warmup_ratio: 0.10`) followed by linear decay to 0 at step 488 based strictly on successful updates.
 - **Dataset Exposure Accounting:**
   - **E1d (MultiBully Only):** MultiBully training split ($N \approx 3,886$) is exposed $\mathbf{8.00\times}$ (8 full passes, $31,088$ sample draws).
   - **E6b (MultiBully + HOT Gold):** Combined training pool ($N \approx 5,310$) is exposed $\mathbf{5.88\times}$ ($\approx 5.9$ passes, $31,232$ sample draws). MultiBully data is drawn $\sim 22,862$ times ($5.88\times$ exposure); active HOT gold data is drawn $\sim 8,370$ times ($5.88\times$ exposure across all 1,424 valid rows).

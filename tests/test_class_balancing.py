@@ -396,3 +396,75 @@ def test_fixed_budget_runs_complete_all_steps(tmp_path):
     assert res["best_step"] >= 1
 
 
+def test_simulated_grad_scaler_skip(monkeypatch, tmp_path):
+    """Verify that a skipped GradScaler update does not advance global_step or scheduler, and training reaches budget."""
+    import torch
+    from toxifusionnet.config import load_config
+    from toxifusionnet.training.trainer import train_run
+
+    cfg = load_config("configs/smoke_test.yaml")
+    cfg.train.epochs = 2
+    cfg.train.steps_per_epoch = 3
+    cfg.train.max_steps = 6
+    cfg.train.early_stopping = False
+    cfg.train.patience = 0
+    cfg.train.device = "cpu"
+    cfg.train.use_cpu_amp = True
+    cfg.train.fp16 = True
+    cfg.rationale.enabled = False
+
+    df = pd.DataFrame({
+        "id": [f"id_{i}" for i in range(40)],
+        "text": ["sample text"] * 40,
+        "split": ["train"] * 30 + ["val"] * 5 + ["test"] * 5,
+        "hate": ["non_hate", "hate"] * 20,
+        "sarcasm": ["not_sarcastic", "sarcastic"] * 20,
+        "target": ["individual"] * 40,
+        "severity": ["low"] * 40,
+        "source_dataset": ["multibully"] * 40,
+    })
+
+    orig_unscale = torch.amp.GradScaler.unscale_
+    attempt_counter = [0]
+    skipped_on_attempt = 2
+
+    def mock_unscale(scaler_self, optimizer):
+        attempt_counter[0] += 1
+        if attempt_counter[0] == skipped_on_attempt:
+            # Inject NaN gradient on attempt #2 before unscaling so GradScaler catches it
+            for group in optimizer.param_groups:
+                for p in group["params"]:
+                    if p.grad is not None:
+                        p.grad.view(-1)[0] = float("nan")
+                        break
+                break
+        return orig_unscale(scaler_self, optimizer)
+
+    monkeypatch.setattr(torch.amp.GradScaler, "unscale_", mock_unscale)
+
+    run_dir = tmp_path / "simulated_skip_run"
+    res = train_run(cfg, df, run_dir)
+
+    # 1. Budget of successful optimizer updates is strictly reached
+    assert res["total_steps"] == 6, f"Expected 6 successful updates, got {res['total_steps']}"
+    assert res["successful_updates"] == 6
+    assert res["steps_budget"] == 6
+
+    # 2. Exactly one update was skipped and one extra batch was attempted
+    assert res["skipped_updates"] == 1, f"Expected 1 skipped update, got {res['skipped_updates']}"
+    assert res["attempted_batches"] == 7, f"Expected 7 attempted batches, got {res['attempted_batches']}"
+
+    # 3. Check history.csv metadata
+    history = pd.read_csv(run_dir / "history.csv")
+    assert len(history) == 2, "Expected 2 epochs in history.csv"
+    assert "successful_updates" in history.columns
+    assert "attempted_batches" in history.columns
+    assert "skipped_updates" in history.columns
+    assert history["skipped_updates"].iloc[0] == 1, "Epoch 1 must record 1 skipped update"
+    assert history["attempted_batches"].iloc[0] == 4, "Epoch 1 must have attempted 4 batches for 3 successful updates"
+    assert history["successful_updates"].iloc[0] == 3, "Epoch 1 must have achieved 3 successful updates"
+    assert history["successful_updates"].iloc[1] == 6, "Epoch 2 must complete the 6 planned updates"
+    assert history["attempted_batches"].iloc[1] == 7, "Total attempted batches after epoch 2 must be 7"
+
+
+

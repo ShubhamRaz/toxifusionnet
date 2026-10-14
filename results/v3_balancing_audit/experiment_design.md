@@ -105,6 +105,12 @@ To ensure the comparison between E1d and E6b is strictly controlled, we do not r
    - Validation performance is evaluated at every 61-step checkpoint (at steps 61, 122, 183, 244, 305, 366, 427, 488).
    - Checkpoint selection preserves the model state corresponding to the highest validation Mean Macro-F1 (`eval_checkpoint_type: best_val_macro_f1`), ensuring final evaluation on test and val sets uses the best checkpoint.
    - `total_steps`, `steps_budget`, `best_epoch`, `best_step`, and per-checkpoint evaluation metrics are permanently recorded in `history.csv` and `cv_metrics.json`.
+4. **Strict Successful-Update Accounting & GradScaler Skip Handling:**
+   - Attempted batches and successful optimizer updates are tracked independently (`attempted_batches`, `successful_updates`, `skipped_updates`).
+   - If mixed-precision `GradScaler` detects inf/NaN gradients during backward and skips the parameter update (`scale_before > scale_after`), the step does **not** count toward the 488-update budget, and the learning-rate scheduler is **not** stepped.
+   - The training loop immediately fetches and processes another batch, ensuring that exactly 61 successful optimizer updates are completed per epoch and all 488 planned updates are achieved.
+   - The learning-rate scheduler steps strictly on successful updates, preserving the exact 48-step linear warmup and linear decay to 0 at step 488.
+
 
 ### 4.4 Sampling Strategy vs. Effective Dataset Exposure
 A common reporting error is to describe an equalized optimizer update budget as "equal dataset exposure." In reality, while the update count is identical (488 steps), the sampling exposure per dataset diverges as expected:
