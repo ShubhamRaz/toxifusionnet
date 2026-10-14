@@ -20,6 +20,7 @@ from ..models.encoder import build_encoder_and_tokenizer
 from ..models.losses import MultiTaskLoss
 from ..models.toxifusionnet import ToxiFusionNet
 from ..preprocessing.normalize import TextNormalizer
+from .balancing import compute_fold_class_weights, compute_task_class_weights
 from .metrics import evaluate_predictions, flatten_metrics
 
 log = logging.getLogger("toxifusionnet")
@@ -36,17 +37,8 @@ def pick_device(pref: str = "auto") -> torch.device:
 
 
 def class_weights(df: pd.DataFrame, task: str, mode: str) -> list[float] | None:
-    if mode != "balanced" or task not in df:
-        return None
-    from ..labels import label_to_id
-    y = np.array([label_to_id(task, v) for v in df[task]])
-    y = y[y != IGNORE_INDEX]
-    k = len(LABEL_SPACES[task])
-    if len(y) == 0:
-        return None
-    counts = np.bincount(y, minlength=k).astype(float)
-    w = len(y) / (k * np.maximum(counts, 1.0))
-    return w.tolist()
+    res = compute_task_class_weights(df, task, mode=mode)
+    return res.get("weights")
 
 
 @torch.no_grad()
@@ -137,13 +129,25 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
     dl_te = DataLoader(ds_te, batch_size=bs * 2, shuffle=False, collate_fn=collate)
 
     lcfg = cfg.loss
-    cw = {t: class_weights(tr_df, t, lcfg.get("class_weighting", "none")) for t in model.tasks}
-    cw = {t: w for t, w in cw.items() if w is not None}
+    mode = lcfg.get("class_weighting", "none")
+    max_w = float(lcfg.get("max_class_weight", 4.0))
+    src_filter = lcfg.get("class_weight_source")
+    if src_filter is None and "source_dataset" in tr_df.columns and tr_df["source_dataset"].nunique() > 1:
+        src_filter = "multibully"
+
+    balancing_meta = compute_fold_class_weights(
+        tr_df, model.tasks, mode=mode, max_weight=max_w, source_filter=src_filter
+    )
+    (run_dir / "class_weights.json").write_text(json.dumps(balancing_meta, indent=2))
+
+    cw = {t: meta["weights"] for t, meta in balancing_meta.items() if meta.get("weights") is not None}
     att_lambda = float(lcfg.get("attention_lambda", 0.0)) if cfg.get("rationale", {}).get("enabled", False) else 0.0
+    focal_use_cw = bool(lcfg.get("focal_use_class_weights", False))
     criterion = MultiTaskLoss(model.tasks, lcfg.get("weighting", "fixed"), dict(lcfg.get("weights", {})), cw,
                               float(lcfg.get("focal_gamma", 0.0)), att_lambda,
                               severity_loss_type=lcfg.get("severity_loss_type", "ce"),
-                              ordinal_penalty=float(lcfg.get("ordinal_penalty_weight", 0.5))).to(device)
+                              ordinal_penalty=float(lcfg.get("ordinal_penalty_weight", 0.5)),
+                              focal_use_class_weights=focal_use_cw).to(device)
     groups = model.param_groups(float(cfg.train.encoder_lr), float(cfg.train.head_lr), float(cfg.train.weight_decay),
                                 extra=criterion.log_vars.parameters() if lcfg.get("weighting") == "uncertainty" else (),
                                 emb_lr_mult=float(cfg.train.get("embedding_lr_mult", 1.0)))
@@ -195,7 +199,8 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
 
     model.load_state_dict(torch.load(run_dir / "model.pt", map_location=device)["state_dict"])
     results = {"best_epoch": best_epoch, "pretrained_vocab": getattr(encoder, "pretrained_vocab_stats", None), "device": str(device), "n_params": sum(p.numel() for p in model.parameters()),
-               "label_source": df["label_source"].iloc[0] if "label_source" in df and len(df) else None}
+               "label_source": df["label_source"].iloc[0] if "label_source" in df and len(df) else None,
+               "class_balancing": balancing_meta}
     for name, d, ds, dl in (("val", va_df, ds_va, dl_va), ("test", te_df, ds_te, dl_te)):
         pf = predictions_frame(d, ds, predict_loader(model, dl, device))
         pf.to_csv(run_dir / f"preds_{name}.csv", index=False)

@@ -1,0 +1,667 @@
+{
+  "fold_0": {
+    "hate": {
+      "task": "hate",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "non_hate",
+        "hate"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "non_hate": 2816,
+        "hate": 1073
+      },
+      "total_supervised": 3889,
+      "raw_weights": [
+        0.8309744074934504,
+        1.3461830337976417
+      ],
+      "normalized_weights": [
+        0.7633572030515793,
+        1.2366427969484208
+      ],
+      "weights": [
+        0.7633572030515793,
+        1.2366427969484208
+      ],
+      "mean_active_weight": 1.0
+    },
+    "sarcasm": {
+      "task": "sarcasm",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "not_sarcastic",
+        "sarcastic"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "not_sarcastic": 2440,
+        "sarcastic": 1449
+      },
+      "total_supervised": 3889,
+      "raw_weights": [
+        0.8927072473707137,
+        1.1584299600730097
+      ],
+      "normalized_weights": [
+        0.8704510299272183,
+        1.1295489700727819
+      ],
+      "weights": [
+        0.8704510299272183,
+        1.1295489700727819
+      ],
+      "mean_active_weight": 1.0
+    },
+    "target": {
+      "task": "target",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ],
+      "num_classes": 4,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "individual": 705,
+        "organization": 54,
+        "community": 171,
+        "society": 46
+      },
+      "total_supervised": 976,
+      "raw_weights": [
+        0.5883020404351338,
+        2.1256807188565543,
+        1.1945294407402949,
+        2.303116980547657
+      ],
+      "normalized_weights": [
+        0.37883912470141123,
+        1.3688394184909767,
+        0.7692213466154314,
+        1.4831001101921804
+      ],
+      "weights": [
+        0.37883912470141123,
+        1.3688394184909767,
+        0.7692213466154314,
+        1.4831001101921804
+      ],
+      "mean_active_weight": 1.0
+    },
+    "severity": {
+      "task": "severity",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "num_classes": 3,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "low": 95,
+        "moderate": 957,
+        "high": 21
+      },
+      "total_supervised": 1073,
+      "raw_weights": [
+        1.940338187198756,
+        0.6113406364191519,
+        4.126953601840713
+      ],
+      "normalized_weights": [
+        0.8715878028272441,
+        0.27461039812076704,
+        1.8538017990519888
+      ],
+      "weights": [
+        0.8715878028272441,
+        0.27461039812076704,
+        1.8538017990519888
+      ],
+      "mean_active_weight": 1.0
+    }
+  },
+  "fold_1": {
+    "hate": {
+      "task": "hate",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "non_hate",
+        "hate"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "non_hate": 2814,
+        "hate": 1071
+      },
+      "total_supervised": 3885,
+      "raw_weights": [
+        0.8308420472404406,
+        1.3467462605094096
+      ],
+      "normalized_weights": [
+        0.7630845961870248,
+        1.2369154038129753
+      ],
+      "weights": [
+        0.7630845961870248,
+        1.2369154038129753
+      ],
+      "mean_active_weight": 1.0
+    },
+    "sarcasm": {
+      "task": "sarcasm",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "not_sarcastic",
+        "sarcastic"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "not_sarcastic": 2439,
+        "sarcastic": 1446
+      },
+      "total_supervised": 3885,
+      "raw_weights": [
+        0.8924309297248966,
+        1.1590345102069317
+      ],
+      "normalized_weights": [
+        0.8700423729824596,
+        1.1299576270175404
+      ],
+      "weights": [
+        0.8700423729824596,
+        1.1299576270175404
+      ],
+      "mean_active_weight": 1.0
+    },
+    "target": {
+      "task": "target",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ],
+      "num_classes": 4,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "individual": 703,
+        "organization": 55,
+        "community": 171,
+        "society": 46
+      },
+      "total_supervised": 975,
+      "raw_weights": [
+        0.5888364010950945,
+        2.105188395801711,
+        1.1939173323522982,
+        2.3019368026681923
+      ],
+      "normalized_weights": [
+        0.3805156175568069,
+        1.3604068311879796,
+        0.7715287135559442,
+        1.4875488376992696
+      ],
+      "weights": [
+        0.3805156175568069,
+        1.3604068311879796,
+        0.7715287135559442,
+        1.4875488376992696
+      ],
+      "mean_active_weight": 1.0
+    },
+    "severity": {
+      "task": "severity",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "num_classes": 3,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "low": 95,
+        "moderate": 956,
+        "high": 20
+      },
+      "total_supervised": 1071,
+      "raw_weights": [
+        1.9385290136704443,
+        0.6110899789254413,
+        4.224926034855522
+      ],
+      "normalized_weights": [
+        0.8584468798193469,
+        0.27061152141548345,
+        1.8709415987651694
+      ],
+      "weights": [
+        0.8584468798193469,
+        0.27061152141548345,
+        1.8709415987651694
+      ],
+      "mean_active_weight": 1.0
+    }
+  },
+  "fold_2": {
+    "hate": {
+      "task": "hate",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "non_hate",
+        "hate"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "non_hate": 2810,
+        "hate": 1078
+      },
+      "total_supervised": 3888,
+      "raw_weights": [
+        0.8317541383240705,
+        1.3428847745153834
+      ],
+      "normalized_weights": [
+        0.764958387724276,
+        1.2350416122757242
+      ],
+      "weights": [
+        0.764958387724276,
+        1.2350416122757242
+      ],
+      "mean_active_weight": 1.0
+    },
+    "sarcasm": {
+      "task": "sarcasm",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "not_sarcastic",
+        "sarcastic"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "not_sarcastic": 2440,
+        "sarcastic": 1448
+      },
+      "total_supervised": 3888,
+      "raw_weights": [
+        0.8925924666248365,
+        1.1586809036417614
+      ],
+      "normalized_weights": [
+        0.8702813379855157,
+        1.1297186620144841
+      ],
+      "weights": [
+        0.8702813379855157,
+        1.1297186620144841
+      ],
+      "mean_active_weight": 0.9999999999999999
+    },
+    "target": {
+      "task": "target",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ],
+      "num_classes": 4,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "individual": 710,
+        "organization": 57,
+        "community": 169,
+        "society": 45
+      },
+      "total_supervised": 981,
+      "raw_weights": [
+        0.5877265820186012,
+        2.0742785683093214,
+        1.2046507510281403,
+        2.3345235059857505
+      ],
+      "normalized_weights": [
+        0.37910632375690934,
+        1.3379897158617948,
+        0.777046217757808,
+        1.505857742623488
+      ],
+      "weights": [
+        0.37910632375690934,
+        1.3379897158617948,
+        0.777046217757808,
+        1.505857742623488
+      ],
+      "mean_active_weight": 1.0
+    },
+    "severity": {
+      "task": "severity",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "num_classes": 3,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "low": 96,
+        "moderate": 962,
+        "high": 20
+      },
+      "total_supervised": 1078,
+      "raw_weights": [
+        1.9346977943739831,
+        0.611168858440426,
+        4.2387104957364885
+      ],
+      "normalized_weights": [
+        0.8554834378088887,
+        0.2702462563511261,
+        1.8742703058399852
+      ],
+      "weights": [
+        0.8554834378088887,
+        0.2702462563511261,
+        1.8742703058399852
+      ],
+      "mean_active_weight": 1.0
+    }
+  },
+  "fold_3": {
+    "hate": {
+      "task": "hate",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "non_hate",
+        "hate"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "non_hate": 2806,
+        "hate": 1075
+      },
+      "total_supervised": 3881,
+      "raw_weights": [
+        0.8315971460132038,
+        1.3435461581463315
+      ],
+      "normalized_weights": [
+        0.7646366512247145,
+        1.2353633487752855
+      ],
+      "weights": [
+        0.7646366512247145,
+        1.2353633487752855
+      ],
+      "mean_active_weight": 1.0
+    },
+    "sarcasm": {
+      "task": "sarcasm",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "not_sarcastic",
+        "sarcastic"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "not_sarcastic": 2436,
+        "sarcastic": 1445
+      },
+      "total_supervised": 3881,
+      "raw_weights": [
+        0.8925204619733101,
+        1.1588384591453909
+      ],
+      "normalized_weights": [
+        0.8701748414524918,
+        1.1298251585475083
+      ],
+      "weights": [
+        0.8701748414524918,
+        1.1298251585475083
+      ],
+      "mean_active_weight": 1.0
+    },
+    "target": {
+      "task": "target",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ],
+      "num_classes": 4,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "individual": 703,
+        "organization": 54,
+        "community": 172,
+        "society": 47
+      },
+      "total_supervised": 976,
+      "raw_weights": [
+        0.5891382910924179,
+        2.1256807188565543,
+        1.1910519095164538,
+        2.2784840051451156
+      ],
+      "normalized_weights": [
+        0.3810507632723028,
+        1.3748762771667207,
+        0.7703645240519309,
+        1.4737084355090455
+      ],
+      "weights": [
+        0.3810507632723028,
+        1.3748762771667207,
+        0.7703645240519309,
+        1.4737084355090455
+      ],
+      "mean_active_weight": 1.0
+    },
+    "severity": {
+      "task": "severity",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "num_classes": 3,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "low": 97,
+        "moderate": 957,
+        "high": 21
+      },
+      "total_supervised": 1075,
+      "raw_weights": [
+        1.922019270351204,
+        0.6119101201350164,
+        4.130797993547017
+      ],
+      "normalized_weights": [
+        0.8651603402214803,
+        0.27543967736818903,
+        1.8593999824103309
+      ],
+      "weights": [
+        0.8651603402214803,
+        0.27543967736818903,
+        1.8593999824103309
+      ],
+      "mean_active_weight": 1.0
+    }
+  },
+  "fold_4": {
+    "hate": {
+      "task": "hate",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "non_hate",
+        "hate"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "non_hate": 2813,
+        "hate": 1074
+      },
+      "total_supervised": 3887,
+      "raw_weights": [
+        0.8312035825614524,
+        1.3452101384443833
+      ],
+      "normalized_weights": [
+        0.7638286549464588,
+        1.2361713450535412
+      ],
+      "weights": [
+        0.7638286549464588,
+        1.2361713450535412
+      ],
+      "mean_active_weight": 1.0
+    },
+    "sarcasm": {
+      "task": "sarcasm",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "not_sarcastic",
+        "sarcastic"
+      ],
+      "num_classes": 2,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "not_sarcastic": 2445,
+        "sarcastic": 1442
+      },
+      "total_supervised": 3887,
+      "raw_weights": [
+        0.8915646502426912,
+        1.1609396452515446
+      ],
+      "normalized_weights": [
+        0.8687578897641289,
+        1.1312421102358712
+      ],
+      "weights": [
+        0.8687578897641289,
+        1.1312421102358712
+      ],
+      "mean_active_weight": 1.0
+    },
+    "target": {
+      "task": "target",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ],
+      "num_classes": 4,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "individual": 705,
+        "organization": 55,
+        "community": 171,
+        "society": 47
+      },
+      "total_supervised": 978,
+      "raw_weights": [
+        0.5889045004398403,
+        2.1084246596581404,
+        1.1957527174978566,
+        2.2808173227101
+      ],
+      "normalized_weights": [
+        0.38154461634919995,
+        1.3660246733886816,
+        0.7747147653065687,
+        1.4777159449555495
+      ],
+      "weights": [
+        0.38154461634919995,
+        1.3660246733886816,
+        0.7747147653065687,
+        1.4777159449555495
+      ],
+      "mean_active_weight": 1.0
+    },
+    "severity": {
+      "task": "severity",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "num_classes": 3,
+      "source_filter": null,
+      "max_weight": 4.0,
+      "counts": {
+        "low": 96,
+        "moderate": 957,
+        "high": 21
+      },
+      "total_supervised": 1074,
+      "raw_weights": [
+        1.9311050377094112,
+        0.6116254445577882,
+        4.128876245132451
+      ],
+      "normalized_weights": [
+        0.8683538088861927,
+        0.27502765205534424,
+        1.8566185390584633
+      ],
+      "weights": [
+        0.8683538088861927,
+        0.27502765205534424,
+        1.8566185390584633
+      ],
+      "mean_active_weight": 1.0
+    }
+  }
+}

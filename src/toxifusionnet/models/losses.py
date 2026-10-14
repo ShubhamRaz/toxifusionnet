@@ -18,7 +18,8 @@ def focal_ce(logits, targets, weight=None, gamma: float = 2.0):
 class MultiTaskLoss(nn.Module):
     def __init__(self, tasks, weighting: str = "fixed", weights: dict | None = None, class_weights: dict | None = None,
                  focal_gamma: float = 0.0, attention_lambda: float = 0.0,
-                 severity_loss_type: str = "ce", ordinal_penalty: float = 0.5):
+                 severity_loss_type: str = "ce", ordinal_penalty: float = 0.5,
+                 focal_use_class_weights: bool = False):
         super().__init__()
         self.tasks = list(tasks)
         self.weighting = weighting
@@ -27,6 +28,7 @@ class MultiTaskLoss(nn.Module):
         self.attention_lambda = attention_lambda
         self.severity_loss_type = severity_loss_type.lower()
         self.ordinal_penalty = float(ordinal_penalty)
+        self.focal_use_class_weights = focal_use_class_weights
         for t, w in (class_weights or {}).items():
             self.register_buffer(f"cw_{t}", torch.as_tensor(w, dtype=torch.float32))
         if weighting == "uncertainty":
@@ -63,7 +65,11 @@ class MultiTaskLoss(nn.Module):
             lg, yy = out["logits"][t][valid], y[valid]
             cw = self._cw(t)
             cw = cw.to(lg.device) if cw is not None else None
-            loss = focal_ce(lg, yy, cw, self.focal_gamma) if self.focal_gamma > 0 else F.cross_entropy(lg, yy, weight=cw)
+            if self.focal_gamma > 0:
+                focal_w = cw if self.focal_use_class_weights else None
+                loss = focal_ce(lg, yy, focal_w, self.focal_gamma)
+            else:
+                loss = F.cross_entropy(lg, yy, weight=cw)
             if t == "severity" and self.severity_loss_type == "ordinal":
                 dist_pen = self.ordinal_distance_penalty(lg, yy)
                 loss = loss + self.ordinal_penalty * dist_pen

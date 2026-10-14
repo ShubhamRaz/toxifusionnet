@@ -124,9 +124,17 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
         fold_gen = make_fold_splits(df, folds, seed)
 
     pooled, tf_pooled = [], []
+    fold_class_weights = {}
     for f, d in fold_gen:
         cfg = load_config(config, overrides + [f"seed={seed + f}"])
         res = train_or_resume(cfg, d, out_dir / f"fold{f}")
+        if "class_balancing" in res:
+            fold_class_weights[f"fold_{f}"] = res["class_balancing"]
+        elif (out_dir / f"fold{f}" / "class_weights.json").exists():
+            try:
+                fold_class_weights[f"fold_{f}"] = json.loads((out_dir / f"fold{f}" / "class_weights.json").read_text())
+            except Exception:
+                pass
         p = pd.read_csv(out_dir / f"fold{f}" / "preds_test.csv"); p["fold"] = f
         pooled.append(p)
         if include_tfidf:
@@ -160,6 +168,7 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             "pooled_flat": flatten_metrics(res),
             "bootstrap_ci95": cis,
             "group_bootstrap_ci95": group_cis,
+            "class_weights_by_fold": fold_class_weights if name == "model" else {},
             "per_fold_hate_macro_f1": [float(x.get("hate_macro_f1", np.nan)) for x in per_fold],
             "per_fold_mean_macro_f1": [float(x.get("mean_macro_f1", np.nan)) for x in per_fold],
             "per_fold_sarcasm_macro_f1": [float(x.get("sarcasm_macro_f1", np.nan)) for x in per_fold],
