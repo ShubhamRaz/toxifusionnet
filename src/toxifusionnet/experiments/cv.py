@@ -85,14 +85,32 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
 
     aux_df = None
     if aux_data_path and Path(aux_data_path).exists():
-        aux_df = pd.read_csv(aux_data_path)
-        if "source_dataset" not in aux_df:
-            aux_df["source_dataset"] = "aux"
-        log.info("Loaded auxiliary training dataset: %d rows from %s", len(aux_df), aux_data_path)
+        raw_aux = pd.read_csv(aux_data_path)
+        if "source_dataset" not in raw_aux:
+            raw_aux["source_dataset"] = "aux"
+
+        # Exclude auxiliary rows whose labels across all tasks are completely masked (zero supervision)
+        from ..labels import TASKS, label_to_id, IGNORE_INDEX
+        sup_mask = pd.Series(False, index=raw_aux.index)
+        for t in TASKS:
+            if t in raw_aux.columns:
+                sup_mask = sup_mask | raw_aux[t].apply(lambda v: label_to_id(t, v) != IGNORE_INDEX)
+
+        n_raw = len(raw_aux)
+        aux_df = raw_aux[sup_mask].reset_index(drop=True)
+        n_excluded = n_raw - len(aux_df)
+        log.info(
+            "Auxiliary dataset '%s': %d raw rows, retained %d supervised rows, excluded %d zero-supervision rows (all labels masked)",
+            aux_data_path, n_raw, len(aux_df), n_excluded
+        )
 
     if grouped:
         if folds_cache and Path(folds_cache).exists():
-            fold_assign = pd.read_csv(folds_cache)
+            import hashlib
+            cache_p = Path(folds_cache)
+            sha = hashlib.sha256(cache_p.read_bytes()).hexdigest()
+            log.info("Using existing canonical fold cache: %s (SHA-256: %s)", folds_cache, sha)
+            fold_assign = pd.read_csv(cache_p)
             validate_fold_cache(fold_assign, expected_ids=set(df["id"]), folds=folds)
             # Reconstruct fold_dfs from cached assignment
             fold_dfs = []
@@ -119,6 +137,7 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
                 Path(folds_cache).parent.mkdir(parents=True, exist_ok=True)
                 cached = pd.concat([d[["id", "split", "fold", "group_id"]] for d in fold_dfs])
                 cached.to_csv(folds_cache, index=False)
+                log.info("Saved newly generated fold cache to %s", folds_cache)
         fold_gen = enumerate(fold_dfs)
     else:
         fold_gen = make_fold_splits(df, folds, seed)

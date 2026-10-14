@@ -89,6 +89,22 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
     tasks = list(cfg.model.tasks)
     normalizer = TextNormalizer.from_config(cfg.preprocess)
     tr_df, va_df, te_df = (df[df.split == s].reset_index(drop=True) for s in ("train", "val", "test"))
+
+    # Exclude auxiliary rows whose labels across all tasks are completely masked/NaN (zero supervision)
+    if "source_dataset" in tr_df.columns:
+        is_aux = tr_df["source_dataset"] != "multibully"
+        if is_aux.any():
+            from ..labels import label_to_id, IGNORE_INDEX
+            has_sup = pd.Series(False, index=tr_df.index)
+            for t in tasks:
+                if t in tr_df.columns:
+                    has_sup = has_sup | tr_df[t].apply(lambda v: label_to_id(t, v) != IGNORE_INDEX)
+            zero_sup_aux = is_aux & (~has_sup)
+            if zero_sup_aux.any():
+                n_zero = int(zero_sup_aux.sum())
+                log.info("Excluding %d zero-supervision auxiliary rows from training loader", n_zero)
+                tr_df = tr_df[~zero_sup_aux].reset_index(drop=True)
+
     log.info("train/val/test = %d/%d/%d on %s", len(tr_df), len(va_df), len(te_df), device)
 
     corpus = [normalizer(t).words for t in tr_df["text"]] if cfg.model.encoder_name == "tiny" else None
@@ -152,15 +168,27 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
                                 extra=criterion.log_vars.parameters() if lcfg.get("weighting") == "uncertainty" else (),
                                 emb_lr_mult=float(cfg.train.get("embedding_lr_mult", 1.0)))
     opt = torch.optim.AdamW(groups)
-    steps = max(1, len(dl_tr) * int(cfg.train.epochs))
-    sched = get_linear_schedule_with_warmup(opt, int(float(cfg.train.warmup_ratio) * steps), steps)
+    steps_per_epoch = cfg.train.get("steps_per_epoch")
+    steps_per_epoch = int(steps_per_epoch) if steps_per_epoch is not None else len(dl_tr)
+    epochs = int(cfg.train.epochs)
+    total_steps = int(cfg.train.get("max_steps", steps_per_epoch * epochs))
+    warmup_steps = int(float(cfg.train.get("warmup_ratio", 0.10)) * total_steps)
+    sched = get_linear_schedule_with_warmup(opt, warmup_steps, total_steps)
     use_amp = device.type == "cuda" and bool(cfg.train.get("fp16", True))
     scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
 
     best, best_epoch, bad, history = -1.0, -1, 0, []
-    for epoch in range(int(cfg.train.epochs)):
+    global_step = 0
+    train_iter = iter(dl_tr)
+    for epoch in range(epochs):
         model.train(); t0 = time.time(); run_loss = 0.0
-        for b in dl_tr:
+        n_steps = steps_per_epoch
+        for _ in range(n_steps):
+            try:
+                b = next(train_iter)
+            except StopIteration:
+                train_iter = iter(dl_tr)
+                b = next(train_iter)
             batch = {k: (v.to(device) if torch.is_tensor(v) else v) for k, v in b.items() if k != "labels"}
             batch["labels"] = {t: v.to(device) for t, v in b["labels"].items()}
             pix = batch.get("pixel_values")
@@ -179,26 +207,33 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
             scaler.update()
             if scale_before <= scaler.get_scale():
                 sched.step()
+            global_step += 1
             run_loss += float(loss.detach())
+            if global_step >= total_steps:
+                break
+        epoch_loss = run_loss / max(1, n_steps)
         pred = predict_loader(model, dl_va, device)
         va_res = evaluate_predictions(predictions_frame(va_df, ds_va, pred), model.tasks)
         score = va_res["mean_macro_f1"]
-        history.append({"epoch": epoch + 1, "train_loss": run_loss / len(dl_tr), "val_mean_macro_f1": score,
+        history.append({"epoch": epoch + 1, "global_step": global_step, "train_loss": epoch_loss, "val_mean_macro_f1": score,
                         **{f"val_{k}": v for k, v in flatten_metrics(va_res).items() if k != "mean_macro_f1"},
                         "seconds": time.time() - t0})
-        log.info("epoch %d  loss %.4f  val mean macro-F1 %.4f  (%.1fs)", epoch + 1, history[-1]["train_loss"], score, history[-1]["seconds"])
+        log.info("epoch %d (step %d/%d)  loss %.4f  val mean macro-F1 %.4f  (%.1fs)", epoch + 1, global_step, total_steps, epoch_loss, score, history[-1]["seconds"])
         if score > best:
             best, best_epoch, bad = score, epoch + 1, 0
             torch.save({"state_dict": model.state_dict(), "cfg": cfg.to_dict()}, run_dir / "model.pt")
         else:
             bad += 1
             if bad >= int(cfg.train.patience):
-                log.info("early stopping at epoch %d", epoch + 1)
+                log.info("early stopping at epoch %d (step %d)", epoch + 1, global_step)
                 break
+        if global_step >= total_steps:
+            break
     pd.DataFrame(history).to_csv(run_dir / "history.csv", index=False)
 
     model.load_state_dict(torch.load(run_dir / "model.pt", map_location=device)["state_dict"])
-    results = {"best_epoch": best_epoch, "pretrained_vocab": getattr(encoder, "pretrained_vocab_stats", None), "device": str(device), "n_params": sum(p.numel() for p in model.parameters()),
+    results = {"best_epoch": best_epoch, "total_steps": global_step, "steps_budget": total_steps,
+               "pretrained_vocab": getattr(encoder, "pretrained_vocab_stats", None), "device": str(device), "n_params": sum(p.numel() for p in model.parameters()),
                "label_source": df["label_source"].iloc[0] if "label_source" in df and len(df) else None,
                "class_balancing": balancing_meta}
     for name, d, ds, dl in (("val", va_df, ds_va, dl_va), ("test", te_df, ds_te, dl_te)):

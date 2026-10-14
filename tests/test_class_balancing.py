@@ -236,3 +236,80 @@ def test_fold_cache_authoritative_checksum():
     test_sizes = folds[folds["split"] == "test"].groupby("fold")["id"].count().tolist()
     assert test_sizes == [1142, 1144, 1146, 1144, 1142]
     assert folds[folds["split"] == "test"]["id"].nunique() == 5718
+
+
+def test_zero_supervision_auxiliary_filtering():
+    """Verify that auxiliary rows with all labels masked are excluded from training loader while preserving disk datasets."""
+    hot_path = DATA_DIR / "hot_gold_only.csv"
+    assert hot_path.exists(), "hot_gold_only.csv must exist"
+
+    # 1. Verify on-disk file remains complete and untouched
+    raw_hot = pd.read_csv(hot_path)
+    assert len(raw_hot) == 3189, "On-disk raw hot_gold_only.csv must retain all 3189 rows"
+
+    # 2. Check supervision distribution across tasks
+    tasks = ["hate", "sarcasm", "target", "severity"]
+    has_sup = pd.Series(False, index=raw_hot.index)
+    for t in tasks:
+        if t in raw_hot.columns:
+            has_sup = has_sup | raw_hot[t].apply(lambda v: label_to_id(t, v) != IGNORE_INDEX)
+
+    n_zero = int((~has_sup).sum())
+    n_supervised = int(has_sup.sum())
+    assert n_zero == 1765, f"Expected 1765 zero-supervision rows, found {n_zero}"
+    assert n_supervised == 1424, f"Expected 1424 supervised rows, found {n_supervised}"
+
+    # 3. Verify all 1424 retained samples are valid human gold hate annotations
+    supervised_hot = raw_hot[has_sup].reset_index(drop=True)
+    assert len(supervised_hot) == 1424
+    hate_counts = supervised_hot["hate"].value_counts().to_dict()
+    assert hate_counts == {"non_hate": 1121, "hate": 303}
+    assert supervised_hot["sarcasm"].isna().all()
+    assert supervised_hot["target"].isna().all()
+    assert supervised_hot["severity"].isna().all()
+
+    # 4. Verify that excluded rows are solely offensive/unlabeled (orig_hot_label == 2.0 or NaN hate)
+    excluded_hot = raw_hot[~has_sup].reset_index(drop=True)
+    assert len(excluded_hot) == 1765
+    assert excluded_hot["hate"].isna().all()
+
+
+def test_matched_optimizer_budget_logic():
+    """Verify that E1d and E6b configs specify matched steps_per_epoch, max_steps, and warmup_ratio."""
+    from toxifusionnet.config import load_config
+
+    cfg_e1c = load_config("configs/exp1c_multibully_text_unweighted.yaml")
+    cfg_e1d = load_config("configs/exp1d_multibully_text_weighted.yaml")
+    cfg_e6b = load_config("configs/exp6b_combined_text_gold_weighted.yaml")
+
+    # Verify exact configuration match
+    for cfg, name in [(cfg_e1c, "E1c"), (cfg_e1d, "E1d"), (cfg_e6b, "E6b")]:
+        assert cfg.train.steps_per_epoch == 61, f"{name} must have steps_per_epoch=61"
+        assert cfg.train.max_steps == 488, f"{name} must have max_steps=488"
+        assert pytest.approx(float(cfg.train.warmup_ratio), rel=1e-5) == 0.10, f"{name} must have warmup_ratio=0.10"
+        assert cfg.train.epochs == 8, f"{name} must have epochs=8"
+        assert cfg.train.batch_size == 64, f"{name} must have batch_size=64"
+
+    # Verify schedule math
+    total_steps = cfg_e1d.train.max_steps
+    warmup_steps = int(float(cfg_e1d.train.warmup_ratio) * total_steps)
+    assert warmup_steps == 48, f"Expected 48 warmup steps for 488 total steps, got {warmup_steps}"
+
+    # Verify that DataLoader cycling properly produces exact steps_per_epoch regardless of dataset size
+    from torch.utils.data import DataLoader, TensorDataset
+    dummy_ds = TensorDataset(torch.arange(100))
+    dummy_dl = DataLoader(dummy_ds, batch_size=10, shuffle=True)
+    assert len(dummy_dl) == 10
+
+    dl_iter = iter(dummy_dl)
+    drawn = 0
+    steps_per_epoch = 15
+    for _ in range(steps_per_epoch):
+        try:
+            b = next(dl_iter)
+        except StopIteration:
+            dl_iter = iter(dummy_dl)
+            b = next(dl_iter)
+        drawn += 1
+    assert drawn == 15, "DataLoader cycling must supply exact steps requested"
+

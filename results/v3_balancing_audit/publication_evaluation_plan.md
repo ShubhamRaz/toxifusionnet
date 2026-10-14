@@ -66,7 +66,20 @@ Upon user confirmation, the evaluation suite can be executed sequentially or in 
 # 1. Pull latest verified implementation
 git pull origin main
 
-# 2. Run E1c: Unweighted Control Baseline
+# 2. Verify authoritative SHA-256 checksum and test IDs of the canonical fold cache
+sha256sum data/processed/multibully_v2_cv_folds.csv
+# Expected output:
+# 73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5  data/processed/multibully_v2_cv_folds.csv
+
+python -c "
+import pandas as pd
+df = pd.read_csv('data/processed/multibully_v2_cv_folds.csv')
+assert len(df) == 28590, f'Expected 28590 rows, got {len(df)}'
+assert df[df['split'] == 'test']['id'].nunique() == 5718, 'Expected 5718 unique test IDs'
+print('Verified canonical fold cache: 28,590 rows, 5,718 test IDs across 5 folds')
+"
+
+# 3. Run E1c: Unweighted Control Baseline (488 steps matched budget)
 python -m toxifusionnet.cli cv \
   --config configs/exp1c_multibully_text_unweighted.yaml \
   --out-dir results/v3_evaluation/e1c_text_unweighted

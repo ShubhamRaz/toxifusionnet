@@ -75,8 +75,33 @@ To prevent ungrounded supervision from degrading model heads:
 
 ---
 
+### 3.3 Zero-Supervision Auxiliary Row Exclusion from Training Loader
+In `hot_gold_only.csv`, 1,765 rows correspond to offensive language where `orig_hot_label == 2.0` (hate is masked to NaN) and sarcasm, target, and severity are unannotated (NaN).
+- **Audit:**
+  - Raw on-disk rows in `data/processed/hot_gold_only.csv`: **3,189** (preserved untouched).
+  - Rows with zero supervision across all 4 tasks: **1,765** ($55.35\%$).
+  - Rows with active human gold hate supervision: **1,424** ($44.65\%$, 1,121 `non_hate`, 303 `hate`).
+- **Loader Filter Implementation:**
+  - Both `cv.py` and `trainer.py` filter out any auxiliary row where all configured task labels map to `IGNORE_INDEX` (-100).
+  - The 1,765 zero-supervision rows are completely excluded from entering the training DataLoader, preventing wasteful forward passes that produce 0 loss.
+  - All 1,424 valid human gold hate annotations are retained and injected into the training partition.
+  - Excluded-row counts are logged at `INFO` level during CV split assembly and trainer initialization.
+
+---
+
 ## 4. Class Weight Derivation Equivalence (E1d vs. E6b)
 
 To ensure that differences between E1d (MultiBully-only) and E6b (MultiBully + HOT) reflect only the transfer effect of auxiliary hate supervision, class weights are derived strictly from MultiBully training samples:
 - `class_weight_source: multibully` filters training samples to `source_dataset == "multibully"` during weight calculation.
 - As verified in [class_weights_by_fold.json](file:///c:/Users/SHUBHAM%20RAJ/Desktop/Others/Toxic/toxifusionnet/toxifusionnet/results/v3_balancing_audit/class_weights_by_fold.json), the fold-for-fold class weights for E1d and E6b are **bit-for-bit identical**.
+
+---
+
+## 5. Non-Overwriting Canonical Fold Cache Policy
+
+- The canonical fold cache `data/processed/multibully_v2_cv_folds.csv` is protected against automatic modification or regeneration if it already exists on disk.
+- When `folds_cache` is specified:
+  1. The SHA-256 checksum is computed and logged (`73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5`).
+  2. The sample IDs and fold distributions are validated against the active dataset.
+  3. If validation passes, the cached assignments are read in read-only mode.
+  4. If validation fails or a checksum mismatch occurs on DGX, execution fails fast with an explanatory error instead of silently overwriting the canonical cache.

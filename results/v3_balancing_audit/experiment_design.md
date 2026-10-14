@@ -56,7 +56,8 @@ To rigorously isolate the contribution of per-task class balancing from auxiliar
 | **Config File** | `configs/exp1c_multibully_text_unweighted.yaml` | `configs/exp1d_multibully_text_weighted.yaml` | `configs/exp6b_combined_text_gold_weighted.yaml` |
 | **Output Directory** | `results/v3_evaluation/e1c_text_unweighted` | `results/v3_evaluation/e1d_text_weighted` | `results/v3_evaluation/e6b_text_gold_weighted` |
 | **Primary Dataset** | MultiBully ($N = 5,718$) | MultiBully ($N = 5,718$) | MultiBully ($N = 5,718$) |
-| **Auxiliary Dataset** | None | None | HOT Gold-Only ($N = 3,189$) strictly in train |
+| **Auxiliary Dataset** | None | None | HOT Gold-Only ($N = 3,189$ raw, **1,424 active**) strictly in train |
+| **Zero-Supervision Excluded** | N/A | N/A | **1,765 rows excluded** (all 4 task labels masked) |
 | **Class Weighting Mode** | `none` ($w_c = 1.0$) | `sqrt_balanced` | `sqrt_balanced` |
 | **Weight Derivation Source** | N/A | MultiBully train fold | **MultiBully train fold only** |
 | **Max Weight Cap** | N/A | 4.0 | 4.0 |
@@ -64,20 +65,51 @@ To rigorously isolate the contribution of per-task class balancing from auxiliar
 | **Focal Modulation ($\gamma$)**| 0.0 (Pure Cross-Entropy) | 0.0 (Pure Cross-Entropy) | 0.0 (Pure Cross-Entropy) |
 | **Backbone Architecture** | `xlm-roberta-base` | `xlm-roberta-base` | `xlm-roberta-base` |
 | **Batch Size** | 64 | 64 | 64 |
+| **Steps per Epoch** | **61** | **61** | **61** |
+| **Total Max Steps** | **488** | **488** | **488** |
+| **Warmup Steps** | **48** (`warmup_ratio: 0.10`) | **48** (`warmup_ratio: 0.10`) | **48** (`warmup_ratio: 0.10`) |
 | **Learning Rates** | Encoder: $1\times 10^{-5}$, Head: $5\times 10^{-4}$ | Encoder: $1\times 10^{-5}$, Head: $5\times 10^{-4}$ | Encoder: $1\times 10^{-5}$, Head: $5\times 10^{-4}$ |
 | **Patience / Epochs** | 3 / 8 | 3 / 8 | 3 / 8 |
 | **Fold Split Cache** | `data/processed/multibully_v2_cv_folds.csv` | `data/processed/multibully_v2_cv_folds.csv` | `data/processed/multibully_v2_cv_folds.csv` |
 
 ---
 
-## 4. Key Hypotheses & Optimizer Update Analysis
+## 4. Hypotheses, Matched Budget Accounting & Dataset Exposure
 
 ### 4.1 Scientific Hypotheses
 - **$H_1$ (Balancing Effect):** E1d will achieve higher Macro-F1 than E1c on Target and Severity due to improved recall on minority classes (`organization`, `society`, `low`, `high`), without degrading Hate or Sarcasm detection.
-- **$H_2$ (Transfer Interaction):** When trained with identical MultiBully-derived class weights, E6b (MultiBully + HOT gold) will demonstrate whether auxiliary hate text supervision improves hate F1 or continues to produce negative transfer on conditional heads.
+- **$H_2$ (Transfer Interaction):** When trained with identical MultiBully-derived class weights and identical optimizer step budgets, E6b (MultiBully + HOT gold) will demonstrate whether auxiliary hate text supervision improves hate F1 or continues to produce negative transfer on conditional heads.
 
-### 4.2 Optimizer Step Accounting
-Because HOT samples are injected exclusively into the training splits of E6b:
-- **E1c & E1d Training Size:** ~4,003 samples per fold $\rightarrow \lceil 4003 / 64 \rceil = 63$ batches/epoch $\rightarrow 504$ total steps across 8 epochs.
-- **E6b Training Size:** 4,003 + 3,189 = 7,192 samples per fold $\rightarrow \lceil 7192 / 64 \rceil = 113$ batches/epoch $\rightarrow 904$ total steps across 8 epochs.
-- **Schedule Invariance:** Both configurations employ `get_linear_schedule_with_warmup` with `warmup_ratio = 0.10` calibrated dynamically to `steps = len(dl_tr) * epochs`, ensuring identical relative warmup profiles.
+### 4.2 Exclusion of Zero-Supervision Auxiliary Rows
+The raw derived dataset `data/processed/hot_gold_only.csv` contains $N = 3,189$ rows. An audit of supervision across all four tasks (`hate`, `sarcasm`, `target`, `severity`) reveals:
+- **Zero-Supervision Rows ($N = 1,765$):** Samples from HOT with `orig_hot_label == 2.0` (offensive language masked to `NaN` to preserve binary hate gold ground truth) where sarcasm, target, and severity are also unannotated (`NaN`). If included in the training loader, these samples contribute `IGNORE_INDEX` (-100) across all heads, generating zero loss and zero gradient while needlessly consuming forward/backward cycles.
+- **Valid Human-Gold Hate Rows ($N = 1,424$):** Samples with active human-annotated binary hate labels (1,121 `non_hate`, 303 `hate`).
+- **Loader Filtering Action:** The DataLoader dynamically filters out all 1,765 zero-supervision rows upon loading. The on-disk file `data/processed/hot_gold_only.csv` remains strictly untouched ($3,189$ rows preserved). Exactly 1,424 valid human-labelled HOT hate examples are retained in the training loader.
+
+### 4.3 Matched Optimizer Budget & Learning-Rate Schedule
+To ensure the comparison between E1d and E6b is strictly controlled, we do not rely solely on identical class weights. Differences in total gradient steps or learning-rate decay schedules would confound the experimental findings. We enforce:
+
+1. **Step Budget Calibration:**
+   - MultiBully training split has $N_{\text{MB}} \approx 3,885 \text{--} 3,889$ samples per fold. With `batch_size = 64`, this yields $\lceil 3889 / 64 \rceil = 61$ batches per epoch.
+   - For 8 epochs, the reference budget is exactly **$61 \times 8 = 488$ optimizer steps**.
+   - In E6b, combining MultiBully ($3,889$) and retained HOT gold ($1,424$) creates a pool of $5,313$ samples. Unconstrained training would yield $\lceil 5313 / 64 \rceil = 84$ batches/epoch ($672$ steps total), giving E6b $38\%$ more gradient updates.
+   - By fixing `steps_per_epoch: 61` and `max_steps: 488` in both E1d and E6b, both models undergo **identically 488 optimizer updates**.
+2. **Schedule Invariance:**
+   - Both models use linear warmup decay with `warmup_ratio = 0.10` calibrated to `total_steps = 488`, yielding identically **48 warmup steps**.
+   - For every step $t \in [1, 488]$, the learning rate is mathematically identical between E1d and E6b.
+   - Validation evaluation and early stopping checks occur at identical step intervals (every 61 steps, at steps 61, 122, 183, 244, 305, 366, 427, 488).
+
+### 4.4 Sampling Strategy & Effective Dataset Exposure
+- **E1d (MultiBully Only):**
+  - Standard shuffled DataLoader over $N_{\text{MB}} \approx 3,886$ training samples.
+  - In each epoch, 61 batches ($3,886$ samples) are drawn.
+  - Total samples seen across 488 steps: $31,088$ sample draws.
+  - MultiBully effective exposure: $31,088 / 3,886 = \mathbf{8.00\times}$ (8 full passes).
+- **E6b (MultiBully + Retained HOT Gold):**
+  - Shuffled combined DataLoader over $N_{\text{comb}} \approx 5,310$ samples ($73.2\%$ MultiBully, $26.8\%$ HOT gold).
+  - In each epoch, exactly 61 batches ($61 \times 64 = 3,904$ samples) are drawn uniformly at random.
+  - Total samples seen across 488 steps: $488 \times 64 = 31,232$ sample draws.
+  - Combined pool effective exposure: $31,232 / 5,310 = \mathbf{5.88\times}$ passes per sample.
+  - Expected MultiBully exposure: $31,232 \times 0.732 \approx 22,862$ draws ($\mathbf{5.88\times}$ passes).
+  - Expected HOT gold exposure: $31,232 \times 0.268 \approx 8,370$ draws ($\mathbf{5.88\times}$ passes across all 1,424 valid HOT samples).
+- **Control Guarantee:** The performance difference between E1d and E6b isolates strictly the effect of substituting auxiliary hate text supervision for multi-task meme supervision under an equalized parameter-update and learning-rate budget.
