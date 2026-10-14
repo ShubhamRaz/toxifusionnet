@@ -102,6 +102,19 @@ To ensure that differences between E1d (MultiBully-only) and E6b (MultiBully + H
 - The canonical fold cache `data/processed/multibully_v2_cv_folds.csv` is protected against automatic modification or regeneration if it already exists on disk.
 - When `folds_cache` is specified:
   1. The SHA-256 checksum is computed with in-memory CRLF normalization and logged (`73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5`).
-  2. The sample IDs and fold distributions are validated against the active dataset.
-  3. If validation passes, the cached assignments are read in read-only mode.
-  4. If validation fails or a checksum mismatch occurs on DGX, execution fails fast with an explanatory error instead of silently overwriting the canonical cache.
+  2. If the canonical file `multibully_v2_cv_folds.csv` has any checksum mismatch, execution immediately raises a `ValueError` fail-fast exception. It is never automatically regenerated or overwritten.
+  3. The sample IDs and fold distributions are validated against the active dataset.
+  4. If validation passes, the cached assignments are read in read-only mode.
+
+---
+
+## 6. Guaranteed Controlled Training Budget & Dataset Exposure Accounting
+
+To eliminate confounding experimental factors across E1c, E1d, and E6b:
+- **Optimizer Updates:** All three experiments are configured with `steps_per_epoch: 61` and `max_steps: 488`. Exactly 488 successful optimizer updates are executed across 8 epochs.
+- **Disabled Early Stopping:** `early_stopping: false` and `patience: 0` prevent premature termination. Checkpoint selection tracks and loads the model corresponding to the best validation Mean Macro-F1 (`eval_checkpoint_type: best_val_macro_f1`).
+- **Learning-Rate Schedule:** Identical 48-step linear warmup (`warmup_ratio: 0.10`) followed by linear decay to 0 at step 488.
+- **Dataset Exposure Accounting:**
+  - **E1d (MultiBully Only):** MultiBully training split ($N \approx 3,886$) is exposed $\mathbf{8.00\times}$ (8 full passes, $31,088$ sample draws).
+  - **E6b (MultiBully + HOT Gold):** Combined training pool ($N \approx 5,310$) is exposed $\mathbf{5.88\times}$ ($\approx 5.9$ passes, $31,232$ sample draws). MultiBully data is drawn $\sim 22,862$ times ($5.88\times$ exposure); active HOT gold data is drawn $\sim 8,370$ times ($5.88\times$ exposure across all 1,424 valid rows).
+  - The matched update budget is not described as identical dataset exposure: E6b deliberately substitutes auxiliary text supervision for $26.8\%$ of the MultiBully multi-task exposure.

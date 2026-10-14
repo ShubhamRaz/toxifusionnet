@@ -57,6 +57,22 @@ def compute_normalized_fold_cache_sha256(cache_path: str | Path) -> str:
     return hashlib.sha256(normalized).hexdigest()
 
 
+def validate_fold_cache_checksum(cache_path: str | Path, expected_sha: str = CANONICAL_FOLD_CACHE_SHA256) -> str:
+    """Verify that the fold cache matches the expected SHA-256 after in-memory CRLF normalization.
+
+    Raises ValueError immediately if the checksum does not match expected_sha, preventing corrupted
+    or modified fold mappings from compromising experimental reproducibility.
+    """
+    sha = compute_normalized_fold_cache_sha256(cache_path)
+    if sha != expected_sha:
+        raise ValueError(
+            f"Canonical fold cache checksum verification failed for '{cache_path}'! "
+            f"Expected SHA-256 (CRLF-normalized): {expected_sha}, got: {sha}. "
+            "The fold cache has been altered or corrupted. Automatic regeneration is disabled."
+        )
+    return sha
+
+
 def validate_fold_cache(fold_assign: pd.DataFrame, expected_ids: set | None = None, folds: int = 5) -> dict[int, list]:
     """Strict pre-training validation of fold cache integrity and test partition coverage."""
     actual_folds = set(fold_assign["fold"].unique())
@@ -124,11 +140,8 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             cache_p = Path(folds_cache)
             sha = compute_normalized_fold_cache_sha256(cache_p)
             log.info("Using existing canonical fold cache: %s (SHA-256 [CRLF-normalized]: %s)", folds_cache, sha)
-            if cache_p.name == "multibully_v2_cv_folds.csv" and sha != CANONICAL_FOLD_CACHE_SHA256:
-                log.warning(
-                    "Fold cache '%s' normalized SHA-256 (%s) differs from canonical (%s)",
-                    folds_cache, sha, CANONICAL_FOLD_CACHE_SHA256
-                )
+            if cache_p.name == "multibully_v2_cv_folds.csv":
+                validate_fold_cache_checksum(cache_p, CANONICAL_FOLD_CACHE_SHA256)
             fold_assign = pd.read_csv(cache_p)
             validate_fold_cache(fold_assign, expected_ids=set(df["id"]), folds=folds)
             # Reconstruct fold_dfs from cached assignment
@@ -163,6 +176,7 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
 
     pooled, tf_pooled = [], []
     fold_class_weights = {}
+    fold_training_meta = {}
     for f, d in fold_gen:
         cfg = load_config(config, overrides + [f"seed={seed + f}"])
         res = train_or_resume(cfg, d, out_dir / f"fold{f}")
@@ -173,6 +187,12 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
                 fold_class_weights[f"fold_{f}"] = json.loads((out_dir / f"fold{f}" / "class_weights.json").read_text())
             except Exception:
                 pass
+        fold_training_meta[f"fold_{f}"] = {
+            k: res[k] for k in (
+                "best_epoch", "best_step", "best_val_score", "total_steps",
+                "steps_budget", "eval_checkpoint", "eval_checkpoint_type"
+            ) if k in res
+        }
         p = pd.read_csv(out_dir / f"fold{f}" / "preds_test.csv"); p["fold"] = f
         pooled.append(p)
         if include_tfidf:
@@ -207,6 +227,7 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             "bootstrap_ci95": cis,
             "group_bootstrap_ci95": group_cis,
             "class_weights_by_fold": fold_class_weights if name == "model" else {},
+            "training_meta_by_fold": fold_training_meta if name == "model" else {},
             "per_fold_hate_macro_f1": [float(x.get("hate_macro_f1", np.nan)) for x in per_fold],
             "per_fold_mean_macro_f1": [float(x.get("mean_macro_f1", np.nan)) for x in per_fold],
             "per_fold_sarcasm_macro_f1": [float(x.get("sarcasm_macro_f1", np.nan)) for x in per_fold],

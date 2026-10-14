@@ -284,7 +284,7 @@ def test_zero_supervision_auxiliary_filtering():
 
 
 def test_matched_optimizer_budget_logic():
-    """Verify that E1d and E6b configs specify matched steps_per_epoch, max_steps, and warmup_ratio."""
+    """Verify that E1c, E1d, and E6b configs specify matched budget, warmup, and disabled early stopping."""
     from toxifusionnet.config import load_config
 
     cfg_e1c = load_config("configs/exp1c_multibully_text_unweighted.yaml")
@@ -298,6 +298,8 @@ def test_matched_optimizer_budget_logic():
         assert pytest.approx(float(cfg.train.warmup_ratio), rel=1e-5) == 0.10, f"{name} must have warmup_ratio=0.10"
         assert cfg.train.epochs == 8, f"{name} must have epochs=8"
         assert cfg.train.batch_size == 64, f"{name} must have batch_size=64"
+        assert bool(cfg.train.get("early_stopping", True)) is False, f"{name} must disable early_stopping"
+        assert int(cfg.train.get("patience", 0)) == 0, f"{name} must set patience=0"
 
     # Verify schedule math
     total_steps = cfg_e1d.train.max_steps
@@ -321,4 +323,76 @@ def test_matched_optimizer_budget_logic():
             b = next(dl_iter)
         drawn += 1
     assert drawn == 15, "DataLoader cycling must supply exact steps requested"
+
+
+def test_fold_cache_checksum_fail_fast(tmp_path):
+    """Verify fail-fast exception when fold cache checksum is invalid."""
+    from toxifusionnet.experiments.cv import CANONICAL_FOLD_CACHE_SHA256, validate_fold_cache_checksum, run_cv
+    canonical_path = DATA_DIR / "multibully_v2_cv_folds.csv"
+
+    # 1. Valid canonical cache passes and returns canonical hash
+    sha = validate_fold_cache_checksum(canonical_path, CANONICAL_FOLD_CACHE_SHA256)
+    assert sha == CANONICAL_FOLD_CACHE_SHA256
+
+    # 2. Incorrect expected hash raises ValueError
+    with pytest.raises(ValueError, match="Canonical fold cache checksum verification failed"):
+        validate_fold_cache_checksum(canonical_path, expected_sha="deadbeef" * 8)
+
+    # 3. Corrupted fold cache file named multibully_v2_cv_folds.csv raises ValueError
+    corrupt_cache = tmp_path / "multibully_v2_cv_folds.csv"
+    corrupt_cache.write_text("corrupted,content\n1,2\n")
+    with pytest.raises(ValueError, match="Canonical fold cache checksum verification failed"):
+        validate_fold_cache_checksum(corrupt_cache)
+
+    # 4. run_cv fails fast if canonical fold cache is corrupted
+    with pytest.raises(ValueError, match="Canonical fold cache checksum verification failed"):
+        run_cv(
+            config="configs/smoke_test.yaml",
+            overrides=[],
+            data_path=str(DATA_DIR / "multibully.csv"),
+            out_dir=tmp_path / "run_out",
+            folds_cache=str(corrupt_cache)
+        )
+
+
+def test_fixed_budget_runs_complete_all_steps(tmp_path):
+    """Verify that early_stopping: false completes the full step budget and loads best checkpoint."""
+    from toxifusionnet.config import load_config
+    from toxifusionnet.training.trainer import train_run
+
+    # Load tiny smoke config
+    cfg = load_config("configs/smoke_test.yaml")
+    cfg.train.epochs = 4
+    cfg.train.steps_per_epoch = 5
+    cfg.train.max_steps = 20
+    cfg.train.early_stopping = False
+    cfg.train.patience = 1  # would trigger at epoch 2 if early stopping were enabled
+    cfg.train.device = "cpu"
+    cfg.rationale.enabled = False
+
+    # Minimal synthetic dataframe
+    df = pd.DataFrame({
+        "id": [f"id_{i}" for i in range(60)],
+        "text": ["some text sample"] * 60,
+        "split": ["train"] * 40 + ["val"] * 10 + ["test"] * 10,
+        "hate": ["non_hate", "hate"] * 30,
+        "sarcasm": ["not_sarcastic", "sarcastic"] * 30,
+        "target": ["individual"] * 60,
+        "severity": ["low"] * 60,
+        "source_dataset": ["multibully"] * 60,
+    })
+
+    run_dir = tmp_path / "budget_run"
+    res = train_run(cfg, df, run_dir)
+
+    assert res["total_steps"] == 20, f"Expected 20 steps, completed {res['total_steps']}"
+    assert res["steps_budget"] == 20
+    assert (run_dir / "history.csv").exists()
+
+    history = pd.read_csv(run_dir / "history.csv")
+    assert len(history) == 4, "Must complete all 4 epochs without early stopping"
+    assert res["eval_checkpoint_type"] == "best_val_macro_f1"
+    assert res["best_epoch"] >= 1
+    assert res["best_step"] >= 1
+
 

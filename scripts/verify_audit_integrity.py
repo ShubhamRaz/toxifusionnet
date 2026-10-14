@@ -26,7 +26,10 @@ def audit_fold_cache(cache_path="data/processed/multibully_v2_cv_folds.csv"):
     print(f"Authoritative Fold Cache SHA-256 (CRLF-normalized): {sha256}")
     expected_sha = "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
     if sha256 != expected_sha:
-        print(f"WARNING: Fold cache checksum differs from expected canonical {expected_sha}")
+        raise ValueError(
+            f"Canonical fold cache checksum verification failed for '{cache_path}'! "
+            f"Expected SHA-256 (CRLF-normalized): {expected_sha}, got: {sha256}."
+        )
 
     df = pd.read_csv(p)
     assert len(df) == 28590, f"Expected 28590 rows, got {len(df)}"

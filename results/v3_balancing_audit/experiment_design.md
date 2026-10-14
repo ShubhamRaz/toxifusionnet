@@ -69,7 +69,9 @@ To rigorously isolate the contribution of per-task class balancing from auxiliar
 | **Total Max Steps** | **488** | **488** | **488** |
 | **Warmup Steps** | **48** (`warmup_ratio: 0.10`) | **48** (`warmup_ratio: 0.10`) | **48** (`warmup_ratio: 0.10`) |
 | **Learning Rates** | Encoder: $1\times 10^{-5}$, Head: $5\times 10^{-4}$ | Encoder: $1\times 10^{-5}$, Head: $5\times 10^{-4}$ | Encoder: $1\times 10^{-5}$, Head: $5\times 10^{-4}$ |
-| **Patience / Epochs** | 3 / 8 | 3 / 8 | 3 / 8 |
+| **Early Stopping / Patience** | **Disabled (`false`)** / 0 | **Disabled (`false`)** / 0 | **Disabled (`false`)** / 0 |
+| **Epochs / Validation Checks**| 8 epochs (evaluates every 61 steps) | 8 epochs (evaluates every 61 steps) | 8 epochs (evaluates every 61 steps) |
+| **Checkpoint Selection** | Best Val Mean Macro-F1 | Best Val Mean Macro-F1 | Best Val Mean Macro-F1 |
 | **Fold Split Cache** | `data/processed/multibully_v2_cv_folds.csv` | `data/processed/multibully_v2_cv_folds.csv` | `data/processed/multibully_v2_cv_folds.csv` |
 
 ---
@@ -86,30 +88,37 @@ The raw derived dataset `data/processed/hot_gold_only.csv` contains $N = 3,189$ 
 - **Valid Human-Gold Hate Rows ($N = 1,424$):** Samples with active human-annotated binary hate labels (1,121 `non_hate`, 303 `hate`).
 - **Loader Filtering Action:** The DataLoader dynamically filters out all 1,765 zero-supervision rows upon loading. The on-disk file `data/processed/hot_gold_only.csv` remains strictly untouched ($3,189$ rows preserved). Exactly 1,424 valid human-labelled HOT hate examples are retained in the training loader.
 
-### 4.3 Matched Optimizer Budget & Learning-Rate Schedule
+### 4.3 Matched Optimizer Budget, Learning-Rate Schedule & Disabled Early Stopping
 To ensure the comparison between E1d and E6b is strictly controlled, we do not rely solely on identical class weights. Differences in total gradient steps or learning-rate decay schedules would confound the experimental findings. We enforce:
 
 1. **Step Budget Calibration:**
    - MultiBully training split has $N_{\text{MB}} \approx 3,885 \text{--} 3,889$ samples per fold. With `batch_size = 64`, this yields $\lceil 3889 / 64 \rceil = 61$ batches per epoch.
    - For 8 epochs, the reference budget is exactly **$61 \times 8 = 488$ optimizer steps**.
    - In E6b, combining MultiBully ($3,889$) and retained HOT gold ($1,424$) creates a pool of $5,313$ samples. Unconstrained training would yield $\lceil 5313 / 64 \rceil = 84$ batches/epoch ($672$ steps total), giving E6b $38\%$ more gradient updates.
-   - By fixing `steps_per_epoch: 61` and `max_steps: 488` in both E1d and E6b, both models undergo **identically 488 optimizer updates**.
+   - By fixing `steps_per_epoch: 61` and `max_steps: 488` in E1c, E1d, and E6b, all models undergo **identically 488 optimizer updates**.
 2. **Schedule Invariance:**
-   - Both models use linear warmup decay with `warmup_ratio = 0.10` calibrated to `total_steps = 488`, yielding identically **48 warmup steps**.
+   - All models use linear warmup decay with `warmup_ratio = 0.10` calibrated to `total_steps = 488`, yielding identically **48 warmup steps**.
    - For every step $t \in [1, 488]$, the learning rate is mathematically identical between E1d and E6b.
-   - Validation evaluation and early stopping checks occur at identical step intervals (every 61 steps, at steps 61, 122, 183, 244, 305, 366, 427, 488).
+3. **Disabled Early Stopping with Best Checkpoint Preservation:**
+   - `early_stopping: false` and `patience: 0` are explicitly configured for all fixed-budget runs.
+   - The trainer will **never terminate early**. All 488 planned optimizer updates will execute to completion.
+   - Validation performance is evaluated at every 61-step checkpoint (at steps 61, 122, 183, 244, 305, 366, 427, 488).
+   - Checkpoint selection preserves the model state corresponding to the highest validation Mean Macro-F1 (`eval_checkpoint_type: best_val_macro_f1`), ensuring final evaluation on test and val sets uses the best checkpoint.
+   - `total_steps`, `steps_budget`, `best_epoch`, `best_step`, and per-checkpoint evaluation metrics are permanently recorded in `history.csv` and `cv_metrics.json`.
 
-### 4.4 Sampling Strategy & Effective Dataset Exposure
+### 4.4 Sampling Strategy vs. Effective Dataset Exposure
+A common reporting error is to describe an equalized optimizer update budget as "equal dataset exposure." In reality, while the update count is identical (488 steps), the sampling exposure per dataset diverges as expected:
+
 - **E1d (MultiBully Only):**
-  - Standard shuffled DataLoader over $N_{\text{MB}} \approx 3,886$ training samples.
+  - Shuffled DataLoader over $N_{\text{MB}} \approx 3,886$ training samples.
   - In each epoch, 61 batches ($3,886$ samples) are drawn.
   - Total samples seen across 488 steps: $31,088$ sample draws.
-  - MultiBully effective exposure: $31,088 / 3,886 = \mathbf{8.00\times}$ (8 full passes).
+  - **MultiBully Effective Exposure:** $31,088 / 3,886 = \mathbf{8.00\times}$ (8 full passes).
 - **E6b (MultiBully + Retained HOT Gold):**
   - Shuffled combined DataLoader over $N_{\text{comb}} \approx 5,310$ samples ($73.2\%$ MultiBully, $26.8\%$ HOT gold).
-  - In each epoch, exactly 61 batches ($61 \times 64 = 3,904$ samples) are drawn uniformly at random.
+  - In each epoch, exactly 61 batches of 64 ($3,904$ samples) are drawn uniformly at random from the cycled iterator.
   - Total samples seen across 488 steps: $488 \times 64 = 31,232$ sample draws.
-  - Combined pool effective exposure: $31,232 / 5,310 = \mathbf{5.88\times}$ passes per sample.
-  - Expected MultiBully exposure: $31,232 \times 0.732 \approx 22,862$ draws ($\mathbf{5.88\times}$ passes).
-  - Expected HOT gold exposure: $31,232 \times 0.268 \approx 8,370$ draws ($\mathbf{5.88\times}$ passes across all 1,424 valid HOT samples).
-- **Control Guarantee:** The performance difference between E1d and E6b isolates strictly the effect of substituting auxiliary hate text supervision for multi-task meme supervision under an equalized parameter-update and learning-rate budget.
+  - **Combined Pool Effective Exposure:** $31,232 / 5,310 = \mathbf{5.88\times}$ passes per sample.
+  - **Expected MultiBully Exposure:** $31,232 \times 0.732 \approx 22,862$ draws ($\mathbf{5.88\times}$ passes over MultiBully).
+  - **Expected HOT Gold Exposure:** $31,232 \times 0.268 \approx 8,370$ draws ($\mathbf{5.88\times}$ passes across all 1,424 valid HOT samples).
+- **Scientific Implication:** E6b trades $2.12\times$ passes ($26.8\%$) of MultiBully multimodal data for $5.88\times$ passes of auxiliary hate text data under a constant parameter-update budget. Any performance divergence directly isolates the substitution value of auxiliary text supervision without confounding from training duration.

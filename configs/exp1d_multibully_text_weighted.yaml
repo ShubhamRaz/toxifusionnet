@@ -34,6 +34,7 @@ train:
   encoder_lr: 1.0e-5
   head_lr: 5.0e-4
   weight_decay: 0.01
-  patience: 3
+  early_stopping: false
+  patience: 0
   fp16: true
   device: auto

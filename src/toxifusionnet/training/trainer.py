@@ -177,9 +177,13 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
     use_amp = device.type == "cuda" and bool(cfg.train.get("fp16", True))
     scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
 
-    best, best_epoch, bad, history = -1.0, -1, 0, []
+    best, best_epoch, best_step, bad, history = -1.0, -1, -1, 0, []
     global_step = 0
     train_iter = iter(dl_tr)
+    use_early_stopping = bool(cfg.train.get("early_stopping", True)) and int(cfg.train.get("patience", 0)) > 0
+    if not use_early_stopping:
+        log.info("Fixed-budget mode active: early stopping is DISABLED. Training will complete all %d planned optimizer updates.", total_steps)
+
     for epoch in range(epochs):
         model.train(); t0 = time.time(); run_loss = 0.0
         n_steps = steps_per_epoch
@@ -215,27 +219,50 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
         pred = predict_loader(model, dl_va, device)
         va_res = evaluate_predictions(predictions_frame(va_df, ds_va, pred), model.tasks)
         score = va_res["mean_macro_f1"]
-        history.append({"epoch": epoch + 1, "global_step": global_step, "train_loss": epoch_loss, "val_mean_macro_f1": score,
-                        **{f"val_{k}": v for k, v in flatten_metrics(va_res).items() if k != "mean_macro_f1"},
-                        "seconds": time.time() - t0})
-        log.info("epoch %d (step %d/%d)  loss %.4f  val mean macro-F1 %.4f  (%.1fs)", epoch + 1, global_step, total_steps, epoch_loss, score, history[-1]["seconds"])
-        if score > best:
-            best, best_epoch, bad = score, epoch + 1, 0
+        is_best = score > best
+        if is_best:
+            best, best_epoch, best_step, bad = score, epoch + 1, global_step, 0
             torch.save({"state_dict": model.state_dict(), "cfg": cfg.to_dict()}, run_dir / "model.pt")
         else:
             bad += 1
-            if bad >= int(cfg.train.patience):
+            if use_early_stopping and bad >= int(cfg.train.patience):
                 log.info("early stopping at epoch %d (step %d)", epoch + 1, global_step)
                 break
+
+        history.append({
+            "epoch": epoch + 1,
+            "global_step": global_step,
+            "train_loss": epoch_loss,
+            "val_mean_macro_f1": score,
+            "is_best": is_best,
+            **{f"val_{k}": v for k, v in flatten_metrics(va_res).items() if k != "mean_macro_f1"},
+            "seconds": time.time() - t0
+        })
+        log.info(
+            "epoch %d (step %d/%d)  loss %.4f  val mean macro-F1 %.4f %s (%.1fs)",
+            epoch + 1, global_step, total_steps, epoch_loss, score,
+            "[BEST]" if is_best else "", history[-1]["seconds"]
+        )
+
         if global_step >= total_steps:
             break
     pd.DataFrame(history).to_csv(run_dir / "history.csv", index=False)
 
     model.load_state_dict(torch.load(run_dir / "model.pt", map_location=device)["state_dict"])
-    results = {"best_epoch": best_epoch, "total_steps": global_step, "steps_budget": total_steps,
-               "pretrained_vocab": getattr(encoder, "pretrained_vocab_stats", None), "device": str(device), "n_params": sum(p.numel() for p in model.parameters()),
-               "label_source": df["label_source"].iloc[0] if "label_source" in df and len(df) else None,
-               "class_balancing": balancing_meta}
+    results = {
+        "best_epoch": best_epoch,
+        "best_step": best_step,
+        "best_val_score": best,
+        "total_steps": global_step,
+        "steps_budget": total_steps,
+        "eval_checkpoint": str(run_dir / "model.pt"),
+        "eval_checkpoint_type": "best_val_macro_f1",
+        "pretrained_vocab": getattr(encoder, "pretrained_vocab_stats", None),
+        "device": str(device),
+        "n_params": sum(p.numel() for p in model.parameters()),
+        "label_source": df["label_source"].iloc[0] if "label_source" in df and len(df) else None,
+        "class_balancing": balancing_meta
+    }
     for name, d, ds, dl in (("val", va_df, ds_va, dl_va), ("test", te_df, ds_te, dl_te)):
         pf = predictions_frame(d, ds, predict_loader(model, dl, device))
         pf.to_csv(run_dir / f"preds_{name}.csv", index=False)
