@@ -17,10 +17,10 @@ from sklearn.model_selection import StratifiedKFold, train_test_split
 log = logging.getLogger("toxifusionnet")
 
 from ..config import load_config
-from ..data.grouped_splits import audit_fold_integrity, make_grouped_cv_splits
+from ..data.grouped_splits import audit_fold_integrity, make_grouped_cv_splits, normalize_ocr_text
 from ..data.schema import load_processed_csv
 from ..training.metrics import evaluate_predictions, flatten_metrics
-from ..training.stats import bootstrap_ci
+from ..training.stats import bootstrap_ci, group_bootstrap_ci
 from ..training.trainer import train_or_resume
 
 
@@ -147,15 +147,13 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
 
         # Compute 95% bootstrap confidence intervals for primary task Macro-F1s
         cis, group_cis = {}, {}
-        from ..data.grouped_splits import normalize_ocr_text
-        from .stats import group_bootstrap_ci
-        groups = normalize_ocr_text(P["text"]) if "text" in P else np.arange(len(P)).astype(str)
+        groups = normalize_ocr_text(P["text"]) if "text" in P else pd.Series(np.arange(len(P)).astype(str), index=P.index)
         for t in tasks:
             if f"gold_{t}" in P and f"pred_{t}" in P:
                 valid = (P[f"gold_{t}"] != -100) & (P[f"gold_{t}"].notna())
                 if valid.any():
                     cis[f"{t}_macro_f1"] = bootstrap_ci(P.loc[valid, f"gold_{t}"], P.loc[valid, f"pred_{t}"])
-                    group_cis[f"{t}_macro_f1"] = group_bootstrap_ci(groups[valid], P.loc[valid, f"gold_{t}"], P.loc[valid, f"pred_{t}"])
+                    group_cis[f"{t}_macro_f1"] = group_bootstrap_ci(groups.loc[valid], P.loc[valid, f"gold_{t}"], P.loc[valid, f"pred_{t}"])
 
         out[name] = {
             "pooled": res,
