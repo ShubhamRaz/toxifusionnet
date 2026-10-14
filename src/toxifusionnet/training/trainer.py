@@ -126,7 +126,9 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
     cw = {t: w for t, w in cw.items() if w is not None}
     att_lambda = float(lcfg.get("attention_lambda", 0.0)) if cfg.get("rationale", {}).get("enabled", False) else 0.0
     criterion = MultiTaskLoss(model.tasks, lcfg.get("weighting", "fixed"), dict(lcfg.get("weights", {})), cw,
-                              float(lcfg.get("focal_gamma", 0.0)), att_lambda).to(device)
+                              float(lcfg.get("focal_gamma", 0.0)), att_lambda,
+                              severity_loss_type=lcfg.get("severity_loss_type", "ce"),
+                              ordinal_penalty=float(lcfg.get("ordinal_penalty_weight", 0.5))).to(device)
     groups = model.param_groups(float(cfg.train.encoder_lr), float(cfg.train.head_lr), float(cfg.train.weight_decay),
                                 extra=criterion.log_vars.parameters() if lcfg.get("weighting") == "uncertainty" else (),
                                 emb_lr_mult=float(cfg.train.get("embedding_lr_mult", 1.0)))

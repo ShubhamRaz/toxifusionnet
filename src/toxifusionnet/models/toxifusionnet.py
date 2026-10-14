@@ -95,17 +95,21 @@ class ToxiFusionNet(nn.Module):
         self.fusion = SarcasmAwareFusion(d) if self.use_fusion else None
         self.heads = nn.ModuleDict({t: _mlp(d, hid, num_classes(t), p) for t in self.tasks if t != "sarcasm"})
 
-    def forward(self, input_ids, attention_mask, cue=None, pixel_values=None, image_mask=None, **_):
+    def forward(self, input_ids, attention_mask, cue=None, pixel_values=None, image_mask=None, vis_feat=None, **_):
         h = self.drop(self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state)
         hate_vec, hate_attn = self.hate_pool(h, attention_mask)
 
         # Multimodal fusion if CLIP vision is enabled and inputs are provided
         vis_proj = None
-        if self.use_clip and pixel_values is not None:
-            with torch.set_grad_enabled(not self.freeze_clip and self.training):
-                vis_feat = self.clip_vision(pixel_values=pixel_values).pooler_output
-            vis_proj = self.vis_proj(vis_feat)
-            hate_vec = self.vis_fusion_hate(hate_vec, vis_proj, image_mask)
+        if self.use_clip:
+            if vis_feat is not None:
+                vis_proj = self.vis_proj(vis_feat)
+                hate_vec = self.vis_fusion_hate(hate_vec, vis_proj, image_mask)
+            elif pixel_values is not None:
+                with torch.set_grad_enabled(not self.freeze_clip and self.training):
+                    vis_feat = self.clip_vision(pixel_values=pixel_values).pooler_output
+                vis_proj = self.vis_proj(vis_feat)
+                hate_vec = self.vis_fusion_hate(hate_vec, vis_proj, image_mask)
 
         out: dict = {"logits": {}, "attn": {"hate": hate_attn}, "gate": None}
         fused = hate_vec

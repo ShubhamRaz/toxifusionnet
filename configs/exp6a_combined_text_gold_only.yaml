@@ -1,0 +1,34 @@
+# Experiment 6a: MultiBully + HOT Combined Text-Only (Strict Human-Gold Only)
+# Uses strictly human-annotated hate/non-hate labels from HOT; masks all sarcasm, target, and severity labels.
+# Offensive language (2.0) is masked from binary hate supervision.
+experiment_name: exp6a_combined_text_gold_only
+data:
+  processed_path: data/processed/multibully.csv
+  aux_path: data/processed/hot_gold_only.csv
+  max_length: 128
+labels:
+  target: [individual, organization, community, society]
+model:
+  encoder_name: xlm-roberta-base
+  tasks: [sarcasm, hate, target, severity]
+  dropout: 0.1
+  head_hidden: 256
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  use_clip: false                # Text-only baseline
+loss:
+  weighting: fixed
+  weights: {sarcasm: 1.0, hate: 1.0, target: 1.0, severity: 1.0}
+  class_weighting: balanced
+  focal_gamma: 2.0
+train:
+  epochs: 8
+  batch_size: 64
+  encoder_lr: 1.0e-5
+  head_lr: 5.0e-4
+  weight_decay: 0.01
+  patience: 3
+  fp16: true
+  device: auto

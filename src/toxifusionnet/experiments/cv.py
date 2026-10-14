@@ -120,17 +120,22 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
         per_fold = [flatten_metrics(evaluate_predictions(g, tasks)) for _, g in P.groupby("fold")]
 
         # Compute 95% bootstrap confidence intervals for primary task Macro-F1s
-        cis = {}
+        cis, group_cis = {}, {}
+        from ..data.grouped_splits import normalize_ocr_text
+        from .stats import group_bootstrap_ci
+        groups = normalize_ocr_text(P["text"]) if "text" in P else np.arange(len(P)).astype(str)
         for t in tasks:
             if f"gold_{t}" in P and f"pred_{t}" in P:
                 valid = (P[f"gold_{t}"] != -100) & (P[f"gold_{t}"].notna())
                 if valid.any():
                     cis[f"{t}_macro_f1"] = bootstrap_ci(P.loc[valid, f"gold_{t}"], P.loc[valid, f"pred_{t}"])
+                    group_cis[f"{t}_macro_f1"] = group_bootstrap_ci(groups[valid], P.loc[valid, f"gold_{t}"], P.loc[valid, f"pred_{t}"])
 
         out[name] = {
             "pooled": res,
             "pooled_flat": flatten_metrics(res),
             "bootstrap_ci95": cis,
+            "group_bootstrap_ci95": group_cis,
             "per_fold_hate_macro_f1": [float(x.get("hate_macro_f1", np.nan)) for x in per_fold],
             "per_fold_mean_macro_f1": [float(x.get("mean_macro_f1", np.nan)) for x in per_fold],
             "per_fold_sarcasm_macro_f1": [float(x.get("sarcasm_macro_f1", np.nan)) for x in per_fold],

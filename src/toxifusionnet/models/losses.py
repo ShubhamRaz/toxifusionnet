@@ -17,13 +17,16 @@ def focal_ce(logits, targets, weight=None, gamma: float = 2.0):
 
 class MultiTaskLoss(nn.Module):
     def __init__(self, tasks, weighting: str = "fixed", weights: dict | None = None, class_weights: dict | None = None,
-                 focal_gamma: float = 0.0, attention_lambda: float = 0.0):
+                 focal_gamma: float = 0.0, attention_lambda: float = 0.0,
+                 severity_loss_type: str = "ce", ordinal_penalty: float = 0.5):
         super().__init__()
         self.tasks = list(tasks)
         self.weighting = weighting
         self.weights = {t: float((weights or {}).get(t, 1.0)) for t in self.tasks}
         self.focal_gamma = focal_gamma
         self.attention_lambda = attention_lambda
+        self.severity_loss_type = severity_loss_type.lower()
+        self.ordinal_penalty = float(ordinal_penalty)
         for t, w in (class_weights or {}).items():
             self.register_buffer(f"cw_{t}", torch.as_tensor(w, dtype=torch.float32))
         if weighting == "uncertainty":
@@ -40,6 +43,13 @@ class MultiTaskLoss(nn.Module):
         a, t = attn[valid], target[valid]
         return -(t * torch.log(a + 1e-9)).sum(-1).mean()
 
+    @staticmethod
+    def ordinal_distance_penalty(logits, targets):
+        probs = F.softmax(logits.float(), dim=-1)
+        classes = torch.arange(logits.size(-1), device=logits.device, dtype=torch.float32)
+        dist = (classes.unsqueeze(0) - targets.unsqueeze(1).float()).abs()
+        return (probs * dist).sum(dim=-1).mean()
+
     def forward(self, out, batch):
         parts: dict[str, torch.Tensor] = {}
         total = 0.0
@@ -54,6 +64,10 @@ class MultiTaskLoss(nn.Module):
             cw = self._cw(t)
             cw = cw.to(lg.device) if cw is not None else None
             loss = focal_ce(lg, yy, cw, self.focal_gamma) if self.focal_gamma > 0 else F.cross_entropy(lg, yy, weight=cw)
+            if t == "severity" and self.severity_loss_type == "ordinal":
+                dist_pen = self.ordinal_distance_penalty(lg, yy)
+                loss = loss + self.ordinal_penalty * dist_pen
+                parts["severity_ordinal_dist"] = dist_pen.detach()
             parts[t] = loss.detach()
             if self.weighting == "uncertainty":
                 s = self.log_vars[t]
