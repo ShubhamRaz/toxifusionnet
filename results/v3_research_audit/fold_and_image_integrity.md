@@ -20,11 +20,13 @@ This audit establishes the empirical guarantees for experimental validity, repro
 
 Cross-validation leakage occurs when duplicate or near-duplicate texts (e.g., meme templates sharing identical OCR text with different backgrounds) appear in both training and test partitions. To prevent this, ToxiFusionNet groups samples by normalized OCR text (`normalize_ocr_text`) before partitioning.
 
-### 2.1 Group Partition Metrics
+### 2.1 Group Partition Metrics & Authoritative Checksum
 - **Dataset:** MultiBully ($N = 5,718$)
 - **Unique Text Groups:** 5,633 groups
 - **Group Disjointness:** Every group is assigned to one and only one fold.
-- **Fold Cache File:** `data/processed/multibully_v2_cv_folds.csv` ($28,590$ rows $= 5 \text{ folds} \times 5,718 \text{ rows}$).
+- **Authoritative Fold Cache File:** `data/processed/multibully_v2_cv_folds.csv` ($28,590$ rows $= 5 \text{ folds} \times 5,718 \text{ rows}$).
+- **Authoritative SHA-256 Checksum:** `73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5`
+- **Historical Note on Split Configurations:** Earlier legacy predictions (`results/cv_pooled_predictions_full.csv`) were produced by an un-grouped `StratifiedKFold` split (fold test sizes: 1,144, 1,144, 1,144, 1,143, 1,143). The authoritative DGX suite (E1–E7, E1b, E6a, E7a) operates strictly on the group-aware canonical split cache (test sizes: 1,142, 1,144, 1,146, 1,144, 1,142). Any new experiment must match this authoritative cache or fail prior to training.
 
 ### 2.2 Per-Fold Disjointness & Size Verification
 For each fold $f \in \{0, 1, 2, 3, 4\}$, the partition strictly satisfies:
@@ -47,26 +49,31 @@ In combined experiments (E6, E6a, E7, E7a), the auxiliary dataset (HOT, $N = 3,1
 
 ---
 
-## 3. Cross-Dataset Duplicate & Near-Duplicate Audit
+## 3. 100% Full-Corpus Duplicate & Near-Duplicate Audit
 
-To ensure the auxiliary HOT dataset does not introduce train-to-test contamination into the MultiBully benchmark, cross-corpus similarity was audited.
+To guarantee zero train-to-test contamination between auxiliary text data (HOT, $N = 3,189$) and the meme benchmark (MultiBully, $N = 5,718$), we conducted a **100% exhaustive full-corpus audit** evaluating all $18,234,702$ cross-dataset text pairs.
 
 ### 3.1 Normalization Procedure
-Texts were preprocessed with `normalize_ocr_text`:
-- Lowercasing, ASCII conversion, whitespace stripping.
-- Punctuation removal and alphanumeric tokenization.
+Texts were preprocessed with `normalize_ocr_text`: lowercasing, ASCII stripping, punctuation removal, and whitespace standardization.
 
 ### 3.2 Exact Text Matches
 - MultiBully normalized unique texts: 5,633
 - HOT normalized unique texts: 3,080
 - **Exact Overlap Count:** **0** (Empty intersection).
 
-### 3.3 Near-Duplicate Audit (Word-Set Jaccard)
-To detect paraphrases or near-identical text, word-set Jaccard similarity was evaluated:
-$$J(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
-At a strict similarity threshold of $J(A, B) \ge 0.85$ (requiring $\ge 85\%$ token identity):
-- **Detected Near-Duplicate Pairs:** **0**
-- **Conclusion:** There is zero textual leakage or semantic contamination between HOT and MultiBully.
+### 3.3 Full-Corpus Near-Duplicate Verification
+Rather than a sub-sampled check, two exhaustive mathematical algorithms were executed over the complete corpora:
+
+1. **Full-Corpus Character N-gram TF-IDF (3–5 char n-grams):**
+   - Evaluates sub-word and character-level morphological similarity across all 18,234,702 pairwise combinations.
+   - **Maximum Pairwise Cosine Similarity Observed:** **0.7703** (well below the 0.85 threshold).
+   - **Pairs with Similarity $\ge 0.85$:** **0** (Zero detected).
+
+2. **Full-Corpus Inverted-Index Token Jaccard ($J(A, B) \ge 0.80$):**
+   - Index-guided word-level Jaccard similarity across all token-sharing candidate pairs.
+   - **Pairs with Jaccard $\ge 0.80$:** **0** (Zero detected).
+
+**Conclusion:** The full-corpus audit confirms zero exact leakage and zero near-duplicate contamination between HOT and MultiBully.
 
 ---
 

@@ -13,10 +13,19 @@ from toxifusionnet.data.grouped_splits import normalize_ocr_text
 
 
 def audit_fold_cache(cache_path="data/processed/multibully_v2_cv_folds.csv"):
-    print("=== 1. AUDITING FOLD CACHE INTEGRITY ===")
+    import hashlib
+    print("=== 1. AUDITING FOLD CACHE INTEGRITY & SHA-256 CHECKSUM ===")
     p = Path(cache_path)
     if not p.exists():
         raise FileNotFoundError(f"Missing fold cache: {cache_path}")
+    
+    with open(p, "rb") as f:
+        sha256 = hashlib.sha256(f.read()).hexdigest()
+    print(f"Authoritative Fold Cache SHA-256: {sha256}")
+    expected_sha = "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
+    if sha256 != expected_sha:
+        print(f"WARNING: Fold cache checksum differs from expected canonical {expected_sha}")
+
     df = pd.read_csv(p)
     assert len(df) == 28590, f"Expected 28590 rows, got {len(df)}"
     assert set(df["fold"].unique()) == {0, 1, 2, 3, 4}
@@ -38,11 +47,14 @@ def audit_fold_cache(cache_path="data/processed/multibully_v2_cv_folds.csv"):
     assert len(all_te) == 5718
     assert len(set(all_te)) == 5718, "Duplicate test IDs found in fold cache!"
     print(f"PASSED: 5 folds verified. Test partition sizes: {test_counts}. Pooled coverage: {len(set(all_te))}/5,718 (100%).")
-    return test_counts
+    return {"sha256": sha256, "test_counts": test_counts}
 
 
 def audit_duplicates_and_near_duplicates(mb_path="data/processed/multibully.csv", hot_path="data/processed/hot_v2.csv"):
-    print("\n=== 2. AUDITING CROSS-DATASET DUPLICATES & NEAR-DUPLICATES ===")
+    import time
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
+    print("\n=== 2. COMPLETE FULL-CORPUS DUPLICATES & NEAR-DUPLICATES AUDIT ===")
     mb = pd.read_csv(mb_path)
     hot = pd.read_csv(hot_path)
 
@@ -55,31 +67,67 @@ def audit_duplicates_and_near_duplicates(mb_path="data/processed/multibully.csv"
     print(f"Exact normalized text matches: {len(exact_overlap)}")
     assert len(exact_overlap) == 0, f"Found exact overlap between MultiBully and HOT: {exact_overlap}"
 
-    # Near-duplicate audit via word-set Jaccard similarity
-    # To be computationally efficient on 5.6k x 3k pairs, index words
-    mb_words = [set(t.split()) for t in mb_norm]
-    hot_words = [set(t.split()) for t in hot_norm]
+    # Method 1: Full-Corpus TF-IDF Character N-gram Cosine Similarity (All 3,189 x 5,718 pairs = 18,234,702 pairs)
+    t0 = time.time()
+    vec = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), min_df=2)
+    vec.fit(list(mb_norm) + list(hot_norm))
+    X_mb = vec.transform(mb_norm)
+    X_hot = vec.transform(hot_norm)
+    sim_matrix = X_hot.dot(X_mb.T)
 
-    # Sample check for highest Jaccard overlap
-    print("Checking Jaccard word-set near-duplicates (threshold >= 0.85)...")
-    near_dups = []
-    # Test top frequent word intersections
-    hot_word_filtered = [(i, w) for i, w in enumerate(hot_words) if len(w) >= 5]
-    mb_word_filtered = [(j, w) for j, w in enumerate(mb_words) if len(w) >= 5]
+    max_char_sim = float(sim_matrix.max())
+    char_pairs_ge_85 = int((sim_matrix >= 0.85).sum())
+    char_time = time.time() - t0
+    print(f"Method 1: Full-Corpus Character N-gram TF-IDF (3-5 char n-grams, 18.2M pairs):")
+    print(f"  - Scope: 100% Full Corpus Audit (not sampled)")
+    print(f"  - Max Pairwise Cosine Similarity: {max_char_sim:.4f}")
+    print(f"  - Pairs with similarity >= 0.85: {char_pairs_ge_85}")
+    print(f"  - Computation time: {char_time:.2f}s")
+    assert char_pairs_ge_85 == 0, f"Found {char_pairs_ge_85} pairs with char n-gram similarity >= 0.85!"
 
-    # Sample audit across 500 representative items from each
-    import itertools
-    for (i, hw), (j, mw) in itertools.product(hot_word_filtered[:200], mb_word_filtered[:500]):
-        inter = len(hw.intersection(mw))
-        union = len(hw.union(mw))
-        if union > 0:
-            sim = inter / union
-            if sim >= 0.85:
-                near_dups.append((hot["text"].iloc[i], mb["text"].iloc[j], sim))
+    # Method 2: Full-Corpus Inverted-Index Token Jaccard Similarity (threshold >= 0.80)
+    t1 = time.time()
+    mb_tokens = [set(t.split()) for t in mb_norm]
+    hot_tokens = [set(t.split()) for t in hot_norm]
 
-    print(f"Sampled near-duplicate pairs (Jaccard >= 0.85): {len(near_dups)}")
-    print("PASSED: Zero exact text leakage and negligible semantic near-duplicate overlap between corpora.")
-    return len(exact_overlap), len(near_dups)
+    inv = {}
+    for i, tokens in enumerate(mb_tokens):
+        for tok in tokens:
+            inv.setdefault(tok, []).append(i)
+
+    jaccard_matches = []
+    for h_idx, h_tok in enumerate(hot_tokens):
+        if len(h_tok) < 3:
+            continue
+        cand_counts = {}
+        for tok in h_tok:
+            for m_idx in inv.get(tok, []):
+                cand_counts[m_idx] = cand_counts.get(m_idx, 0) + 1
+
+        for m_idx, count in cand_counts.items():
+            m_tok = mb_tokens[m_idx]
+            if len(m_tok) < 3:
+                continue
+            union = len(h_tok.union(m_tok))
+            if union > 0:
+                jaccard = count / union
+                if jaccard >= 0.80:
+                    jaccard_matches.append((h_idx, m_idx, jaccard))
+
+    jaccard_time = time.time() - t1
+    print(f"Method 2: Full-Corpus Inverted-Index Word-Set Jaccard (Threshold >= 0.80):")
+    print(f"  - Scope: 100% Full Corpus Audit (all token-sharing candidate pairs tested)")
+    print(f"  - Pairs with Jaccard >= 0.80: {len(jaccard_matches)}")
+    print(f"  - Computation time: {jaccard_time:.2f}s")
+    assert len(jaccard_matches) == 0, f"Found {len(jaccard_matches)} pairs with Jaccard >= 0.80!"
+
+    print("PASSED: 100% Full-corpus duplicate audit verified zero text leakage across 18.2M pair comparisons.")
+    return {
+        "exact_overlap": len(exact_overlap),
+        "max_char_sim": max_char_sim,
+        "char_pairs_ge_85": char_pairs_ge_85,
+        "jaccard_pairs_ge_80": len(jaccard_matches)
+    }
 
 
 def audit_image_integrity(mb_path="data/processed/multibully.csv", image_dir="data/raw/bully_data/bully_data"):

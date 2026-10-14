@@ -56,9 +56,10 @@ def predict_loader(model: ToxiFusionNet, loader: DataLoader, device) -> dict:
     idxs, gates = [], []
     for b in loader:
         pix = b["pixel_values"].to(device) if b.get("pixel_values") is not None else None
+        vis = b["vis_feat"].to(device) if b.get("vis_feat") is not None else None
         im_mask = b["image_mask"].to(device) if b.get("image_mask") is not None else None
         out = model(b["input_ids"].to(device), b["attention_mask"].to(device), b["cue"].to(device),
-                    pixel_values=pix, image_mask=im_mask)
+                    pixel_values=pix, image_mask=im_mask, vis_feat=vis)
         for t, lg in out["logits"].items():
             probs[t].append(torch.softmax(lg.float(), -1).cpu().numpy())
         idxs.append(b["idx"].numpy())
@@ -111,9 +112,23 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
     image_proc = getattr(model, "clip_processor", None) if use_clip else None
     image_dir = cfg.data.get("image_dir", "data/raw/bully_data/bully_data")
 
+    clip_store = None
+    if use_clip and cfg.train.get("use_clip_cache", True) and getattr(model, "clip_vision", None) is not None:
+        try:
+            from ..models.clip_cache import build_or_load_clip_cache
+            all_df = pd.concat([tr_df, va_df, te_df], ignore_index=True)
+            clip_store = build_or_load_clip_cache(
+                all_df, image_dir=image_dir, vision_model=model.clip_vision,
+                image_processor=image_proc, cache_dir=cfg.data.get("clip_cache_dir", "data/cache/clip_features"),
+                model_name=cfg.model.get("clip_model_name", "openai/clip-vit-base-patch32"),
+                device=device
+            )
+        except Exception as e:
+            log.warning("Could not initialize CLIP cache (%s); proceeding with live visual extraction", e)
+
     mk = lambda d: HateSarcasmDataset(d, tokenizer, normalizer, int(cfg.data.max_length), tasks,
                                      cfg.get("rationale"), image_dir=image_dir,
-                                     image_processor=image_proc, use_clip=use_clip)  # noqa: E731
+                                     image_processor=image_proc, use_clip=use_clip, clip_store=clip_store)  # noqa: E731
     ds_tr, ds_va, ds_te = mk(tr_df), mk(va_df), mk(te_df)
     collate = make_collate(tokenizer.pad_token_id)
     bs = int(cfg.train.batch_size)
@@ -145,10 +160,11 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
             batch = {k: (v.to(device) if torch.is_tensor(v) else v) for k, v in b.items() if k != "labels"}
             batch["labels"] = {t: v.to(device) for t, v in b["labels"].items()}
             pix = batch.get("pixel_values")
+            vis = batch.get("vis_feat")
             im_mask = batch.get("image_mask")
             with torch.autocast(device.type, enabled=use_amp):
                 out = model(batch["input_ids"], batch["attention_mask"], batch["cue"],
-                            pixel_values=pix, image_mask=im_mask)
+                            pixel_values=pix, image_mask=im_mask, vis_feat=vis)
                 loss, parts = criterion(out, batch)
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()

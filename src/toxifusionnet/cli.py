@@ -150,10 +150,18 @@ def cmd_bench(args):
 
 
 def cmd_compare(args):
-    from .training.stats import paired_bootstrap
-    a, b = pd.read_csv(args.preds_a), pd.read_csv(args.preds_b)
-    m = (a.gold_hate == 1) & (a.get("gold_sarcasm", 0) == 1) if args.sarcastic_only else None
-    print(json.dumps(paired_bootstrap(a.gold_hate, a.pred_hate, b.pred_hate, mask=m), indent=2))
+    if getattr(args, "out_dir", None) or getattr(args, "full", False):
+        from .experiments.compare import compare_predictions
+        name_a = getattr(args, "name_a", "Model_A")
+        name_b = getattr(args, "name_b", "Model_B")
+        out = compare_predictions(args.preds_a, args.preds_b, name_a=name_a, name_b=name_b, out_dir=getattr(args, "out_dir", None))
+        for t, data in out["task_comparisons"].items():
+            print(f"{t.upper()}: delta={data['delta_macro_f1']:+.4f}, 95% CI={data['delta_ci95']}, p={data['p_value_bootstrap']:.4f}")
+    else:
+        from .training.stats import paired_bootstrap
+        a, b = pd.read_csv(args.preds_a), pd.read_csv(args.preds_b)
+        m = (a.gold_hate == 1) & (a.get("gold_sarcasm", 0) == 1) if args.sarcastic_only else None
+        print(json.dumps(paired_bootstrap(a.gold_hate, a.pred_hate, b.pred_hate, mask=m), indent=2))
 
 
 def cmd_figures(args):
@@ -228,7 +236,12 @@ def build_parser():
     s.add_argument("--sheet-n", type=int, default=100); s.add_argument("--lime", default=None, help="also print a LIME explanation for this text"); s.set_defaults(fn=cmd_explain)
     s = sub.add_parser("bench", help="latency / size benchmark (fp32 vs int8)"); add_run(s); s.add_argument("--no-quant", action="store_true"); s.set_defaults(fn=cmd_bench)
     s = sub.add_parser("compare", help="paired bootstrap between two preds_test.csv files")
-    s.add_argument("preds_a"); s.add_argument("preds_b"); s.add_argument("--sarcastic-only", action="store_true"); s.set_defaults(fn=cmd_compare)
+    s.add_argument("preds_a"); s.add_argument("preds_b"); s.add_argument("--sarcastic-only", action="store_true")
+    s.add_argument("--out-dir", default=None, help="Directory to save JSON and Markdown comparison reports")
+    s.add_argument("--name-a", default="Model_A", help="Name for Model A")
+    s.add_argument("--name-b", default="Model_B", help="Name for Model B")
+    s.add_argument("--full", action="store_true", help="Run full 4-task paired group-aware comparison")
+    s.set_defaults(fn=cmd_compare)
     s = sub.add_parser("figures", help="plots for a run"); s.add_argument("--run-dir", required=True); s.set_defaults(fn=cmd_figures)
     s = sub.add_parser("describe", help="label distributions, sarcastic-hate counts per split, language mix")
     s.add_argument("--data", default="data/processed/dataset.csv"); s.add_argument("--out", default="results/data_report.md"); s.set_defaults(fn=cmd_describe)

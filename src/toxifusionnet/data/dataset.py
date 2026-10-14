@@ -23,12 +23,13 @@ def encode_words(tokenizer, words_list: list[list[str]], max_length: int):
 class HateSarcasmDataset(Dataset):
     def __init__(self, df: pd.DataFrame, tokenizer, normalizer: TextNormalizer, max_length: int = 128,
                  tasks=TASKS, rationale_cfg=None, image_dir=None,
-                 image_processor=None, use_clip: bool = False):
+                 image_processor=None, use_clip: bool = False, clip_store=None):
         self.df = df.reset_index(drop=True)
         self.tasks = list(tasks)
         self.image_dir = image_dir
         self.image_processor = image_processor
         self.use_clip = use_clip
+        self.clip_store = clip_store
         nts = [normalizer(t) for t in self.df["text"]]
         words = [nt.words if nt.words else ["<empty>"] for nt in nts]
         enc = encode_words(tokenizer, words, max_length)
@@ -44,13 +45,16 @@ class HateSarcasmDataset(Dataset):
                     tau=float(rationale_cfg.get("temperature", 0.5)), mode=rationale_cfg.get("mode", "text"),
                     use_sarcasm=bool(rationale_cfg.get("use_sarcasm_rationale", True)))
 
-            # Image loading with alt extension fallback
+            # Image loading with alt extension fallback or cached feature store
             img_tensor = None
+            vis_feat = None
             has_image = 0.0
             source_ds = getattr(row, "source_dataset", "multibully")
             if self.use_clip:
                 img_name = getattr(row, "id", None)
-                if self.image_dir and img_name and source_ds == "multibully":
+                if self.clip_store is not None and img_name and source_ds == "multibully":
+                    vis_feat, has_image = self.clip_store.get(str(img_name))
+                elif self.image_dir and img_name and source_ds == "multibully":
                     from pathlib import Path
                     img_path = Path(self.image_dir) / str(img_name)
                     if not img_path.exists():
@@ -80,12 +84,15 @@ class HateSarcasmDataset(Dataset):
                         img_tensor = torch.zeros((3, 224, 224), dtype=torch.float32)
                 else:
                     has_image = 0.0
-                    img_tensor = torch.zeros((3, 224, 224), dtype=torch.float32)
+                    if self.clip_store is not None:
+                        vis_feat = torch.zeros(768, dtype=torch.float32)
+                    else:
+                        img_tensor = torch.zeros((3, 224, 224), dtype=torch.float32)
 
             self.items.append({
                 "input_ids": enc["input_ids"][i], "labels": labels, "cue": cue_vector(nts[i]),
                 "hate_t": ht, "sarc_t": st, "idx": i,
-                "pixel_values": img_tensor, "has_image": has_image, "source_dataset": source_ds
+                "pixel_values": img_tensor, "vis_feat": vis_feat, "has_image": has_image, "source_dataset": source_ds
             })
         self.normalized = nts
 
@@ -104,8 +111,10 @@ def make_collate(pad_id: int):
         ht = torch.zeros((B, T)); st = torch.zeros((B, T))
         hv = torch.zeros(B, dtype=torch.bool); sv = torch.zeros(B, dtype=torch.bool)
         has_pix = any(b.get("pixel_values") is not None for b in batch)
+        has_vis = any(b.get("vis_feat") is not None for b in batch)
         pix = torch.stack([b["pixel_values"] for b in batch]) if has_pix else None
-        img_mask = torch.tensor([[b["has_image"]] for b in batch], dtype=torch.float32) if has_pix else None
+        vis = torch.stack([b["vis_feat"] for b in batch]) if has_vis else None
+        img_mask = torch.tensor([[b["has_image"]] for b in batch], dtype=torch.float32) if (has_pix or has_vis) else None
         sources = [b.get("source_dataset", "multibully") for b in batch]
         for i, b in enumerate(batch):
             n = len(b["input_ids"])
@@ -120,6 +129,6 @@ def make_collate(pad_id: int):
             "labels": {t: torch.tensor([b["labels"][t] for b in batch], dtype=torch.long) for t in TASKS},
             "hate_attn_target": ht, "hate_attn_valid": hv, "sarc_attn_target": st, "sarc_attn_valid": sv,
             "idx": torch.tensor([b["idx"] for b in batch]),
-            "pixel_values": pix, "image_mask": img_mask, "source_dataset": sources,
+            "pixel_values": pix, "vis_feat": vis, "image_mask": img_mask, "source_dataset": sources,
         }
     return collate

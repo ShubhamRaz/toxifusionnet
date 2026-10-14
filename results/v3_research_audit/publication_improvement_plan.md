@@ -51,25 +51,29 @@ For all experiments, reporting will adhere to:
 3. **Per-Class Diagnostics:** Reporting precision, recall, F1, support, and confusion matrix heatmaps for every class in all heads.
 
 ### 3.2 Severity Imbalance Treatment & Data Recommendation (Phase E)
-The MultiBully human-labeled severity distribution is extremely skewed:
-- **Low Severity:** 1,182 samples (74.81%)
-- **Medium Severity:** 363 samples (22.97%)
-- **High Severity:** **35 samples (2.22%)**
+The authoritative MultiBully human-labeled severity distribution (verified across `data/raw/multibully.csv`, `data/processed/multibully.csv`, and saved pooled model evaluations) is:
+- **Low Severity** (`Harmless`): **141 samples (8.92%)**
+- **Moderate Severity** (`Partially-Harmful`): **1,409 samples (89.18%)**
+- **High Severity** (`Very-Harmful`): **30 samples (1.90%)**
+- **Total Evaluated Severity Support:** **1,580 samples (100.0%)**
+- **Masked Non-Hate Samples:** **4,138 samples (72.37%)** (severity is hate-conditional; non-hate memes are masked to `NaN`)
+
+*(Note on Resolved Discrepancy: A prior text summary erroneously cited 1,182/363/35 by assuming a hypothetical pyramid distribution. The actual empirical distribution reveals that human annotators judged the vast majority [89.2%] of text-bullying memes as moderately harmful [Partially-Harmful], while high severity is extremely rare at 1.9% [30 samples]. No labels were modified; the model evaluation support matches the ground truth exactly).*
 
 #### Analytical Guidelines:
 1. **Zero Validation Oversampling:** In all experiments, validation and test splits maintain the natural empirical distribution. No SMOTE or synthetic oversampling is applied to evaluation partitions.
 2. **Fold-Strict Weight Computation:** When class weights are enabled, weights are dynamically computed using only the training split of the active fold:
    $$w_c = \frac{N_{\text{train}}}{C \cdot N_{\text{train}, c}}$$
 3. **Data Collection Recommendation for Camera-Ready / Extension:**
-   - With only 35 high-severity memes in 5,718 samples, the variance of high-severity test metrics is high (approximately 7 test samples per fold).
+   - With only 30 high-severity memes in 5,718 samples, the variance of high-severity test metrics is high (approximately 6 test samples per fold).
    - We recommend a targeted data collection protocol: using active learning (uncertainty sampling from multimodal models) or community-specific seed terms (violent extremism, severe racial/religious slurs) to annotate an additional 250–500 high-severity memes with multi-annotator agreement ($\ge 3$ human annotators, Krippendorff's $\alpha \ge 0.70$).
 
 ### 3.3 Frozen CLIP Feature Caching (Phase F)
 In multimodal training (E3, E5, E7, E7a), the CLIP image encoder (`openai/clip-vit-base-patch32`) remains frozen. 
-- **Bottleneck:** Repeatedly forwarding 5,718 images through the 12-layer Vision Transformer on every epoch accounts for $>85\%$ of training compute.
-- **Implementation:** `src/toxifusionnet/models/clip_cache.py` implements an SHA-256 hashed on-disk tensor store keyed by image content, preprocessing configuration, and model checkpoint.
-- **Numerical Parity:** Verified in `tests/test_clip_caching.py` with tolerance $|y_{\text{cached}} - y_{\text{live}}| \le 1\times 10^{-5}$.
-- **Performance Impact:** Reduces 5-fold multimodal CV time from ~3.5 hours to under 30 minutes on DGX A100.
+- **Bottleneck:** Repeatedly forwarding 5,718 images through the 12-layer Vision Transformer on every epoch accounts for the majority of multimodal training compute.
+- **Implementation:** `src/toxifusionnet/models/clip_cache.py` implements an on-disk tensor store keyed by image content hash, model weight hash/revision, and preprocessing configuration signature.
+- **Numerical Parity:** Verified in `tests/test_clip_caching.py` with tolerance $|y_{\text{cached}} - y_{\text{live}}| \le 1\times 10^{-4}$.
+- **Performance Impact:** Empirically benchmarked to verify actual per-batch speedup on local and DGX compute.
 
 ---
 

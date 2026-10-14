@@ -114,3 +114,50 @@ tasks:
 | :--- | :--- | :--- | :--- |
 | **Historical Benchmark (E1, E3, E5, E6, E7, E1b, E6a, E7a)** | `Text-Label` | Toxicity of extracted OCR text in isolation | Low / Neutral (visual features confound text-only label) |
 | **Meme-Level Benchmark (`exp_memehate_*`)** | `Img-Text-Label` | Toxicity of full multimodal meme (image + text) | High / Decisive (essential for 29.5% multimodal-dependent cases) |
+
+---
+
+## 6. Authoritative Severity Label Trace & Discrepancy Resolution
+
+### 6.1 The Discrepancy Investigated
+An earlier draft summary cited hypothetical severity counts of **1,182 low / 363 moderate / 35 high** (assuming a conventional ~75% / ~23% / ~2% pyramid distribution). In contrast, the saved E7 pooled model evaluation and `results/data_report.md` report exact class supports of:
+$$\mathbf{141 \text{ low} \quad / \quad 1,409 \text{ moderate} \quad / \quad 30 \text{ high}}$$
+
+### 6.2 Complete End-to-End Trace Through the Pipeline
+Tracing raw data values through every stage of the ToxiFusionNet pipeline confirms the mathematical ground truth:
+1. **Raw MultiBully Source (`data/raw/multibully.csv`)**:
+   - Column: `Harmful-Score`
+   - Whole-dataset counts: `Partially-Harmful` (3,069), `Harmless` (2,751), `Very-Harmful` (33), `NaN` (12).
+2. **Schema Mapping (`configs/schema_multibully.yaml`)**:
+   ```yaml
+   value_maps:
+     severity:
+       harmless: low
+       partially-harmful: moderate
+       very-harmful: high
+   ```
+3. **Multi-Task Conditionality & Loss Masking (`src/toxifusionnet/data/schema.py`)**:
+   - By project definition (flow-chart rule), `severity` is evaluated **only conditional on bullying/hate detection**:
+     ```python
+     out.loc[out["hate"] == HATE_LABELS[0], ["target", "severity"]] = np.nan
+     ```
+   - For all 4,138 `Nonbully` memes, `severity` is explicitly masked to `NaN`.
+4. **Canonical Processed Dataset (`data/processed/multibully.csv`)**:
+   - Out of 5,718 total rows, exactly 1,580 have `hate == "hate"` (`Text-Label == Bully`).
+   - Among these 1,580 instances:
+     - `Harmless` $\to$ **`low`**: **141** (8.92%)
+     - `Partially-Harmful` $\to$ **`moderate`**: **1,409** (89.18%)
+     - `Very-Harmful` $\to$ **`high`**: **30** (1.90%)
+     - Total: **1,580** (100.0%)
+5. **Loss & Metric Masking in PyTorch**:
+   - In `HateSarcasmDataset`, missing/NaN labels receive `IGNORE_INDEX = -100`.
+   - `MultiTaskLoss` ignores index `-100`.
+   - `evaluate_predictions` computes precision, recall, and F1 strictly on non-NaN rows.
+   - Consequently, pooled evaluation support across all 5 test folds is strictly:
+     - **Low:** 141
+     - **Moderate:** 1,409
+     - **High:** 30
+
+### 6.3 Conclusion
+The model evaluation counts (141 / 1409 / 30) are 100% correct and faithful to the actual MultiBully human annotations. Human annotators overwhelmingly judged bullying memes as *Partially-Harmful* rather than *Harmless*. No labels should be modified. All severity loss ablations and class weighting must use these exact fold-derived class supports.
+

@@ -1,13 +1,14 @@
 """Caching and fast retrieval of frozen CLIP ViT visual embeddings.
 
 Eliminates repetitive vision transformer forward passes during multi-epoch training,
-reducing epoch duration by >95% while guaranteeing exact numerical equivalence.
+providing substantial throughput gains while guaranteeing exact numerical equivalence.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import logging
+import time
 from pathlib import Path
 from typing import Dict, Tuple
 
@@ -31,10 +32,40 @@ def hash_image_file(path: str | Path) -> str:
     return h.hexdigest()
 
 
-def get_cache_signature(model_name: str, image_size: int = 224) -> str:
-    """Construct deterministic cache namespace signature from model architecture."""
+def get_cache_signature(
+    model_name: str = "openai/clip-vit-base-patch32",
+    vision_model: torch.nn.Module | None = None,
+    image_processor=None,
+    image_size: int = 224,
+) -> str:
+    """Construct deterministic cache signature from model architecture, weight hash, and preprocessing configuration."""
     safe_name = model_name.replace("/", "_").replace("-", "_")
-    return f"{safe_name}_{image_size}"
+    sig_parts = [safe_name, f"sz{image_size}"]
+
+    # 1. Preprocessing Configuration Signature
+    if image_processor is not None:
+        proc_dict = {
+            "size": getattr(image_processor, "size", image_size),
+            "crop_size": getattr(image_processor, "crop_size", None),
+            "image_mean": getattr(image_processor, "image_mean", None),
+            "image_std": getattr(image_processor, "image_std", None),
+            "resample": getattr(image_processor, "resample", None),
+        }
+        proc_str = json.dumps(proc_dict, sort_keys=True, default=str)
+        proc_hash = hashlib.sha256(proc_str.encode()).hexdigest()[:8]
+        sig_parts.append(f"proc_{proc_hash}")
+
+    # 2. Vision Model Weight Checksum / Hash
+    if vision_model is not None:
+        h = hashlib.sha256()
+        with torch.no_grad():
+            for p_name, param in vision_model.named_parameters():
+                if "weight" in p_name:
+                    chunk = param.data[:2, :2].cpu().numpy().tobytes() if param.dim() >= 2 else param.data[:4].cpu().numpy().tobytes()
+                    h.update(chunk)
+        sig_parts.append(f"w_{h.hexdigest()[:8]}")
+
+    return "_".join(sig_parts)
 
 
 def extract_clip_embeddings(
@@ -47,12 +78,13 @@ def extract_clip_embeddings(
     """Extract 768-d pooler_output vectors for a list of image paths.
     
     Returns:
-        features: (N, 768) float32 tensor
+        features: (N, hidden_size) float32 tensor
         has_image: (N,) float32 binary mask (1.0 = valid image, 0.0 = missing/corrupt)
     """
     vision_model.eval()
     n = len(image_paths)
-    feats = torch.zeros((n, vision_model.config.hidden_size), dtype=torch.float32)
+    hidden_size = getattr(getattr(vision_model, "config", None), "hidden_size", 768)
+    feats = torch.zeros((n, hidden_size), dtype=torch.float32)
     masks = torch.zeros(n, dtype=torch.float32)
 
     for i in range(0, n, batch_size):
@@ -83,7 +115,7 @@ def extract_clip_embeddings(
 
 
 class CachedClipFeatureStore:
-    """In-memory or disk-backed fast feature store for precomputed CLIP embeddings."""
+    """In-memory and disk-backed fast feature store for precomputed CLIP embeddings."""
 
     def __init__(self, cache_file: str | Path | None = None):
         self.embeddings: Dict[str, torch.Tensor] = {}
@@ -117,5 +149,118 @@ class CachedClipFeatureStore:
             return self.embeddings[item_id], self.masks.get(item_id, 1.0)
         return torch.zeros(hidden_size, dtype=torch.float32), 0.0
 
+    def __contains__(self, item_id: str) -> bool:
+        return item_id in self.embeddings
+
     def __len__(self) -> int:
         return len(self.embeddings)
+
+
+def build_or_load_clip_cache(
+    df: pd.DataFrame,
+    image_dir: str | Path,
+    vision_model: torch.nn.Module,
+    image_processor,
+    cache_dir: str | Path = "data/cache/clip_features",
+    model_name: str = "openai/clip-vit-base-patch32",
+    device: torch.device = torch.device("cpu"),
+    batch_size: int = 64
+) -> CachedClipFeatureStore:
+    """Load or generate cached CLIP embeddings for all unique image IDs in df."""
+    cache_dir = Path(cache_dir)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    sig = get_cache_signature(model_name, vision_model, image_processor)
+    cache_path = cache_dir / f"{sig}.pt"
+
+    store = CachedClipFeatureStore()
+    if cache_path.exists():
+        try:
+            store.load(cache_path)
+            # Check if all required IDs in df are covered
+            multibully_ids = set(df[df.get("source_dataset", "multibully") == "multibully"]["id"].astype(str))
+            missing_ids = multibully_ids.difference(set(store.embeddings.keys()))
+            if not missing_ids:
+                return store
+            log.info("Cache present but missing %d IDs. Updating cache...", len(missing_ids))
+        except Exception as e:
+            log.warning("Failed loading existing cache from %s (%s). Rebuilding...", cache_path, e)
+
+    # Collect unique image IDs to process
+    img_dir = Path(image_dir)
+    unique_ids = df[df.get("source_dataset", "multibully") == "multibully"]["id"].astype(str).unique().tolist()
+    log.info("Extracting frozen CLIP visual embeddings for %d unique items...", len(unique_ids))
+
+    image_paths = []
+    for item_id in unique_ids:
+        p = img_dir / item_id
+        if not p.exists():
+            stem = p.stem
+            alt_ext = ".png" if p.suffix.lower() == ".jpg" else ".jpg"
+            alt = p.parent / f"{stem}{alt_ext}"
+            if alt.exists():
+                p = alt
+        image_paths.append(p if p.exists() else None)
+
+    feats, masks = extract_clip_embeddings(
+        image_paths, vision_model, image_processor, device=device, batch_size=batch_size
+    )
+
+    for item_id, feat, mask in zip(unique_ids, feats, masks):
+        store.embeddings[item_id] = feat
+        store.masks[item_id] = float(mask)
+
+    meta = {
+        "signature": sig,
+        "model_name": model_name,
+        "total_items": len(unique_ids),
+        "valid_images": int(masks.sum().item()),
+        "missing_images": int((masks == 0.0).sum().item()),
+        "created_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    }
+    store.save(cache_path, metadata=meta)
+    return store
+
+
+def benchmark_clip_caching(
+    model: torch.nn.Module,
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+    cue: torch.Tensor,
+    pixel_values: torch.Tensor,
+    vis_feat: torch.Tensor,
+    image_mask: torch.Tensor,
+    n_iters: int = 20
+) -> dict:
+    """Empirically measure runtime between live uncached CLIP forward passes and cached feature store."""
+    model.eval()
+
+    # Warmup
+    with torch.no_grad():
+        _ = model(input_ids, attention_mask, cue=cue, pixel_values=pixel_values, image_mask=image_mask)
+        _ = model(input_ids, attention_mask, cue=cue, vis_feat=vis_feat, image_mask=image_mask)
+
+    # 1. Uncached runtime
+    t0 = time.perf_counter()
+    with torch.no_grad():
+        for _ in range(n_iters):
+            _ = model(input_ids, attention_mask, cue=cue, pixel_values=pixel_values, image_mask=image_mask)
+    uncached_time = time.perf_counter() - t0
+
+    # 2. Cached runtime
+    t1 = time.perf_counter()
+    with torch.no_grad():
+        for _ in range(n_iters):
+            _ = model(input_ids, attention_mask, cue=cue, vis_feat=vis_feat, image_mask=image_mask)
+    cached_time = time.perf_counter() - t1
+
+    speedup = uncached_time / max(cached_time, 1e-6)
+    reduction_pct = (1.0 - cached_time / uncached_time) * 100.0
+
+    return {
+        "n_iters": n_iters,
+        "uncached_seconds": uncached_time,
+        "cached_seconds": cached_time,
+        "speedup_factor": speedup,
+        "latency_reduction_pct": reduction_pct
+    }

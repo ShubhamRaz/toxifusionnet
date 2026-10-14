@@ -42,6 +42,31 @@ def make_fold_splits(df: pd.DataFrame, k: int, seed: int, val_frac: float = 0.15
         yield f, d
 
 
+def validate_fold_cache(fold_assign: pd.DataFrame, expected_ids: set | None = None, folds: int = 5) -> dict[int, list]:
+    """Strict pre-training validation of fold cache integrity and test partition coverage."""
+    actual_folds = set(fold_assign["fold"].unique())
+    if actual_folds != set(range(folds)):
+        raise ValueError(f"Fold cache must contain folds 0..{folds-1}, got {actual_folds}")
+    test_ids_by_fold = {}
+    all_test_ids = []
+    for f in range(folds):
+        f_df = fold_assign[fold_assign["fold"] == f]
+        tr = set(f_df[f_df["split"] == "train"]["id"])
+        va = set(f_df[f_df["split"] == "val"]["id"])
+        te = set(f_df[f_df["split"] == "test"]["id"])
+        if len(tr.intersection(va)) > 0 or len(tr.intersection(te)) > 0 or len(va.intersection(te)) > 0:
+            raise ValueError(f"Fold cache integrity violation in fold {f}: train/val/test splits overlap!")
+        test_ids_by_fold[f] = sorted(list(te))
+        all_test_ids.extend(te)
+    if len(all_test_ids) != len(set(all_test_ids)):
+        raise ValueError("Duplicate test IDs detected across folds in fold cache!")
+    if expected_ids:
+        missing = set(expected_ids) - set(all_test_ids)
+        if missing:
+            raise ValueError(f"Fold cache missing {len(missing)} dataset IDs! (examples: {list(missing)[:5]})")
+    return test_ids_by_fold
+
+
 def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Path, folds: int = 5, seed: int = 42,
            include_tfidf: bool = True, grouped: bool = True, folds_cache: str | Path | None = None,
            aux_data_path: str | Path | None = None) -> dict:
@@ -68,6 +93,7 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
     if grouped:
         if folds_cache and Path(folds_cache).exists():
             fold_assign = pd.read_csv(folds_cache)
+            validate_fold_cache(fold_assign, expected_ids=set(df["id"]), folds=folds)
             # Reconstruct fold_dfs from cached assignment
             fold_dfs = []
             for f in range(folds):
