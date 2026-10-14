@@ -14,10 +14,14 @@ from toxifusionnet.preprocessing.normalize import TextNormalizer
 from toxifusionnet.labels import label_to_id, IGNORE_INDEX
 
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = REPO_ROOT / "data" / "processed"
+
+
 def test_multibully_fold_cache_preservation():
     """Verify that canonical MultiBully fold assignments are strictly preserved."""
-    fold_cache_path = Path("data/processed/multibully_v2_cv_folds.csv")
-    assert fold_cache_path.exists(), "multibully_v2_cv_folds.csv must exist"
+    fold_cache_path = DATA_DIR / "multibully_v2_cv_folds.csv"
+    assert fold_cache_path.exists(), f"multibully_v2_cv_folds.csv must exist at {fold_cache_path}"
     folds = pd.read_csv(fold_cache_path)
     assert len(folds) == 28590, f"Expected 28,590 rows (5,718 * 5), got {len(folds)}"
     assert set(folds["fold"].unique()) == {0, 1, 2, 3, 4}
@@ -30,11 +34,11 @@ def test_multibully_fold_cache_preservation():
 
 def test_auxiliary_hot_data_isolation():
     """Verify that auxiliary HOT samples are injected exclusively into train split."""
-    mb = pd.read_csv("data/processed/multibully.csv")
+    mb = pd.read_csv(DATA_DIR / "multibully.csv")
     if "source_dataset" not in mb:
         mb["source_dataset"] = "multibully"
-    hot = pd.read_csv("data/processed/hot_v2.csv")
-    folds_cache = pd.read_csv("data/processed/multibully_v2_cv_folds.csv")
+    hot = pd.read_csv(DATA_DIR / "hot_v2.csv")
+    folds_cache = pd.read_csv(DATA_DIR / "multibully_v2_cv_folds.csv")
 
     for f in range(5):
         mb_f = mb.drop(columns=["split"], errors="ignore").merge(
@@ -63,8 +67,8 @@ def test_auxiliary_hot_data_isolation():
 
 def test_cross_dataset_duplicate_leakage():
     """Verify zero duplicate OCR text overlap between MultiBully and HOT."""
-    mb = pd.read_csv("data/processed/multibully.csv")
-    hot = pd.read_csv("data/processed/hot_v2.csv")
+    mb = pd.read_csv(DATA_DIR / "multibully.csv")
+    hot = pd.read_csv(DATA_DIR / "hot_v2.csv")
 
     mb_norm = set(normalize_ocr_text(mb["text"].fillna("")).unique())
     hot_norm = set(normalize_ocr_text(hot["text"].fillna("")).unique())
@@ -96,7 +100,7 @@ def test_missing_image_modality_masking():
 
 def test_hot_dataset_label_masking():
     """Verify that offensive-excluded samples and missing tasks map to IGNORE_INDEX."""
-    hot = pd.read_csv("data/processed/hot_v2.csv")
+    hot = pd.read_csv(DATA_DIR / "hot_v2.csv")
 
     # In hot_v2, orig_hot_label 2.0 (offensive) has hate = NaN
     off_samples = hot[hot["orig_hot_label"] == 2.0]

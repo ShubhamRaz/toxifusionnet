@@ -112,7 +112,9 @@ def clean_hot_dataset(raw_path: str | Path, out_path: str | Path, seed: int = 42
 
 
 if __name__ == "__main__":
-    workspace = Path(r"c:\Users\SHUBHAM RAJ\Desktop\Others\Toxic")
-    raw_csv = workspace / "dataset.csv"
-    out_csv = workspace / "toxifusionnet" / "toxifusionnet" / "data" / "processed" / "hot_cleaned.csv"
+    repo_root = Path(__file__).resolve().parent.parent
+    raw_csv = repo_root.parent / "dataset.csv"
+    if not raw_csv.exists():
+        raw_csv = repo_root / "data" / "raw" / "hot.csv"
+    out_csv = repo_root / "data" / "processed" / "hot_cleaned.csv"
     clean_hot_dataset(raw_csv, out_csv)

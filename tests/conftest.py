@@ -1,9 +1,22 @@
+from pathlib import Path
 import pytest
 
 from toxifusionnet.config import load_config
 from toxifusionnet.data.splits import make_splits
 from toxifusionnet.data.synthetic import make_synthetic
 from toxifusionnet.training.trainer import train_run
+
+
+@pytest.fixture(scope="session")
+def repo_root() -> Path:
+    """Return repository root path dynamically."""
+    return Path(__file__).resolve().parent.parent
+
+
+@pytest.fixture(scope="session")
+def workspace_dir(repo_root: Path) -> Path:
+    """Alias for repo_root for workspace-relative path resolution."""
+    return repo_root
 
 
 @pytest.fixture(scope="session")

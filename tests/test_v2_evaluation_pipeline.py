@@ -8,7 +8,7 @@ Covers:
 5. Loss masking with IGNORE_INDEX for non-hate conditional labels.
 6. Bootstrap confidence interval computation for uncertainty estimation.
 """
-import os
+from pathlib import Path
 import pytest
 import numpy as np
 import pandas as pd
@@ -29,14 +29,14 @@ from toxifusionnet.training.stats import bootstrap_ci
 
 
 @pytest.fixture
-def workspace_dir():
-    return r"c:\Users\SHUBHAM RAJ\Desktop\Others\Toxic\toxifusionnet\toxifusionnet"
+def workspace_dir() -> Path:
+    return Path(__file__).resolve().parent.parent
 
 
 @pytest.fixture
-def multibully_df(workspace_dir):
-    csv_path = os.path.join(workspace_dir, "data", "processed", "multibully.csv")
-    assert os.path.exists(csv_path), f"Processed CSV not found at {csv_path}"
+def multibully_df(workspace_dir: Path) -> pd.DataFrame:
+    csv_path = Path(workspace_dir) / "data" / "processed" / "multibully.csv"
+    assert csv_path.exists(), f"Processed CSV not found at {csv_path}"
     return pd.read_csv(csv_path)
 
 

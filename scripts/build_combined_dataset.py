@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 import pandas as pd
 
-workspace = Path(r"c:\Users\SHUBHAM RAJ\Desktop\Others\Toxic\toxifusionnet\toxifusionnet")
+workspace = Path(__file__).resolve().parent.parent
 mb_path = workspace / "data" / "processed" / "multibully.csv"
 hot_path = workspace / "data" / "processed" / "hot_cleaned.csv"
 combined_path = workspace / "data" / "processed" / "combined_multibully_hot.csv"

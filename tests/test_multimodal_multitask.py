@@ -1,5 +1,6 @@
 """Comprehensive integration and unit test suite for ToxiFusionNet multimodal multitask pipeline."""
 import os
+from pathlib import Path
 import pytest
 import numpy as np
 import pandas as pd
@@ -56,11 +57,16 @@ def test_modality_presence_mask_invariance():
 
 def test_missing_image_and_alt_extension_handling():
     """Test image resolution with alternate extension fallback and missing image safety."""
-    workspace = r"c:\Users\SHUBHAM RAJ\Desktop\Others\Toxic\toxifusionnet\toxifusionnet"
-    img_dir = os.path.join(workspace, "data", "raw", "bully_data", "bully_data")
-    proc_csv = os.path.join(workspace, "data", "processed", "multibully.csv")
+    repo_root = Path(__file__).resolve().parent.parent
+    proc_csv = repo_root / "data" / "processed" / "multibully.csv"
+    img_dir = repo_root / "data" / "raw" / "bully_data" / "bully_data"
+    if not img_dir.is_dir():
+        alt_img_dir = repo_root / "data" / "raw" / "bully_data"
+        if alt_img_dir.is_dir():
+            img_dir = alt_img_dir
 
-    assert os.path.exists(proc_csv), "Processed multibully.csv must exist"
+    assert proc_csv.exists(), f"Processed multibully.csv must exist at {proc_csv}"
+    assert img_dir.exists(), f"Bully data image directory must exist at {img_dir}"
     df = pd.read_csv(proc_csv).head(20)
 
     # Add a synthetic missing row
