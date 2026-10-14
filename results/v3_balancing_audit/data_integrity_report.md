@@ -13,9 +13,9 @@ To prevent regression or accidental split reshuffling across repeated experiment
 
 - **File Path:** `data/processed/multibully_v2_cv_folds.csv`
 - **Total Records:** 28,590 rows ($5 \text{ folds} \times 5,718 \text{ MultiBully samples}$)
-- **MD5 Checksum:** `7b9db4f7a3d79e91a31c1ff959fc2652`
-- **SHA-256 Checksum:** `73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5`
-- **Byte Size:** 633,997 bytes
+- **Canonical SHA-256 Checksum (in-memory CRLF normalized):** `73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5`
+- **Linux raw LF Checksum:** `da3ea2286e88cda00896bdc10610ef0ea76cbcde4218a43ffa97aec7237c99d2` (Git checkout on Linux preserves LF line endings; in-memory CRLF normalization produces the canonical hash)
+- **Byte Size:** 633,997 bytes (CRLF) / 605,406 bytes (LF)
 
 ### 1.1 Out-of-Fold Partition Structure
 Every MultiBully sample ($N = 5,718$) appears as an evaluated test sample in **exactly one fold**. Across all 5 folds, the unique evaluated test IDs equal exactly 5,718 ($100.0\%$ coverage):
@@ -101,7 +101,7 @@ To ensure that differences between E1d (MultiBully-only) and E6b (MultiBully + H
 
 - The canonical fold cache `data/processed/multibully_v2_cv_folds.csv` is protected against automatic modification or regeneration if it already exists on disk.
 - When `folds_cache` is specified:
-  1. The SHA-256 checksum is computed and logged (`73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5`).
+  1. The SHA-256 checksum is computed with in-memory CRLF normalization and logged (`73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5`).
   2. The sample IDs and fold distributions are validated against the active dataset.
   3. If validation passes, the cached assignments are read in read-only mode.
   4. If validation fails or a checksum mismatch occurs on DGX, execution fails fast with an explanatory error instead of silently overwriting the canonical cache.

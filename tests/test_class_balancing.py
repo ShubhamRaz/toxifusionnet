@@ -225,10 +225,19 @@ def test_fold_cache_authoritative_checksum():
     fold_cache_path = DATA_DIR / "multibully_v2_cv_folds.csv"
     assert fold_cache_path.exists(), "multibully_v2_cv_folds.csv must exist"
 
-    sha = hashlib.sha256(fold_cache_path.read_bytes()).hexdigest()
+    # Normalize line endings to CRLF in memory for cross-platform checksum verification
+    raw_bytes = fold_cache_path.read_bytes()
+    normalized = raw_bytes.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+    sha = hashlib.sha256(normalized).hexdigest()
     assert sha == "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5", (
         f"Fold cache checksum mismatch! Expected authoritative 73d4db..., got {sha}"
     )
+
+    # Verify that an LF-checked-out version (DGX Linux environment) normalizes to the identical canonical hash
+    raw_lf = raw_bytes.replace(b"\r\n", b"\n")
+    assert hashlib.sha256(raw_lf).hexdigest() == "da3ea2286e88cda00896bdc10610ef0ea76cbcde4218a43ffa97aec7237c99d2"
+    sha_from_lf = hashlib.sha256(raw_lf.replace(b"\n", b"\r\n")).hexdigest()
+    assert sha_from_lf == "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
 
     # Verify partition sizes
     folds = pd.read_csv(fold_cache_path)

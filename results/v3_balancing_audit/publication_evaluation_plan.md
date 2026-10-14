@@ -67,16 +67,20 @@ Upon user confirmation, the evaluation suite can be executed sequentially or in 
 git pull origin main
 
 # 2. Verify authoritative SHA-256 checksum and test IDs of the canonical fold cache
-sha256sum data/processed/multibully_v2_cv_folds.csv
-# Expected output:
-# 73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5  data/processed/multibully_v2_cv_folds.csv
-
+# Note: On Linux DGX, raw checkout has LF endings (raw sha256: da3ea2286e88cda00896bdc10610ef0ea76cbcde4218a43ffa97aec7237c99d2).
+# In-memory CRLF normalization produces the canonical hash (73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5)
 python -c "
-import pandas as pd
+import hashlib, pandas as pd
+from pathlib import Path
+
+raw = Path('data/processed/multibully_v2_cv_folds.csv').read_bytes()
+sha = hashlib.sha256(raw.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')).hexdigest()
+assert sha == '73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5', f'SHA mismatch: {sha}'
+
 df = pd.read_csv('data/processed/multibully_v2_cv_folds.csv')
 assert len(df) == 28590, f'Expected 28590 rows, got {len(df)}'
 assert df[df['split'] == 'test']['id'].nunique() == 5718, 'Expected 5718 unique test IDs'
-print('Verified canonical fold cache: 28,590 rows, 5,718 test IDs across 5 folds')
+print('Verified canonical fold cache: SHA-256 matches (CRLF-normalized), 28,590 rows, 5,718 test IDs across 5 folds')
 "
 
 # 3. Run E1c: Unweighted Control Baseline (488 steps matched budget)

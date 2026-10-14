@@ -42,6 +42,21 @@ def make_fold_splits(df: pd.DataFrame, k: int, seed: int, val_frac: float = 0.15
         yield f, d
 
 
+CANONICAL_FOLD_CACHE_SHA256 = "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
+
+
+def compute_normalized_fold_cache_sha256(cache_path: str | Path) -> str:
+    """Compute the SHA-256 checksum of fold cache with in-memory CRLF line-ending normalization.
+
+    Ensures consistent, cross-platform checksum verification across Linux (LF) and
+    Windows (CRLF) environments without modifying the file on disk.
+    """
+    import hashlib
+    raw_bytes = Path(cache_path).read_bytes()
+    normalized = raw_bytes.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+    return hashlib.sha256(normalized).hexdigest()
+
+
 def validate_fold_cache(fold_assign: pd.DataFrame, expected_ids: set | None = None, folds: int = 5) -> dict[int, list]:
     """Strict pre-training validation of fold cache integrity and test partition coverage."""
     actual_folds = set(fold_assign["fold"].unique())
@@ -106,10 +121,14 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
 
     if grouped:
         if folds_cache and Path(folds_cache).exists():
-            import hashlib
             cache_p = Path(folds_cache)
-            sha = hashlib.sha256(cache_p.read_bytes()).hexdigest()
-            log.info("Using existing canonical fold cache: %s (SHA-256: %s)", folds_cache, sha)
+            sha = compute_normalized_fold_cache_sha256(cache_p)
+            log.info("Using existing canonical fold cache: %s (SHA-256 [CRLF-normalized]: %s)", folds_cache, sha)
+            if cache_p.name == "multibully_v2_cv_folds.csv" and sha != CANONICAL_FOLD_CACHE_SHA256:
+                log.warning(
+                    "Fold cache '%s' normalized SHA-256 (%s) differs from canonical (%s)",
+                    folds_cache, sha, CANONICAL_FOLD_CACHE_SHA256
+                )
             fold_assign = pd.read_csv(cache_p)
             validate_fold_cache(fold_assign, expected_ids=set(df["id"]), folds=folds)
             # Reconstruct fold_dfs from cached assignment

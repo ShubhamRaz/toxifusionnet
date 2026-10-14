@@ -20,8 +20,10 @@ def audit_fold_cache(cache_path="data/processed/multibully_v2_cv_folds.csv"):
         raise FileNotFoundError(f"Missing fold cache: {cache_path}")
     
     with open(p, "rb") as f:
-        sha256 = hashlib.sha256(f.read()).hexdigest()
-    print(f"Authoritative Fold Cache SHA-256: {sha256}")
+        raw_bytes = f.read()
+    normalized = raw_bytes.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+    sha256 = hashlib.sha256(normalized).hexdigest()
+    print(f"Authoritative Fold Cache SHA-256 (CRLF-normalized): {sha256}")
     expected_sha = "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
     if sha256 != expected_sha:
         print(f"WARNING: Fold cache checksum differs from expected canonical {expected_sha}")
