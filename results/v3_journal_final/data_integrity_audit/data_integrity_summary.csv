@@ -1,0 +1,13 @@
+source_dataset,task,total_rows,valid_gold_labels,valid_pseudo_labels,missing_or_ignored_labels,zero_supervision_rows,loss_consumption_rows,policy_notes
+MultiBully (Processed),hate,5718,5718,0,0,0,5718,Primary evaluation benchmark; 100% human gold
+MultiBully (Processed),sarcasm,5718,5718,0,0,0,5718,Primary evaluation benchmark; 100% human gold
+MultiBully (Processed),target,5718,1437,0,4281,0,1437,Primary evaluation benchmark; 100% human gold
+MultiBully (Processed),severity,5718,1580,0,4138,0,1580,Primary evaluation benchmark; 100% human gold
+HOT Gold-Only (E6b),hate,3189,1424,0,1765,1765,1424,Strict human gold; all auxiliary tasks 100% masked to NaN
+HOT Gold-Only (E6b),sarcasm,3189,0,0,3189,1765,0,Strict human gold; all auxiliary tasks 100% masked to NaN
+HOT Gold-Only (E6b),target,3189,0,0,3189,1765,0,Strict human gold; all auxiliary tasks 100% masked to NaN
+HOT Gold-Only (E6b),severity,3189,0,0,3189,1765,0,Strict human gold; all auxiliary tasks 100% masked to NaN
+HOT v2 (Reference),hate,3189,1424,0,1765,0,1424,"Contains Qwen pseudo-labels for sarcasm, target, severity"
+HOT v2 (Reference),sarcasm,3189,0,2457,732,0,2457,"Contains Qwen pseudo-labels for sarcasm, target, severity"
+HOT v2 (Reference),target,3189,0,1035,2154,0,1035,"Contains Qwen pseudo-labels for sarcasm, target, severity"
+HOT v2 (Reference),severity,3189,0,1020,2169,0,1020,"Contains Qwen pseudo-labels for sarcasm, target, severity"

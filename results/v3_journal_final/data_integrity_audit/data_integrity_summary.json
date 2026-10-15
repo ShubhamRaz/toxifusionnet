@@ -1,0 +1,560 @@
+{
+  "audit_timestamp": "2026-10-15 05:08:02 UTC",
+  "provenance_audit": {
+    "raw_multibully": {
+      "file_path": "data\\raw\\multibully.csv",
+      "exists": true,
+      "size_bytes": 996271,
+      "sha256_raw": "d8644e9c58ba0e87a15f6be58a3b86368c4e3d2fd1baa7495746a6c11a9225e4",
+      "sha256_crlf": "8b92810626a42abb8173b6770ae1adde7c5633f4e9301f747c81c2acdd81d29c",
+      "num_rows": 5865,
+      "num_cols": 24,
+      "columns": [
+        "Img-Name",
+        "Img-Text",
+        "Img-Text-Label",
+        "Img-Label",
+        "Text-Label",
+        "Sentiment",
+        "Emotion",
+        "Sarcasm",
+        "Harmful-Score",
+        "Target",
+        "Unnamed: 10",
+        "Doubtful",
+        "Unnamed: 12",
+        "Unnamed: 13",
+        "Unnamed: 14",
+        "Unnamed: 15",
+        "Unnamed: 16",
+        "Unnamed: 17",
+        "Bully",
+        "Negative",
+        "Happiness",
+        "Yes",
+        "Harmless",
+        "Individual"
+      ],
+      "source_dataset_counts": {}
+    },
+    "processed_multibully": {
+      "file_path": "data\\processed\\multibully.csv",
+      "exists": true,
+      "size_bytes": 1289597,
+      "sha256_raw": "bd551069ded67b059d8d4f2cb6a1bd9bc14641453c37a14b5a1db5a3cda9e909",
+      "sha256_crlf": "8191c13c1ef966a1ad4ba703a4e723c46b03b321c9e4cafb097dbe840b2413f0",
+      "num_rows": 5718,
+      "num_cols": 11,
+      "columns": [
+        "id",
+        "text",
+        "sarcasm",
+        "hate",
+        "target",
+        "severity",
+        "sarcasm_rationale",
+        "hate_rationale",
+        "narrative",
+        "label_source",
+        "split"
+      ],
+      "source_dataset_counts": {}
+    },
+    "multibully_memehate": {
+      "file_path": "data\\processed\\multibully_memehate.csv",
+      "exists": true,
+      "size_bytes": 1300515,
+      "sha256_raw": "5f57899deb2914e40b1e1b8c598dfb9b4de31b21a710bbfe4294bc2f54fe3ff2",
+      "sha256_crlf": "22bc5cfd40e2c8b4b15da0291564499948bbeedef9233bddd3522498f0b4f99c",
+      "num_rows": 5718,
+      "num_cols": 11,
+      "columns": [
+        "id",
+        "text",
+        "sarcasm",
+        "hate",
+        "target",
+        "severity",
+        "sarcasm_rationale",
+        "hate_rationale",
+        "narrative",
+        "label_source",
+        "split"
+      ],
+      "source_dataset_counts": {}
+    },
+    "multibully_cv_folds": {
+      "file_path": "data\\processed\\multibully_v2_cv_folds.csv",
+      "exists": true,
+      "size_bytes": 633997,
+      "sha256_raw": "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5",
+      "sha256_crlf": "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5",
+      "num_rows": 28590,
+      "num_cols": 4,
+      "columns": [
+        "id",
+        "split",
+        "fold",
+        "group_id"
+      ],
+      "source_dataset_counts": {}
+    },
+    "hot_cleaned": {
+      "file_path": "data\\processed\\hot_cleaned.csv",
+      "exists": true,
+      "size_bytes": 1147106,
+      "sha256_raw": "6b9489f714241e9d0d6ec4f32bf0c19eeceeb68dc2028bb16d2dd908babb9b70",
+      "sha256_crlf": "6b9489f714241e9d0d6ec4f32bf0c19eeceeb68dc2028bb16d2dd908babb9b70",
+      "num_rows": 3189,
+      "num_cols": 16,
+      "columns": [
+        "id",
+        "text",
+        "orig_hot_label",
+        "qwen_hate",
+        "qwen_sarcasm",
+        "qwen_target",
+        "qwen_severity",
+        "annotation_model",
+        "annotation_status",
+        "source_dataset",
+        "hate",
+        "sarcasm",
+        "target",
+        "severity",
+        "split",
+        "label_source"
+      ],
+      "source_dataset_counts": {
+        "hot": 3189
+      }
+    },
+    "hot_v2": {
+      "file_path": "data\\processed\\hot_v2.csv",
+      "exists": true,
+      "size_bytes": 1173878,
+      "sha256_raw": "db5652f6a09aaa829bcbf2c6ec3038ed5b8d5e641eac719758b04fe39e7b17cd",
+      "sha256_crlf": "db5652f6a09aaa829bcbf2c6ec3038ed5b8d5e641eac719758b04fe39e7b17cd",
+      "num_rows": 3189,
+      "num_cols": 18,
+      "columns": [
+        "id",
+        "text",
+        "orig_hot_label",
+        "qwen_hate",
+        "qwen_sarcasm",
+        "qwen_target",
+        "qwen_severity",
+        "annotation_model",
+        "annotation_status",
+        "source_dataset",
+        "hate",
+        "sarcasm",
+        "target",
+        "severity",
+        "split",
+        "label_source",
+        "hate_gold_strict",
+        "hate_pseudo_qwen"
+      ],
+      "source_dataset_counts": {
+        "hot": 3189
+      }
+    },
+    "hot_gold_only": {
+      "file_path": "data\\processed\\hot_gold_only.csv",
+      "exists": true,
+      "size_bytes": 824086,
+      "sha256_raw": "a655e0204afa53d52c6ea9234b0ca3cd0fd5fc1ba1d2ee44eab735b79947e4dc",
+      "sha256_crlf": "a655e0204afa53d52c6ea9234b0ca3cd0fd5fc1ba1d2ee44eab735b79947e4dc",
+      "num_rows": 3189,
+      "num_cols": 10,
+      "columns": [
+        "id",
+        "text",
+        "orig_hot_label",
+        "source_dataset",
+        "split",
+        "hate",
+        "sarcasm",
+        "target",
+        "severity",
+        "label_source"
+      ],
+      "source_dataset_counts": {
+        "hot": 3189
+      }
+    },
+    "combined_multibully_hot": {
+      "file_path": "data\\processed\\combined_multibully_hot.csv",
+      "exists": true,
+      "size_bytes": 2514701,
+      "sha256_raw": "f0577fc9015a29822a4155afedc2d4153ec7ac6d9c59711d851985f0a1b19348",
+      "sha256_crlf": "95af30e0f897dc27723c0350f357a632b66d0591c32b3ada19f5b9f58c96faee",
+      "num_rows": 8907,
+      "num_cols": 18,
+      "columns": [
+        "id",
+        "text",
+        "sarcasm",
+        "hate",
+        "target",
+        "severity",
+        "sarcasm_rationale",
+        "hate_rationale",
+        "narrative",
+        "label_source",
+        "split",
+        "source_dataset",
+        "orig_hot_label",
+        "qwen_hate",
+        "qwen_sarcasm",
+        "qwen_target",
+        "qwen_severity",
+        "annotation_status"
+      ],
+      "source_dataset_counts": {
+        "multibully": 5718,
+        "hot": 3189
+      }
+    },
+    "combined_multibully_hot_v2": {
+      "file_path": "data\\processed\\combined_multibully_hot_v2.csv",
+      "exists": true,
+      "size_bytes": 2453880,
+      "sha256_raw": "c3496e411dbced3c89a080edd5075104275c96998f24b238118509723a311e48",
+      "sha256_crlf": "7b0e0672c55bdf515cf6bd5bbd6558ea616579323718585c039aaeeaab970454",
+      "num_rows": 8907,
+      "num_cols": 17,
+      "columns": [
+        "id",
+        "text",
+        "sarcasm",
+        "hate",
+        "target",
+        "severity",
+        "sarcasm_rationale",
+        "hate_rationale",
+        "narrative",
+        "label_source",
+        "source_dataset",
+        "orig_hot_label",
+        "qwen_hate",
+        "qwen_sarcasm",
+        "qwen_target",
+        "qwen_severity",
+        "annotation_status"
+      ],
+      "source_dataset_counts": {
+        "multibully": 5718,
+        "hot": 3189
+      }
+    },
+    "raw_hot_dataset": {
+      "file_path": "C:\\Users\\SHUBHAM RAJ\\Desktop\\Others\\Toxic\\toxifusionnet\\dataset.csv",
+      "exists": false,
+      "sha256_raw": null,
+      "num_rows": 0
+    }
+  },
+  "experiment_inputs": {
+    "E1d": {
+      "config_file": "configs\\exp1d_multibully_text_weighted.yaml",
+      "saved_fold0_config": "results\\v3_journal_final\\e1d_text_weighted\\fold0\\config.yaml",
+      "primary_dataset": "data/processed/multibully.csv",
+      "auxiliary_dataset": null,
+      "folds_cache": "data/processed/multibully_v2_cv_folds.csv",
+      "num_training_samples_per_fold": 4574,
+      "num_test_samples_total": 5718
+    },
+    "E6b": {
+      "config_file": "configs\\exp6b_combined_text_gold_weighted.yaml",
+      "saved_fold0_config": "results\\v3_journal_final\\e6b_text_gold_weighted\\fold0\\config.yaml",
+      "primary_dataset": "data/processed/multibully.csv",
+      "auxiliary_dataset": "data/processed/hot_gold_only.csv",
+      "folds_cache": "data/processed/multibully_v2_cv_folds.csv",
+      "raw_aux_rows": 3189,
+      "retained_supervised_aux_rows": 1424,
+      "excluded_zero_supervision_aux_rows": 1765,
+      "num_training_samples_per_fold": 5998,
+      "num_test_samples_total": 5718
+    }
+  },
+  "e6b_pseudolabel_check": {
+    "sarcasm_valid_count": 0,
+    "target_valid_count": 0,
+    "severity_valid_count": 0,
+    "has_pseudolabel_supervision": false,
+    "rationales_present": false
+  },
+  "hot_category_audit": [
+    {
+      "orig_category_code": 0.0,
+      "orig_category_name": "Normal",
+      "total_count": 1121,
+      "raw_meaning": "Normal",
+      "cleaned_label_dist": {
+        "non_hate": 1095,
+        "hate": 26
+      },
+      "v2_label_dist": {
+        "non_hate": 1121
+      },
+      "gold_only_label_dist": {
+        "non_hate": 1121
+      },
+      "final_canonical_id": 0,
+      "complies_with_gold_policy": true
+    },
+    {
+      "orig_category_code": 1.0,
+      "orig_category_name": "Hate Speech",
+      "total_count": 303,
+      "raw_meaning": "Hate Speech",
+      "cleaned_label_dist": {
+        "hate": 169,
+        "non_hate": 134
+      },
+      "v2_label_dist": {
+        "hate": 303
+      },
+      "gold_only_label_dist": {
+        "hate": 303
+      },
+      "final_canonical_id": 1,
+      "complies_with_gold_policy": true
+    },
+    {
+      "orig_category_code": 2.0,
+      "orig_category_name": "Offensive Language",
+      "total_count": 1765,
+      "raw_meaning": "Offensive Language",
+      "cleaned_label_dist": {
+        "non_hate": 956,
+        "hate": 809
+      },
+      "v2_label_dist": {
+        "NaN": 1765
+      },
+      "gold_only_label_dist": {
+        "NaN": 1765
+      },
+      "final_canonical_id": -100,
+      "complies_with_gold_policy": "True"
+    }
+  ],
+  "task_supervision_audit": [
+    {
+      "source_dataset": "MultiBully (Processed)",
+      "task": "hate",
+      "total_rows": 5718,
+      "valid_gold_labels": 5718,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 0,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 5718,
+      "policy_notes": "Primary evaluation benchmark; 100% human gold"
+    },
+    {
+      "source_dataset": "MultiBully (Processed)",
+      "task": "sarcasm",
+      "total_rows": 5718,
+      "valid_gold_labels": 5718,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 0,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 5718,
+      "policy_notes": "Primary evaluation benchmark; 100% human gold"
+    },
+    {
+      "source_dataset": "MultiBully (Processed)",
+      "task": "target",
+      "total_rows": 5718,
+      "valid_gold_labels": 1437,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 4281,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 1437,
+      "policy_notes": "Primary evaluation benchmark; 100% human gold"
+    },
+    {
+      "source_dataset": "MultiBully (Processed)",
+      "task": "severity",
+      "total_rows": 5718,
+      "valid_gold_labels": 1580,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 4138,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 1580,
+      "policy_notes": "Primary evaluation benchmark; 100% human gold"
+    },
+    {
+      "source_dataset": "HOT Gold-Only (E6b)",
+      "task": "hate",
+      "total_rows": 3189,
+      "valid_gold_labels": 1424,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 1765,
+      "zero_supervision_rows": 1765,
+      "loss_consumption_rows": 1424,
+      "policy_notes": "Strict human gold; all auxiliary tasks 100% masked to NaN"
+    },
+    {
+      "source_dataset": "HOT Gold-Only (E6b)",
+      "task": "sarcasm",
+      "total_rows": 3189,
+      "valid_gold_labels": 0,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 3189,
+      "zero_supervision_rows": 1765,
+      "loss_consumption_rows": 0,
+      "policy_notes": "Strict human gold; all auxiliary tasks 100% masked to NaN"
+    },
+    {
+      "source_dataset": "HOT Gold-Only (E6b)",
+      "task": "target",
+      "total_rows": 3189,
+      "valid_gold_labels": 0,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 3189,
+      "zero_supervision_rows": 1765,
+      "loss_consumption_rows": 0,
+      "policy_notes": "Strict human gold; all auxiliary tasks 100% masked to NaN"
+    },
+    {
+      "source_dataset": "HOT Gold-Only (E6b)",
+      "task": "severity",
+      "total_rows": 3189,
+      "valid_gold_labels": 0,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 3189,
+      "zero_supervision_rows": 1765,
+      "loss_consumption_rows": 0,
+      "policy_notes": "Strict human gold; all auxiliary tasks 100% masked to NaN"
+    },
+    {
+      "source_dataset": "HOT v2 (Reference)",
+      "task": "hate",
+      "total_rows": 3189,
+      "valid_gold_labels": 1424,
+      "valid_pseudo_labels": 0,
+      "missing_or_ignored_labels": 1765,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 1424,
+      "policy_notes": "Contains Qwen pseudo-labels for sarcasm, target, severity"
+    },
+    {
+      "source_dataset": "HOT v2 (Reference)",
+      "task": "sarcasm",
+      "total_rows": 3189,
+      "valid_gold_labels": 0,
+      "valid_pseudo_labels": 2457,
+      "missing_or_ignored_labels": 732,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 2457,
+      "policy_notes": "Contains Qwen pseudo-labels for sarcasm, target, severity"
+    },
+    {
+      "source_dataset": "HOT v2 (Reference)",
+      "task": "target",
+      "total_rows": 3189,
+      "valid_gold_labels": 0,
+      "valid_pseudo_labels": 1035,
+      "missing_or_ignored_labels": 2154,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 1035,
+      "policy_notes": "Contains Qwen pseudo-labels for sarcasm, target, severity"
+    },
+    {
+      "source_dataset": "HOT v2 (Reference)",
+      "task": "severity",
+      "total_rows": 3189,
+      "valid_gold_labels": 0,
+      "valid_pseudo_labels": 1020,
+      "missing_or_ignored_labels": 2169,
+      "zero_supervision_rows": 0,
+      "loss_consumption_rows": 1020,
+      "policy_notes": "Contains Qwen pseudo-labels for sarcasm, target, severity"
+    }
+  ],
+  "cross_dataset_leakage_audit": {
+    "exact_ocr_matches": 0,
+    "exact_full_pipeline_matches": 0,
+    "duplicate_ids": 0,
+    "conflicting_hate_labels": 0,
+    "fold_leakage": {
+      "fold_0": {
+        "val_overlap": 0,
+        "test_overlap": 0
+      },
+      "fold_1": {
+        "val_overlap": 0,
+        "test_overlap": 0
+      },
+      "fold_2": {
+        "val_overlap": 0,
+        "test_overlap": 0
+      },
+      "fold_3": {
+        "val_overlap": 0,
+        "test_overlap": 0
+      },
+      "fold_4": {
+        "val_overlap": 0,
+        "test_overlap": 0
+      }
+    },
+    "max_char_cosine_similarity": 0.7703,
+    "char_pairs_ge_85": 0,
+    "char_pairs_ge_80": 0,
+    "jaccard_pairs_ge_80": 0,
+    "leakage_verdict": "PASS"
+  },
+  "label_definition_consistency": {
+    "multibully_text_label_hate_counts": {
+      "non_hate": 4138,
+      "hate": 1580
+    },
+    "multibully_memehate_counts": {
+      "hate": 3139,
+      "non_hate": 2579
+    },
+    "text_vs_meme_divergence_count": 1725,
+    "text_vs_meme_divergence_pct": 29.41,
+    "multibully_gold_severity_dist": {
+      "NaN": 4138,
+      "moderate": 1409,
+      "low": 141,
+      "high": 30
+    },
+    "hot_qwen_pseudo_severity_dist": {
+      "NaN": 2169,
+      "high": 713,
+      "moderate": 307
+    },
+    "multibully_gold_target_dist": {
+      "NaN": 4281,
+      "individual": 1037,
+      "community": 251,
+      "organization": 81,
+      "society": 68
+    },
+    "hot_qwen_pseudo_target_dist": {
+      "NaN": 2154,
+      "individual": 692,
+      "community": 330,
+      "society": 7,
+      "organization": 6
+    },
+    "severity_high_proportion": {
+      "multibully_gold": 1.9,
+      "hot_qwen_pseudo": 69.9
+    },
+    "severity_low_proportion": {
+      "multibully_gold": 8.92,
+      "hot_qwen_pseudo": 0.0
+    },
+    "source_confounding_verdict": "CONFIRMED_SEVERE_CONFOUNDING_AVERTED_BY_MASKING"
+  },
+  "overall_verdict": "PASS"
+}

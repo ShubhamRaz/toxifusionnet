@@ -20,7 +20,7 @@ from ..labels import HATE_LABELS, LABEL_SPACES, SARCASM_LABELS, SEVERITY_LABELS,
 log = logging.getLogger("toxifusionnet")
 
 POS_VALUES = {"1", "true", "yes", "y", "sarcastic", "sarcasm", "hate", "hateful", "hatespeech", "bully", "bullying",
-              "cyberbullying", "abusive", "toxic"}
+              "cyberbullying", "other_cyberbullying", "abusive", "toxic"}
 NEG_VALUES = {"0", "false", "no", "n", "not_sarcastic", "non_sarcastic", "non_hate", "not_hate", "none", "normal",
               "neutral", "not_bully", "not_bullying", "not_cyberbullying", "non_bully", "clean", "non_toxic"}
 TARGET_SYNONYMS = {
@@ -185,11 +185,49 @@ def build_canonical(df: pd.DataFrame, schema: dict, weak_fill: bool = True) -> p
     if raw is not None:
         d = derive.get("hate") or {}
         non_hate = {_norm(x) for x in d.get("non_hate_values", [])}
-        if non_hate:
-            out["hate"] = [np.nan if _norm(v) is None else (HATE_LABELS[0] if _norm(v) in non_hate else HATE_LABELS[1]) for v in raw]
+        hate_vals = {_norm(x) for x in d.get("hate_values", [])}
+        ignored_vals = {_norm(x) for x in d.get("ignored_values", []) or d.get("ignore_values", [])}
+        if non_hate or hate_vals:
+            out_hate = []
+            for v in raw:
+                nv = _norm(v)
+                if nv is None:
+                    out_hate.append(np.nan)
+                elif nv in ignored_vals:
+                    out_hate.append(np.nan)
+                elif nv in non_hate:
+                    out_hate.append(HATE_LABELS[0])
+                elif hate_vals and nv in hate_vals:
+                    out_hate.append(HATE_LABELS[1])
+                elif not hate_vals:
+                    # Explicit check: do NOT map offensive/needs_review/uncertain to hate
+                    if nv in ("offensive", "2", "2.0", "needs_review", "uncertain"):
+                        out_hate.append(np.nan)
+                    elif nv in POS_VALUES or nv in TARGET_SYNONYMS or nv in ("bully", "hate", "cyberbullying"):
+                        out_hate.append(HATE_LABELS[1])
+                    else:
+                        raise ValueError(f"Unknown class '{v}' encountered in hate derivation. Cannot silently map to hate.")
+                else:
+                    raise ValueError(f"Unknown class '{v}' encountered in hate derivation. Expected hate_values {hate_vals} or non_hate_values {non_hate}.")
+            out["hate"] = out_hate
         else:
             m = vmaps.get("hate", {})
-            out["hate"] = [m[_norm(v)] if _norm(v) in m else _to_binary(v, POS_VALUES, NEG_VALUES, HATE_LABELS) for v in raw]
+            out_hate = []
+            for v in raw:
+                nv = _norm(v)
+                if nv is None:
+                    out_hate.append(np.nan)
+                elif nv in m:
+                    out_hate.append(m[nv])
+                elif nv in ("offensive", "2", "2.0", "needs_review", "uncertain"):
+                    out_hate.append(np.nan)
+                elif nv in POS_VALUES:
+                    out_hate.append(HATE_LABELS[1])
+                elif nv in NEG_VALUES:
+                    out_hate.append(HATE_LABELS[0])
+                else:
+                    raise ValueError(f"Unknown class '{v}' encountered in hate column. Cannot silently map to hate.")
+            out["hate"] = out_hate
     else:
         out["hate"] = np.nan
 
@@ -229,11 +267,12 @@ def build_canonical(df: pd.DataFrame, schema: dict, weak_fill: bool = True) -> p
                 source[t] = "weak"
     out["label_source"] = json.dumps(source)
     out = out[out["text"].str.len() > 0]
-    if out["hate"].notna().any():   # a post without a hate label cannot be used by any task
+    task_cols = [t for t in ("hate", "sarcasm", "target", "severity") if t in out.columns]
+    if task_cols:
         n0 = len(out)
-        out = out[out["hate"].notna()]
+        out = out[out[task_cols].notna().any(axis=1)]
         if len(out) < n0:
-            log.info("dropped %d rows without a hate label", n0 - len(out))
+            log.info("dropped %d rows without any task supervision", n0 - len(out))
     return out[CANONICAL_COLUMNS]
 
 
