@@ -1,7 +1,7 @@
 # ToxiFusionNet: MultiBully & HOT Data-Integrity Audit Report
 
-**Audit Verdict:** `PASS`  
-**Evaluation Date:** `2026-10-15 06:03:49 UTC`  
+**Audit Verdict:** `WARNING`  
+**Evaluation Date:** `2026-10-15 06:19:16 UTC`  
 **Repository:** `https://github.com/ShubhamRaz/toxifusionnet`  
 
 ---
@@ -10,18 +10,21 @@
 
 | Section | Audit Domain | Status | Key Evaluated Finding |
 | :--- | :--- | :---: | :--- |
-| **A** | **Data Provenance** | `PASS` | All critical experiment files exist and E6b has zero pseudo-labels. External pre-curation files not on local disk: ['raw_hot_dataset']. |
-| **B** | **HOT Label Mapping** | `PASS` | Normal (1,121)->non_hate; Hate (303)->hate; Offensive (1,765)->NaN (-100); needs_review (732)->NaN. |
-| **C** | **Task Supervision & Folds** | `PASS` | 1,765 zero-supervision rows excluded; 1,424 supervised rows retained in train; 5 folds partition 5,718 test rows. |
+| **A** | **Data Provenance** | `WARNING` | Upstream raw HOT dataset ('dataset.csv') is absent from workspace; local curated files (hot_cleaned.csv, hot_v2.csv, hot_gold_only.csv) verified with zero pseudo-labels, but upstream pre-curation provenance cannot be independently completed on disk. |
+| **B** | **HOT Label Mapping** | `PASS` | Observed distributions verified: Normal (1,121)->all 'non_hate'; Hate Speech (303)->all 'hate'; Offensive (1,765)->all masked (NaN). |
+| **C** | **Task Supervision & Folds** | `PASS` | 1,765 zero-supervision rows excluded; 1,424 supervised rows retained in train; 5 folds verify pairwise ID disjointness (0 train/val/test overlaps) and partition 5,718 unique test IDs. |
 | **D** | **Cross-Dataset Leakage** | `PASS` | 0 exact matches, 0 ID collisions, 0 near-duplicates (char >=0.85 or jaccard >=0.80), 0 fold test/val overlaps. |
 | **E** | **Label Definitions & Divergence** | `PASS` | 1-to-1 ID merge verified (5,718 rows); discordance (1,670 vs 111, delta=1,559) reconciled; confounding averted. |
 
-**Overall Audit Verdict: `PASS`**  
-All canonical splits, human annotations, fold caches, and loss masks satisfy strict scientific and methodological criteria. No model retraining or dataset modification is required.
+**Overall Audit Verdict: `WARNING`**  
+All critical experiment inputs, loss masks, fold caches, and split disjointness are verified, but upstream raw HOT source provenance cannot be completed on local disk because 'dataset.csv' is absent from the repository workspace. No model retraining or dataset modification is required.
 
 ---
 
 ## A. Exact Data Provenance & Per-Fold Sample Counts
+
+> [!WARNING]
+> **Upstream Provenance Status: WARNING.** Upstream raw HOT dataset ('dataset.csv') is absent from workspace; local curated files (hot_cleaned.csv, hot_v2.csv, hot_gold_only.csv) verified with zero pseudo-labels, but upstream pre-curation provenance cannot be independently completed on disk.
 
 ### 1. Actual Experiment Inputs & Split Counts
 - **Experiment 1d (`exp1d_multibully_text_weighted`):**

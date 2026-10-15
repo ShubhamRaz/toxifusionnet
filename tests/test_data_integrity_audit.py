@@ -281,6 +281,7 @@ def test_per_fold_sample_counts_from_canonical_cache():
 
 def test_data_driven_audit_verdict_rejects_failures():
     """Verify compute_audit_verdicts dynamically derives verdicts and rejects deliberate failures."""
+    import copy
     import sys
     sys.path.insert(0, str(Path("scripts").resolve()))
     from run_data_integrity_audit import compute_audit_verdicts
@@ -290,7 +291,7 @@ def test_data_driven_audit_verdict_rejects_failures():
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # 1. Nominal data must produce overall PASS
+    # 1. Real workspace data: raw_hot_dataset is absent on disk -> Section A is WARNING, overall is WARNING
     base_verdict = compute_audit_verdicts(
         provenance_info=data["provenance_audit"],
         e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
@@ -300,12 +301,31 @@ def test_data_driven_audit_verdict_rejects_failures():
         confounding_analysis=data["label_definition_consistency"],
         per_fold_splits=data["per_fold_splits"],
     )
-    assert base_verdict["overall_verdict"] == "PASS"
-    assert all(v == "PASS" for v in base_verdict["section_verdicts"].values())
+    assert base_verdict["section_verdicts"]["A"] == "WARNING"
+    assert base_verdict["overall_verdict"] == "WARNING"
+    assert base_verdict["section_verdicts"]["B"] == "PASS"
+    assert base_verdict["section_verdicts"]["C"] == "PASS"
+    assert base_verdict["section_verdicts"]["D"] == "PASS"
+    assert base_verdict["section_verdicts"]["E"] == "PASS"
 
-    # 2. Deliberate failure: missing critical file must produce FAIL
-    corrupt_prov = dict(data["provenance_audit"])
-    corrupt_prov["processed_multibully"] = {"exists": False}
+    # 2. When upstream raw_hot_dataset exists, Section A becomes PASS and overall becomes PASS
+    mock_prov = copy.deepcopy(data["provenance_audit"])
+    mock_prov["raw_hot_dataset"]["exists"] = True
+    v_full = compute_audit_verdicts(
+        provenance_info=mock_prov,
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v_full["section_verdicts"]["A"] == "PASS"
+    assert v_full["overall_verdict"] == "PASS"
+
+    # 3. Deliberate failure: missing critical file must produce FAIL
+    corrupt_prov = copy.deepcopy(data["provenance_audit"])
+    corrupt_prov["processed_multibully"]["exists"] = False
     v_missing_file = compute_audit_verdicts(
         provenance_info=corrupt_prov,
         e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
@@ -316,10 +336,10 @@ def test_data_driven_audit_verdict_rejects_failures():
         per_fold_splits=data["per_fold_splits"],
     )
     assert v_missing_file["section_verdicts"]["A"] == "FAIL"
-    assert v_missing_file["overall_verdict"] == "FAIL", "Missing critical file cannot produce overall PASS"
+    assert v_missing_file["overall_verdict"] == "FAIL", "Missing critical file cannot produce overall PASS or WARNING"
 
-    # 3. Deliberate failure: pseudo-label in E6b must produce FAIL
-    corrupt_pseudo = dict(data["e6b_pseudolabel_check"])
+    # 4. Deliberate failure: pseudo-label in E6b must produce FAIL
+    corrupt_pseudo = copy.deepcopy(data["e6b_pseudolabel_check"])
     corrupt_pseudo["has_pseudolabel_supervision"] = True
     v_pseudo = compute_audit_verdicts(
         provenance_info=data["provenance_audit"],
@@ -331,25 +351,10 @@ def test_data_driven_audit_verdict_rejects_failures():
         per_fold_splits=data["per_fold_splits"],
     )
     assert v_pseudo["section_verdicts"]["A"] == "FAIL"
-    assert v_pseudo["overall_verdict"] == "FAIL", "E6b pseudo-label cannot produce overall PASS"
-
-    # 4. Deliberate failure: corrupted category mapping must produce FAIL
-    corrupt_cat = [dict(c) for c in data["hot_category_audit"]]
-    corrupt_cat[0]["final_canonical_id"] = 1  # Map Normal to hate!
-    v_cat = compute_audit_verdicts(
-        provenance_info=data["provenance_audit"],
-        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
-        category_audit=corrupt_cat,
-        task_supervision_rows=data["task_supervision_audit"],
-        leakage_summary=data["cross_dataset_leakage_audit"],
-        confounding_analysis=data["label_definition_consistency"],
-        per_fold_splits=data["per_fold_splits"],
-    )
-    assert v_cat["section_verdicts"]["B"] == "FAIL"
-    assert v_cat["overall_verdict"] == "FAIL", "Corrupted category rule cannot produce overall PASS"
+    assert v_pseudo["overall_verdict"] == "FAIL", "E6b pseudo-label cannot produce overall PASS or WARNING"
 
     # 5. Deliberate failure: cross-dataset leakage must produce FAIL
-    corrupt_leak = dict(data["cross_dataset_leakage_audit"])
+    corrupt_leak = copy.deepcopy(data["cross_dataset_leakage_audit"])
     corrupt_leak["exact_ocr_matches"] = 2
     v_leak = compute_audit_verdicts(
         provenance_info=data["provenance_audit"],
@@ -361,7 +366,131 @@ def test_data_driven_audit_verdict_rejects_failures():
         per_fold_splits=data["per_fold_splits"],
     )
     assert v_leak["section_verdicts"]["D"] == "FAIL"
-    assert v_leak["overall_verdict"] == "FAIL", "Cross-dataset leakage cannot produce overall PASS"
+    assert v_leak["overall_verdict"] == "FAIL", "Cross-dataset leakage cannot produce overall PASS or WARNING"
+
+
+def test_category_audit_rejects_corrupted_observed_label_distribution():
+    """Verify that compute_audit_verdicts inspects actual gold_only_label_dist values and fails on corruption."""
+    import copy
+    import sys
+    sys.path.insert(0, str(Path("scripts").resolve()))
+    from run_data_integrity_audit import compute_audit_verdicts
+
+    json_path = Path("results/v3_journal_final/data_integrity_audit/data_integrity_summary.json")
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # 1. Corrupt Normal (code 0.0): preserve total_count = 1121, but corrupt distribution with 1 hate row
+    corrupt_cats = copy.deepcopy(data["hot_category_audit"])
+    corrupt_cats[0]["gold_only_label_dist"] = {"non_hate": 1120, "hate": 1}
+    assert corrupt_cats[0]["total_count"] == 1121, "Row count is preserved"
+    v1 = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=corrupt_cats,
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v1["section_verdicts"]["B"] == "FAIL"
+    assert v1["overall_verdict"] == "FAIL"
+
+    # 2. Corrupt Hate Speech (code 1.0): preserve total_count = 303, but change 1 row to non_hate
+    corrupt_cats2 = copy.deepcopy(data["hot_category_audit"])
+    corrupt_cats2[1]["gold_only_label_dist"] = {"hate": 302, "non_hate": 1}
+    assert corrupt_cats2[1]["total_count"] == 303, "Row count is preserved"
+    v2 = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=corrupt_cats2,
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v2["section_verdicts"]["B"] == "FAIL"
+    assert v2["overall_verdict"] == "FAIL"
+
+    # 3. Corrupt Offensive Language (code 2.0): preserve total_count = 1765, but unmask 1 row to non_hate
+    corrupt_cats3 = copy.deepcopy(data["hot_category_audit"])
+    corrupt_cats3[2]["gold_only_label_dist"] = {"NaN": 1764, "non_hate": 1}
+    assert corrupt_cats3[2]["total_count"] == 1765, "Row count is preserved"
+    v3 = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=corrupt_cats3,
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v3["section_verdicts"]["B"] == "FAIL"
+    assert v3["overall_verdict"] == "FAIL"
+
+
+def test_fold_integrity_verdict_rejects_overlapping_ids():
+    """Verify that compute_audit_verdicts fails when partition counts remain unchanged but IDs overlap."""
+    import copy
+    import sys
+    sys.path.insert(0, str(Path("scripts").resolve()))
+    from run_data_integrity_audit import compute_audit_verdicts
+
+    json_path = Path("results/v3_journal_final/data_integrity_audit/data_integrity_summary.json")
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # 1. Within-fold train/validation ID overlap with counts unchanged
+    corrupt_splits_tv = copy.deepcopy(data["per_fold_splits"])
+    corrupt_splits_tv["fold_0"]["train_val_overlap_count"] = 1
+    # Note: partition counts are completely unchanged
+    assert corrupt_splits_tv["fold_0"]["multibully_train_rows"] == 3889
+    assert corrupt_splits_tv["fold_0"]["multibully_val_rows"] == 687
+    v_tv = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=corrupt_splits_tv,
+    )
+    assert v_tv["section_verdicts"]["C"] == "FAIL"
+    assert v_tv["overall_verdict"] != "PASS"
+
+    # 2. Cross-fold outer test ID overlap: fold 0 and fold 1 duplicate a test ID, counts unchanged
+    corrupt_splits_cross = copy.deepcopy(data["per_fold_splits"])
+    corrupt_splits_cross["fold_1"]["test_ids"][0] = corrupt_splits_cross["fold_0"]["test_ids"][0]
+    # Counts remain 1142 and 1144
+    assert len(corrupt_splits_cross["fold_0"]["test_ids"]) == 1142
+    assert len(corrupt_splits_cross["fold_1"]["test_ids"]) == 1144
+    v_cross = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=corrupt_splits_cross,
+    )
+    assert v_cross["section_verdicts"]["C"] == "FAIL"
+    assert v_cross["overall_verdict"] != "PASS"
+
+    # 3. Explicit train_ids and val_ids overlapping
+    corrupt_splits_explicit = copy.deepcopy(data["per_fold_splits"])
+    corrupt_splits_explicit["fold_0"]["train_ids"] = [10, 20, 30]
+    corrupt_splits_explicit["fold_0"]["val_ids"] = [30, 40, 50]  # ID 30 is overlapping
+    v_explicit = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=corrupt_splits_explicit,
+    )
+    assert v_explicit["section_verdicts"]["C"] == "FAIL"
+    assert v_explicit["overall_verdict"] != "PASS"
 
 
 def test_near_duplicate_jaccard_and_char_scope_documentation():
@@ -393,8 +522,8 @@ def test_near_duplicate_jaccard_and_char_scope_documentation():
     assert "cannot establish semantic equivalence" in leak["methodological_limitation"].lower()
 
 
-def test_audit_deliverables_exist_and_verdict_pass():
-    """Verify audit deliverables exist in both root and results/ and confirm overall PASS verdict."""
+def test_audit_deliverables_exist_and_verdict_warning_on_absent_raw_hot():
+    """Verify audit deliverables exist in both root and results/ and confirm WARNING verdict due to absent raw HOT source."""
     audit_dir = Path("results/v3_journal_final/data_integrity_audit")
     for base_p in [audit_dir, Path(".")]:
         md_file = base_p / "data_integrity_report.md"
@@ -408,8 +537,8 @@ def test_audit_deliverables_exist_and_verdict_pass():
     with open(audit_dir / "data_integrity_summary.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    assert data["overall_verdict"] == "PASS"
-    assert data["section_verdicts"]["A"] == "PASS"
+    assert data["overall_verdict"] == "WARNING"
+    assert data["section_verdicts"]["A"] == "WARNING"
     assert data["section_verdicts"]["B"] == "PASS"
     assert data["section_verdicts"]["C"] == "PASS"
     assert data["section_verdicts"]["D"] == "PASS"
@@ -418,3 +547,11 @@ def test_audit_deliverables_exist_and_verdict_pass():
     assert data["label_definition_consistency"]["processed_text_vs_meme_divergence_count"] == 1670
     assert data["label_definition_consistency"]["raw_text_vs_meme_divergence_count"] == 1725
     assert data["label_definition_consistency"]["net_marginal_difference_processed"] == 1559
+
+    # Verify per-fold disjointness and test_ids
+    for f in range(5):
+        fstat = data["per_fold_splits"][f"fold_{f}"]
+        assert fstat["train_val_overlap_count"] == 0
+        assert fstat["train_test_overlap_count"] == 0
+        assert fstat["val_test_overlap_count"] == 0
+        assert len(fstat["test_ids"]) in (1142, 1144, 1146)

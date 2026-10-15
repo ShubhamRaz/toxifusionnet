@@ -75,51 +75,140 @@ def compute_audit_verdicts(
         section_verdicts["A"] = "FAIL"
         details["A"] = f"Missing critical files: {missing_critical}; E6b pseudo-labels: {e6b_has_pseudo}"
     else:
-        missing_optional = [k for k, v in provenance_info.items() if k not in critical_files and not v.get("exists", False)]
-        section_verdicts["A"] = "PASS"
-        if missing_optional:
+        raw_hot_present = provenance_info.get("raw_hot_dataset", {}).get("exists", False)
+        if not raw_hot_present:
+            section_verdicts["A"] = "WARNING"
             details["A"] = (
-                f"All critical experiment files exist and E6b has zero pseudo-labels. "
-                f"External pre-curation files not on local disk: {missing_optional}."
+                "Upstream raw HOT dataset ('dataset.csv') is absent from workspace; "
+                "local curated files (hot_cleaned.csv, hot_v2.csv, hot_gold_only.csv) verified with zero pseudo-labels, "
+                "but upstream pre-curation provenance cannot be independently completed on disk."
             )
         else:
-            details["A"] = "E1d strictly uses MultiBully; E6b strictly uses MultiBully + hot_gold_only.csv with zero pseudo-labels."
+            section_verdicts["A"] = "PASS"
+            details["A"] = "All critical and upstream provenance files verified; E6b strictly uses zero pseudo-labels."
 
-    # Section B: HOT Label Mapping
+    # Section B: HOT Label Mapping (inspect actual values in each category's gold_only_label_dist)
     cat_failures = []
     for cat in category_audit:
-        code = cat["orig_category_code"]
-        cid = cat["final_canonical_id"]
-        cnt = cat["total_count"]
-        if code == 0.0 and (cid != 0 or cnt != 1121):
-            cat_failures.append(f"Normal: expected id=0 cnt=1121, got id={cid} cnt={cnt}")
-        elif code == 1.0 and (cid != 1 or cnt != 303):
-            cat_failures.append(f"Hate Speech: expected id=1 cnt=303, got id={cid} cnt={cnt}")
-        elif code == 2.0 and (cid != -100 or cnt != 1765):
-            cat_failures.append(f"Offensive: expected id=-100 cnt=1765, got id={cid} cnt={cnt}")
+        code = cat.get("orig_category_code")
+        cnt = cat.get("total_count", 0)
+        gold_dist = cat.get("gold_only_label_dist", {})
+
+        def get_count(target_key):
+            if target_key == "masked":
+                masked_cnt = 0
+                for k, v in gold_dist.items():
+                    if pd.isna(k) or str(k).lower() in ("nan", "none", "null") or k is None:
+                        masked_cnt += v
+                return masked_cnt
+            return gold_dist.get(target_key, 0)
+
+        if code == 0.0:  # Normal -> must all be 'non_hate'
+            non_hate_cnt = get_count("non_hate")
+            has_other = any(k != "non_hate" for k in gold_dist.keys())
+            if non_hate_cnt != 1121 or cnt != 1121 or has_other:
+                cat_failures.append(
+                    f"Normal (code 0.0): expected all 1,121 rows to map to 'non_hate', "
+                    f"observed distribution: {gold_dist} (total={cnt})"
+                )
+        elif code == 1.0:  # Hate Speech -> must all be 'hate'
+            hate_cnt = get_count("hate")
+            has_other = any(k != "hate" for k in gold_dist.keys())
+            if hate_cnt != 303 or cnt != 303 or has_other:
+                cat_failures.append(
+                    f"Hate Speech (code 1.0): expected all 303 rows to map to 'hate', "
+                    f"observed distribution: {gold_dist} (total={cnt})"
+                )
+        elif code == 2.0:  # Offensive Language -> must all be masked (NaN)
+            masked_cnt = get_count("masked")
+            has_unmasked = any(
+                not (pd.isna(k) or str(k).lower() in ("nan", "none", "null") or k is None)
+                for k in gold_dist.keys()
+            )
+            if masked_cnt != 1765 or cnt != 1765 or has_unmasked:
+                cat_failures.append(
+                    f"Offensive Language (code 2.0): expected all 1,765 rows to be masked (NaN), "
+                    f"observed distribution: {gold_dist} (total={cnt})"
+                )
+
     if cat_failures:
         section_verdicts["B"] = "FAIL"
         details["B"] = "; ".join(cat_failures)
     else:
         section_verdicts["B"] = "PASS"
-        details["B"] = "Normal (1,121)->non_hate; Hate (303)->hate; Offensive (1,765)->NaN (-100); needs_review (732)->NaN."
+        details["B"] = (
+            "Observed distributions verified: Normal (1,121)->all 'non_hate'; "
+            "Hate Speech (303)->all 'hate'; Offensive (1,765)->all masked (NaN)."
+        )
 
-    # Section C: Task Supervision & Folds
+    # Section C: Task Supervision & Folds (Counts, within-fold ID disjointness, and full outer test coverage)
     c_failures = []
-    total_test_rows = sum(f["multibully_test_rows"] for f in per_fold_splits.values())
-    if total_test_rows != 5718:
-        c_failures.append(f"Total test rows across folds {total_test_rows} != 5718")
+    total_test_rows = 0
+    all_test_ids: set = set()
+
     for fname, fstat in per_fold_splits.items():
-        if fstat["multibully_train_rows"] + fstat["multibully_val_rows"] + fstat["multibully_test_rows"] != 5718:
+        if not fname.startswith("fold_"):
+            continue
+        n_train = fstat.get("multibully_train_rows", 0)
+        n_val = fstat.get("multibully_val_rows", 0)
+        n_test = fstat.get("multibully_test_rows", 0)
+        total_test_rows += n_test
+
+        if n_train + n_val + n_test != 5718:
             c_failures.append(f"{fname} split sum != 5718")
-        if fstat["hot_supervised_aux_train_rows"] != 1424:
-            c_failures.append(f"{fname} auxiliary train rows {fstat['hot_supervised_aux_train_rows']} != 1424")
+        if fstat.get("hot_supervised_aux_train_rows") != 1424:
+            c_failures.append(f"{fname} auxiliary train rows {fstat.get('hot_supervised_aux_train_rows')} != 1424")
+
+        # Check within-fold ID disjointness
+        train_ids = fstat.get("train_ids")
+        val_ids = fstat.get("val_ids")
+        test_ids = fstat.get("test_ids")
+
+        if train_ids is not None and val_ids is not None:
+            tv_overlap = len(set(train_ids).intersection(set(val_ids)))
+        else:
+            tv_overlap = fstat.get("train_val_overlap_count", 0)
+
+        if train_ids is not None and test_ids is not None:
+            tt_overlap = len(set(train_ids).intersection(set(test_ids)))
+        else:
+            tt_overlap = fstat.get("train_test_overlap_count", 0)
+
+        if val_ids is not None and test_ids is not None:
+            vt_overlap = len(set(val_ids).intersection(set(test_ids)))
+        else:
+            vt_overlap = fstat.get("val_test_overlap_count", 0)
+
+        if tv_overlap > 0:
+            c_failures.append(f"{fname}: train and val partitions overlap ({tv_overlap} shared IDs)")
+        if tt_overlap > 0:
+            c_failures.append(f"{fname}: train and test partitions overlap ({tt_overlap} shared IDs)")
+        if vt_overlap > 0:
+            c_failures.append(f"{fname}: val and test partitions overlap ({vt_overlap} shared IDs)")
+
+        # Outer test coverage and cross-fold test disjointness
+        if test_ids:
+            fold_test_set = set(test_ids)
+            test_cross_overlap = all_test_ids.intersection(fold_test_set)
+            if test_cross_overlap:
+                c_failures.append(f"{fname}: test IDs overlap with prior folds ({len(test_cross_overlap)} duplicate IDs)")
+            all_test_ids.update(fold_test_set)
+
+    if total_test_rows != 5718:
+        c_failures.append(f"Total test rows across folds ({total_test_rows}) != 5718")
+
+    if all_test_ids and len(all_test_ids) != 5718:
+        c_failures.append(f"Outer test ID coverage across 5 folds ({len(all_test_ids)}) != 5718 unique IDs")
+
     if c_failures:
         section_verdicts["C"] = "FAIL"
         details["C"] = "; ".join(c_failures)
     else:
         section_verdicts["C"] = "PASS"
-        details["C"] = "1,765 zero-supervision rows excluded; 1,424 supervised rows retained in train; 5 folds partition 5,718 test rows."
+        details["C"] = (
+            "1,765 zero-supervision rows excluded; 1,424 supervised rows retained in train; "
+            "5 folds verify pairwise ID disjointness (0 train/val/test overlaps) and partition 5,718 unique test IDs."
+        )
 
     # Section D: Cross-Dataset Leakage
     d_failures = []
@@ -260,6 +349,14 @@ def run_data_integrity_audit(
         f_val = f_mb[f_mb["split"] == "val"]
         f_test = f_mb[f_mb["split"] == "test"]
 
+        train_id_set = set(f_train["id"])
+        val_id_set = set(f_val["id"])
+        test_id_set = set(f_test["id"])
+
+        tv_overlap = len(train_id_set.intersection(val_id_set))
+        tt_overlap = len(train_id_set.intersection(test_id_set))
+        vt_overlap = len(val_id_set.intersection(test_id_set))
+
         train_sup = {t: int((f_train[t].apply(lambda v: label_to_id(t, v) != IGNORE_INDEX)).sum()) for t in TASKS}
         val_sup = {t: int((f_val[t].apply(lambda v: label_to_id(t, v) != IGNORE_INDEX)).sum()) for t in TASKS}
         test_sup = {t: int((f_test[t].apply(lambda v: label_to_id(t, v) != IGNORE_INDEX)).sum()) for t in TASKS}
@@ -272,6 +369,10 @@ def run_data_integrity_audit(
             "multibully_val_rows": len(f_val),
             "multibully_test_rows": len(f_test),
             "multibully_total_fold_rows": len(f_mb),
+            "train_val_overlap_count": tv_overlap,
+            "train_test_overlap_count": tt_overlap,
+            "val_test_overlap_count": vt_overlap,
+            "test_ids": list(f_test["id"]),
             "e1d_train_rows": len(f_train),
             "hot_supervised_aux_train_rows": n_hot_supervised,
             "e6b_actual_train_rows": len(f_train) + n_hot_supervised,
@@ -749,6 +850,20 @@ def _format_markdown_report(summary: Dict[str, Any]) -> str:
     sec_det = summary.get("section_details", {})
     overall_verd = summary.get("overall_verdict", "PASS")
 
+    if overall_verd == "PASS":
+        verdict_prose = (
+            "All canonical splits, human annotations, fold caches, and loss masks satisfy strict "
+            "scientific and methodological criteria. No model retraining or dataset modification is required."
+        )
+    elif overall_verd == "WARNING":
+        verdict_prose = (
+            "All critical experiment inputs, loss masks, fold caches, and split disjointness are verified, "
+            "but upstream raw HOT source provenance cannot be completed on local disk because 'dataset.csv' "
+            "is absent from the repository workspace. No model retraining or dataset modification is required."
+        )
+    else:
+        verdict_prose = "Critical data-integrity invariants have been violated. Immediate remediation required."
+
     lines = [
         "# ToxiFusionNet: MultiBully & HOT Data-Integrity Audit Report",
         "",
@@ -762,19 +877,29 @@ def _format_markdown_report(summary: Dict[str, Any]) -> str:
         "",
         "| Section | Audit Domain | Status | Key Evaluated Finding |",
         "| :--- | :--- | :---: | :--- |",
-        f"| **A** | **Data Provenance** | `{sec_verd.get('A', 'PASS')}` | {sec_det.get('A', 'E1d strictly uses MultiBully; E6b strictly uses MultiBully + hot_gold_only.csv.')} |",
-        f"| **B** | **HOT Label Mapping** | `{sec_verd.get('B', 'PASS')}` | {sec_det.get('B', 'Normal (1,121)->non_hate; Hate (303)->hate; Offensive (1,765)->NaN.')} |",
-        f"| **C** | **Task Supervision & Folds** | `{sec_verd.get('C', 'PASS')}` | {sec_det.get('C', 'Zero-supervision rows (1,765) excluded; 1,424 supervised rows retained; 5 folds partition 5,718 test rows.')} |",
-        f"| **D** | **Cross-Dataset Leakage** | `{sec_verd.get('D', 'PASS')}` | {sec_det.get('D', '0 exact matches, 0 near-duplicates, 0 fold test/val overlaps.')} |",
-        f"| **E** | **Label Definitions & Divergence** | `{sec_verd.get('E', 'PASS')}` | {sec_det.get('E', '1-to-1 ID merge verified (5,718 rows); discordance (1,670 vs 111, delta=1,559) reconciled.')} |",
+        f"| **A** | **Data Provenance** | `{sec_verd.get('A', 'PASS')}` | {sec_det.get('A', '')} |",
+        f"| **B** | **HOT Label Mapping** | `{sec_verd.get('B', 'PASS')}` | {sec_det.get('B', '')} |",
+        f"| **C** | **Task Supervision & Folds** | `{sec_verd.get('C', 'PASS')}` | {sec_det.get('C', '')} |",
+        f"| **D** | **Cross-Dataset Leakage** | `{sec_verd.get('D', 'PASS')}` | {sec_det.get('D', '')} |",
+        f"| **E** | **Label Definitions & Divergence** | `{sec_verd.get('E', 'PASS')}` | {sec_det.get('E', '')} |",
         "",
         f"**Overall Audit Verdict: `{overall_verd}`**  ",
-        "All canonical splits, human annotations, fold caches, and loss masks satisfy strict scientific and methodological criteria. No model retraining or dataset modification is required.",
+        verdict_prose,
         "",
         "---",
         "",
         "## A. Exact Data Provenance & Per-Fold Sample Counts",
         "",
+    ]
+
+    if sec_verd.get("A") == "WARNING":
+        lines.extend([
+            "> [!WARNING]",
+            f"> **Upstream Provenance Status: WARNING.** {sec_det.get('A', '')}",
+            "",
+        ])
+
+    lines.extend([
         "### 1. Actual Experiment Inputs & Split Counts",
         "- **Experiment 1d (`exp1d_multibully_text_weighted`):**",
         f"  - Config: `{exp_in['E1d']['config_file']}`",
@@ -793,7 +918,7 @@ def _format_markdown_report(summary: Dict[str, Any]) -> str:
         "",
         "| Fold | MultiBully Train | MultiBully Val | MultiBully Test | Total MB Rows | E1d Actual Train | Retained HOT Aux (Train Only) | E6b Actual Train |",
         "| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
-    ]
+    ])
 
     for f_idx in range(5):
         s = p_splits[f"fold_{f_idx}"]
