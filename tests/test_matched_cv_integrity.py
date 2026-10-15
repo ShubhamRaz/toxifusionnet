@@ -439,3 +439,67 @@ def test_cv_reconstruction_with_colliding_ids(tmp_path: Path, monkeypatch):
     assert "sources" in cv_metrics["model"]
     assert "source_a" in cv_metrics["model"]["sources"]
     assert "source_b" in cv_metrics["model"]["sources"]
+
+
+def test_cv_reconstruction_detects_missing_cache_rows(tmp_path: Path, monkeypatch):
+    """Verify that a fold cache missing assignments for some original rows raises a clear
+    ValueError (not a silent row drop) due to the left-merge + indicator coverage check.
+
+    This exercises the failure mode that validate="one_to_one" alone cannot catch:
+    an inner join silently drops rows when the cache is incomplete.
+    """
+    from scripts.generate_combined_folds import generate_combined_folds
+    from toxifusionnet.experiments.cv import run_cv
+
+    # Build a valid 60-row dataset and generate a valid fold cache
+    records = []
+    for i in range(60):
+        records.append({
+            "id": f"id_{i}",
+            "text": f"text for item {i}",
+            "hate": "hate" if i % 2 == 0 else "none",
+            "sarcasm": "sarcastic" if i % 3 == 0 else "not_sarcastic",
+            "target": "society" if i < 20 else "individual",
+            "severity": "high" if i < 20 else "low",
+        })
+    df = pd.DataFrame(records)
+    synth_csv = tmp_path / "incomplete_cache_dataset.csv"
+    df.to_csv(synth_csv, index=False)
+
+    folds_cache_csv = tmp_path / "incomplete_cv_folds.csv"
+    cached = generate_combined_folds(synth_csv, folds_cache_csv, folds=5, seed=42)
+
+    # Corrupt the cache by removing assignments for 5 specific IDs across all folds.
+    # This simulates a cache that was generated from a subset of the dataset.
+    ids_to_drop = {"id_0", "id_1", "id_2", "id_3", "id_4"}
+    corrupted = cached[~cached["id"].isin(ids_to_drop)].copy()
+    corrupt_cache_csv = tmp_path / "corrupt_cv_folds.csv"
+    corrupted.to_csv(corrupt_cache_csv, index=False)
+
+    monkeypatch.setattr("toxifusionnet.experiments.cv.train_or_resume", lambda *a, **kw: (_ for _ in ()).throw(AssertionError("train_or_resume must not be called")))
+
+    # Guard 1: validate_fold_cache() detects missing IDs prior to fold iteration
+    with pytest.raises(ValueError, match=r"missing 5 IDs"):
+        run_cv(
+            config="configs/exp2_multidataset_text.yaml",
+            overrides=[],
+            data_path=str(synth_csv),
+            out_dir=tmp_path / "cv_output",
+            folds=5,
+            seed=42,
+            folds_cache=str(corrupt_cache_csv),
+        )
+
+    # Guard 2: If validate_fold_cache is bypassed, the left-merge indicator in reconstruction
+    # catches the missing rows and surfaces the exact count and example keys.
+    monkeypatch.setattr("toxifusionnet.experiments.cv.validate_fold_cache", lambda *a, **kw: None)
+    with pytest.raises(ValueError, match=r"5 of 60 original rows had no matching fold assignment"):
+        run_cv(
+            config="configs/exp2_multidataset_text.yaml",
+            overrides=[],
+            data_path=str(synth_csv),
+            out_dir=tmp_path / "cv_output",
+            folds=5,
+            seed=42,
+            folds_cache=str(corrupt_cache_csv),
+        )

@@ -270,9 +270,29 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             for f in range(folds):
                 f_assign = fold_assign[fold_assign["fold"] == f][merge_cols]
                 base_df = df.drop(columns=cols_to_drop_from_df, errors="ignore")
-                # validate="one_to_one" raises MergeError immediately if either side has
-                # duplicate keys on on_cols, preventing silent row multiplication.
-                d = base_df.merge(f_assign, on=on_cols, how="inner", validate="one_to_one")
+                # Left merge with indicator keeps every original row visible so we can
+                # detect two independent failure modes:
+                #   (a) validate="one_to_one"  → raises MergeError if either side has
+                #       duplicate keys on on_cols (catches row multiplication immediately)
+                #   (b) _merge != "both"       → catches rows silently dropped by an
+                #       inner join when the fold cache is missing an assignment
+                d = base_df.merge(
+                    f_assign, on=on_cols, how="left",
+                    indicator=True, validate="one_to_one",
+                )
+                unmatched = d[d["_merge"] != "both"]
+                if not unmatched.empty:
+                    examples = unmatched[on_cols].head(5).to_dict("records")
+                    raise ValueError(
+                        f"Fold {f} cache reconstruction: {len(unmatched)} of {len(df)} "
+                        f"original rows had no matching fold assignment. "
+                        f"Example unmatched keys: {examples}"
+                    )
+                d = d.drop(columns=["_merge"])
+                if len(d) != len(df):
+                    raise ValueError(
+                        f"Fold {f} cache reconstruction row count mismatch: got {len(d)}, expected {len(df)}"
+                    )
 
                 if "group_id" not in d.columns:
                     d = assign_group_ids(d)
