@@ -1,0 +1,6 @@
+experiment,task,tuning_status,chosen_param,default_macro_f1,tuned_macro_f1,delta_macro_f1,ci95_lower,ci95_upper,permutation_p,default_accuracy,tuned_accuracy,delta_accuracy,default_balanced_acc,tuned_balanced_acc,delta_balanced_acc
+E1d_weighted,sarcasm,TUNED_ON_VALIDATION,tau=0.450,0.5608,0.5733,0.0125,0.0035,0.0216,0.012,0.6049,0.5902,-0.0147,0.5605,0.577,0.0165
+E1d_weighted,hate,TUNED_ON_VALIDATION,tau=0.536,0.6808,0.6826,0.0018,-0.006,0.0096,0.6565,0.7242,0.7331,0.0089,0.6991,0.6933,-0.0058
+E1d_weighted,severity,INSUFFICIENT_SUPPORT_RETAIN_DEFAULT,default_argmax,0.4252,0.4252,0.0,0.0,0.0,1.0,0.8443,0.8443,0.0,0.4232,0.4232,0.0
+E1d_weighted,target,INSUFFICIENT_SUPPORT_RETAIN_DEFAULT,default_argmax,0.4364,0.4364,0.0,0.0,0.0,1.0,0.7049,0.7049,0.0,0.4376,0.4376,0.0
+E1d_weighted,OVERALL_MEAN,HYBRID_VALIDATION_TUNED,tuned_binary+retained_multiclass,0.5258,0.5294,0.0036,,,,,,,,,
