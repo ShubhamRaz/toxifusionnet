@@ -67,7 +67,6 @@ def compute_audit_verdicts(
         "hot_cleaned",
         "hot_v2",
         "hot_gold_only",
-        "combined_multibully_hot_v2",
     ]
     missing_critical = [k for k in critical_files if not provenance_info.get(k, {}).get("exists", False)]
     e6b_has_pseudo = e6b_pseudolabel_check.get("has_pseudolabel_supervision", True)
@@ -945,8 +944,10 @@ def _format_markdown_report(summary: Dict[str, Any]) -> str:
     ]
 
     for fname, info, hate_prov, aux_prov, role in hot_files:
+        sha_str = f"`{info['sha256_raw'][:16]}...`" if info.get("sha256_raw") else "`NOT_PRESENT`"
+        rows_str = f"{info['num_rows']:,}" if info.get("exists") else "N/A"
         lines.append(
-            f"| `{fname}` | {info['num_rows']:,} | `{info['sha256_raw'][:16]}...` | {hate_prov} | {aux_prov} | {role} |"
+            f"| `{fname}` | {rows_str} | {sha_str} | {hate_prov} | {aux_prov} | {role} |"
         )
 
     lines.extend([

@@ -319,7 +319,7 @@ def test_training_pipeline_learns_tiny_synthetic_pattern():
     batch = collate_fn([ds[i] for i in range(len(ds))])
 
     criterion = MultiTaskLoss(cfg.tasks)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.03, weight_decay=1e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.005, weight_decay=1e-4)
 
     # Initial forward and backward pass: check loss and gradients
     optimizer.zero_grad()
