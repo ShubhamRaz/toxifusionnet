@@ -156,6 +156,21 @@ class CachedClipFeatureStore:
         return len(self.embeddings)
 
 
+def get_multibully_mask(df: pd.DataFrame) -> pd.Series:
+    """Return an explicit, index-aligned boolean mask selecting MultiBully records.
+
+    Semantics:
+    - If 'source_dataset' is absent from df, every row is treated as MultiBully.
+    - If 'source_dataset' is present, only rows explicitly marked 'multibully'
+      (case-insensitive, trimmed) are selected. Missing (NaN), HOT, or malformed
+      labels are strictly excluded.
+    """
+    if "source_dataset" not in df.columns:
+        return pd.Series(True, index=df.index, dtype=bool)
+    col = df["source_dataset"]
+    return col.notna() & (col.astype(str).str.strip().str.lower() == "multibully")
+
+
 def build_or_load_clip_cache(
     df: pd.DataFrame,
     image_dir: str | Path,
@@ -174,21 +189,47 @@ def build_or_load_clip_cache(
     cache_path = cache_dir / f"{sig}.pt"
 
     store = CachedClipFeatureStore()
+    multibully_mask = get_multibully_mask(df)
+    multibully_df = df[multibully_mask]
+    multibully_ids = set(multibully_df["id"].astype(str))
+
     if cache_path.exists():
         try:
             store.load(cache_path)
-            # Check if all required IDs in df are covered
-            multibully_ids = set(df[df.get("source_dataset", "multibully") == "multibully"]["id"].astype(str))
-            missing_ids = multibully_ids.difference(set(store.embeddings.keys()))
+            cached_ids = set(store.embeddings.keys())
+            missing_ids = multibully_ids.difference(cached_ids)
+            extra_ids = cached_ids.difference(multibully_ids)
+
+            if extra_ids:
+                log.info(
+                    "Cache contains %d extraneous IDs (e.g. HOT / non-MultiBully). Pruning from cache...",
+                    len(extra_ids)
+                )
+                for eid in extra_ids:
+                    store.embeddings.pop(eid, None)
+                    store.masks.pop(eid, None)
+
             if not missing_ids:
+                if extra_ids:
+                    meta = {
+                        "signature": sig,
+                        "model_name": model_name,
+                        "total_items": len(store.embeddings),
+                        "valid_images": int(sum(1 for m in store.masks.values() if m == 1.0)),
+                        "missing_images": int(sum(1 for m in store.masks.values() if m == 0.0)),
+                        "created_at": time.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    store.save(cache_path, metadata=meta)
                 return store
+
             log.info("Cache present but missing %d IDs. Updating cache...", len(missing_ids))
         except Exception as e:
             log.warning("Failed loading existing cache from %s (%s). Rebuilding...", cache_path, e)
+            store = CachedClipFeatureStore()
 
     # Collect unique image IDs to process
     img_dir = Path(image_dir)
-    unique_ids = df[df.get("source_dataset", "multibully") == "multibully"]["id"].astype(str).unique().tolist()
+    unique_ids = multibully_df["id"].astype(str).unique().tolist()
     log.info("Extracting frozen CLIP visual embeddings for %d unique items...", len(unique_ids))
 
     image_paths = []
