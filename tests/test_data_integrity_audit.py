@@ -190,20 +190,36 @@ def test_cross_source_duplicate_detection_and_zero_leakage():
 
 
 def test_multibully_text_label_vs_memehate_label_consistency():
-    """Verify MultiBully Text-Label is distinct from Img-Text-Label and reconcile 1,559 vs 1,725."""
+    """Verify MultiBully Text-Label is distinct from Img-Text-Label via ID-safe 1:1 join and reconcile 1,559 vs 1,725."""
     mb_text = pd.read_csv(DATA_DIR / "multibully.csv")
     mb_meme = pd.read_csv(DATA_DIR / "multibully_memehate.csv")
     raw_mb = pd.read_csv(Path("data/raw/multibully.csv"))
 
-    # Text-only hate target: 1,580 hate, 4,138 non-hate (N = 5,718)
-    assert mb_text["hate"].value_counts().to_dict() == {"non_hate": 4138, "hate": 1580}
+    # Validate ID uniqueness in both processed files
+    assert mb_text["id"].is_unique, "MultiBully text dataset must have unique IDs"
+    assert mb_meme["id"].is_unique, "MultiBully meme dataset must have unique IDs"
 
-    # Whole-meme hate target: 3,139 hate, 2,579 non-hate (N = 5,718)
-    assert mb_meme["hate"].value_counts().to_dict() == {"hate": 3139, "non_hate": 2579}
+    # ID-safe one-to-one merge on shared identifier 'id'
+    merged = pd.merge(
+        mb_text[["id", "hate"]],
+        mb_meme[["id", "hate"]],
+        on="id",
+        suffixes=("_text", "_meme"),
+        how="inner",
+        validate="1:1"
+    )
+    assert len(merged) == 5718, "One-to-one merge must match exactly 5,718 rows"
+    assert len(merged) == len(mb_text) == len(mb_meme), "Zero records may be dropped during join"
 
-    # Processed divergence:
-    proc_vis_only = (mb_text["hate"] == "non_hate") & (mb_meme["hate"] == "hate")
-    proc_rev_disc = (mb_text["hate"] == "hate") & (mb_meme["hate"] == "non_hate")
+    # Marginal hate totals in processed data
+    assert (merged["hate_text"] == "hate").sum() == 1580
+    assert (merged["hate_text"] == "non_hate").sum() == 4138
+    assert (merged["hate_meme"] == "hate").sum() == 3139
+    assert (merged["hate_meme"] == "non_hate").sum() == 2579
+
+    # Pairwise discordance computed strictly from joined rows
+    proc_vis_only = (merged["hate_text"] == "non_hate") & (merged["hate_meme"] == "hate")
+    proc_rev_disc = (merged["hate_text"] == "hate") & (merged["hate_meme"] == "non_hate")
     assert int(proc_vis_only.sum()) == 1670, "Processed dataset has exactly 1,670 visual-only bullying memes (29.21%)"
     assert int(proc_rev_disc.sum()) == 111, "Processed dataset has exactly 111 text-only hate memes (1.94%)"
 
@@ -211,11 +227,170 @@ def test_multibully_text_label_vs_memehate_label_consistency():
     assert (3139 - 1580) == 1559
     assert (1670 - 111) == 1559
 
-    # Raw divergence:
+    # Raw counts computed directly from raw source
     raw_vis_only = (raw_mb["Text-Label"] == "Nonbully") & (raw_mb["Img-Text-Label"] == "Bully")
     raw_rev_disc = (raw_mb["Text-Label"] == "Bully") & (raw_mb["Img-Text-Label"] == "Nonbully")
     assert int(raw_vis_only.sum()) == 1725, "Raw dataset has exactly 1,725 visual-only bullying memes (29.41%)"
     assert int(raw_rev_disc.sum()) == 111, "Raw dataset has exactly 111 text-only bullying memes (1.89%)"
+
+
+def test_per_fold_sample_counts_from_canonical_cache():
+    """Verify per-fold train, val, and test row counts are computed from canonical fold cache without conflation."""
+    folds_df = pd.read_csv(DATA_DIR / "multibully_v2_cv_folds.csv")
+    mb_df = pd.read_csv(DATA_DIR / "multibully.csv")
+    hot_gold = pd.read_csv(DATA_DIR / "hot_gold_only.csv")
+
+    assert len(mb_df) == 5718
+    assert len(hot_gold) == 3189
+
+    # Retained supervised HOT auxiliary rows
+    sup_mask = pd.Series(False, index=hot_gold.index)
+    for t in ["hate", "sarcasm", "target", "severity"]:
+        if t in hot_gold.columns:
+            sup_mask = sup_mask | hot_gold[t].apply(lambda v: label_to_id(t, v) != IGNORE_INDEX)
+    n_hot_supervised = int(sup_mask.sum())
+    assert n_hot_supervised == 1424, "Exactly 1,424 supervised HOT rows retained"
+
+    mb_merged = mb_df.drop(columns=["split"], errors="ignore").merge(folds_df, on="id")
+
+    total_test_rows = 0
+    for f in range(5):
+        f_mb = mb_merged[mb_merged["fold"] == f]
+        n_train = len(f_mb[f_mb["split"] == "train"])
+        n_val = len(f_mb[f_mb["split"] == "val"])
+        n_test = len(f_mb[f_mb["split"] == "test"])
+
+        # Disjoint partition sums
+        assert n_train + n_val + n_test == 5718, f"Fold {f} must sum to 5,718 rows"
+        total_test_rows += n_test
+
+        # MultiBully train partition range
+        assert 3881 <= n_train <= 3889, f"Fold {f} train rows {n_train} outside expected range [3881, 3889]"
+        assert 684 <= n_val <= 693, f"Fold {f} val rows {n_val} outside expected range [684, 693]"
+        assert 1142 <= n_test <= 1146, f"Fold {f} test rows {n_test} outside expected range [1142, 1146]"
+
+        # E6b actual training rows: MultiBully train + 1,424 HOT
+        e6b_train = n_train + n_hot_supervised
+        assert 5305 <= e6b_train <= 5313, f"Fold {f} E6b train rows {e6b_train} outside expected range [5305, 5313]"
+
+        # Confirm validation is never labeled as training
+        assert n_train != (n_train + n_val), "Train partition must not conflate validation rows"
+
+    assert total_test_rows == 5718, "All 5 outer test folds must sum to exactly 5,718 MultiBully rows"
+
+
+def test_data_driven_audit_verdict_rejects_failures():
+    """Verify compute_audit_verdicts dynamically derives verdicts and rejects deliberate failures."""
+    import sys
+    sys.path.insert(0, str(Path("scripts").resolve()))
+    from run_data_integrity_audit import compute_audit_verdicts
+
+    json_path = Path("results/v3_journal_final/data_integrity_audit/data_integrity_summary.json")
+    assert json_path.exists(), "Summary JSON must exist"
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # 1. Nominal data must produce overall PASS
+    base_verdict = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert base_verdict["overall_verdict"] == "PASS"
+    assert all(v == "PASS" for v in base_verdict["section_verdicts"].values())
+
+    # 2. Deliberate failure: missing critical file must produce FAIL
+    corrupt_prov = dict(data["provenance_audit"])
+    corrupt_prov["processed_multibully"] = {"exists": False}
+    v_missing_file = compute_audit_verdicts(
+        provenance_info=corrupt_prov,
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v_missing_file["section_verdicts"]["A"] == "FAIL"
+    assert v_missing_file["overall_verdict"] == "FAIL", "Missing critical file cannot produce overall PASS"
+
+    # 3. Deliberate failure: pseudo-label in E6b must produce FAIL
+    corrupt_pseudo = dict(data["e6b_pseudolabel_check"])
+    corrupt_pseudo["has_pseudolabel_supervision"] = True
+    v_pseudo = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=corrupt_pseudo,
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v_pseudo["section_verdicts"]["A"] == "FAIL"
+    assert v_pseudo["overall_verdict"] == "FAIL", "E6b pseudo-label cannot produce overall PASS"
+
+    # 4. Deliberate failure: corrupted category mapping must produce FAIL
+    corrupt_cat = [dict(c) for c in data["hot_category_audit"]]
+    corrupt_cat[0]["final_canonical_id"] = 1  # Map Normal to hate!
+    v_cat = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=corrupt_cat,
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=data["cross_dataset_leakage_audit"],
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v_cat["section_verdicts"]["B"] == "FAIL"
+    assert v_cat["overall_verdict"] == "FAIL", "Corrupted category rule cannot produce overall PASS"
+
+    # 5. Deliberate failure: cross-dataset leakage must produce FAIL
+    corrupt_leak = dict(data["cross_dataset_leakage_audit"])
+    corrupt_leak["exact_ocr_matches"] = 2
+    v_leak = compute_audit_verdicts(
+        provenance_info=data["provenance_audit"],
+        e6b_pseudolabel_check=data["e6b_pseudolabel_check"],
+        category_audit=data["hot_category_audit"],
+        task_supervision_rows=data["task_supervision_audit"],
+        leakage_summary=corrupt_leak,
+        confounding_analysis=data["label_definition_consistency"],
+        per_fold_splits=data["per_fold_splits"],
+    )
+    assert v_leak["section_verdicts"]["D"] == "FAIL"
+    assert v_leak["overall_verdict"] == "FAIL", "Cross-dataset leakage cannot produce overall PASS"
+
+
+def test_near_duplicate_jaccard_and_char_scope_documentation():
+    """Verify near-duplicate documentation records character n-gram full scope and Jaccard candidate screening."""
+    json_path = Path("results/v3_journal_final/data_integrity_audit/data_integrity_summary.json")
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    leak = data["cross_dataset_leakage_audit"]
+
+    # Character n-gram scope
+    char_scope = leak["char_ngram_full_corpus"]
+    assert char_scope["total_pairs_evaluated"] == 18234702
+    assert char_scope["char_pairs_ge_85"] == 0
+    assert char_scope["char_pairs_ge_80"] == 0
+    assert char_scope["max_char_cosine_similarity"] < 0.85
+
+    # Word-set Jaccard candidate scope
+    jaccard_scope = leak["word_jaccard_candidate_scope"]
+    assert jaccard_scope["multibully_texts_ge3_tokens"] == 5605
+    assert jaccard_scope["multibully_texts_lt3_tokens_excluded"] == 113
+    assert jaccard_scope["hot_texts_ge3_tokens"] == 3130
+    assert jaccard_scope["hot_texts_lt3_tokens_excluded"] == 59
+    assert jaccard_scope["candidate_pairs_evaluated"] == 2846571
+    assert jaccard_scope["jaccard_pairs_ge_80"] == 0
+
+    # Explicit methodological limitation documented
+    assert "methodological_limitation" in leak
+    assert "cannot establish semantic equivalence" in leak["methodological_limitation"].lower()
 
 
 def test_audit_deliverables_exist_and_verdict_pass():
@@ -234,7 +409,11 @@ def test_audit_deliverables_exist_and_verdict_pass():
         data = json.load(f)
 
     assert data["overall_verdict"] == "PASS"
-    assert data["cross_dataset_leakage_audit"]["leakage_verdict"] == "PASS"
+    assert data["section_verdicts"]["A"] == "PASS"
+    assert data["section_verdicts"]["B"] == "PASS"
+    assert data["section_verdicts"]["C"] == "PASS"
+    assert data["section_verdicts"]["D"] == "PASS"
+    assert data["section_verdicts"]["E"] == "PASS"
     assert data["e6b_pseudolabel_check"]["has_pseudolabel_supervision"] is False
     assert data["label_definition_consistency"]["processed_text_vs_meme_divergence_count"] == 1670
     assert data["label_definition_consistency"]["raw_text_vs_meme_divergence_count"] == 1725

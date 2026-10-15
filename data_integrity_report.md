@@ -1,41 +1,56 @@
 # ToxiFusionNet: MultiBully & HOT Data-Integrity Audit Report
 
-**Audit Status:** `PASS`  
-**Evaluation Date:** `2026-10-15 05:33:52 UTC`  
+**Audit Verdict:** `PASS`  
+**Evaluation Date:** `2026-10-15 06:03:49 UTC`  
 **Repository:** `https://github.com/ShubhamRaz/toxifusionnet`  
 
 ---
 
-## Executive Summary & Verdict
+## Executive Summary & Data-Driven Verdict
 
-| Section | Audit Domain | Status | Key Finding |
+| Section | Audit Domain | Status | Key Evaluated Finding |
 | :--- | :--- | :---: | :--- |
-| **A** | **Data Provenance** | `PASS` | E1d strictly uses MultiBully; E6b strictly uses MultiBully + `hot_gold_only.csv`. Zero pseudo-labels reach E6b. |
-| **B** | **HOT Label Mapping** | `PASS` | Normal (1,121) -> non_hate; Hate (303) -> hate; Offensive (1,765) -> masked to NaN; needs_review (732) -> ignored. |
-| **C** | **Task Supervision** | `PASS` | Zero-supervision auxiliary rows (1,765) filtered dynamically; no rows dropped for conditional missing labels. |
-| **D** | **Cross-Dataset Leakage** | `PASS` | Exact matches = 0, Duplicate IDs = 0, Max Char-TFIDF Cosine = 0.7703 (0 pairs >= 0.85 across 18.2M pairs). |
-| **E** | **Label Definitions** | `PASS` | MultiBully Text-Label strictly preserved for text models; visual-only bullying discordance (1,670 processed / 1,725 raw memes) and net marginal delta (1,559) reconciled. |
+| **A** | **Data Provenance** | `PASS` | All critical experiment files exist and E6b has zero pseudo-labels. External pre-curation files not on local disk: ['raw_hot_dataset']. |
+| **B** | **HOT Label Mapping** | `PASS` | Normal (1,121)->non_hate; Hate (303)->hate; Offensive (1,765)->NaN (-100); needs_review (732)->NaN. |
+| **C** | **Task Supervision & Folds** | `PASS` | 1,765 zero-supervision rows excluded; 1,424 supervised rows retained in train; 5 folds partition 5,718 test rows. |
+| **D** | **Cross-Dataset Leakage** | `PASS` | 0 exact matches, 0 ID collisions, 0 near-duplicates (char >=0.85 or jaccard >=0.80), 0 fold test/val overlaps. |
+| **E** | **Label Definitions & Divergence** | `PASS` | 1-to-1 ID merge verified (5,718 rows); discordance (1,670 vs 111, delta=1,559) reconciled; confounding averted. |
 
-**Overall Audit Verdict: PASS.**  
+**Overall Audit Verdict: `PASS`**  
 All canonical splits, human annotations, fold caches, and loss masks satisfy strict scientific and methodological criteria. No model retraining or dataset modification is required.
 
 ---
 
-## A. Exact Data Provenance & File Audit
+## A. Exact Data Provenance & Per-Fold Sample Counts
 
-### 1. Actual Experiment Inputs
+### 1. Actual Experiment Inputs & Split Counts
 - **Experiment 1d (`exp1d_multibully_text_weighted`):**
   - Config: `configs\exp1d_multibully_text_weighted.yaml`
-  - Primary Data: `data/processed/multibully.csv` ($N = 5,718$)
+  - Primary Data: `data/processed/multibully.csv` ($N = 5,718$ unique rows)
   - Auxiliary Data: `None` (Zero auxiliary injection)
-  - Folds Cache: `data/processed/multibully_v2_cv_folds.csv`
+  - Folds Cache: `data/processed/multibully_v2_cv_folds.csv` (Canonical 5-fold CV)
+  - Outer Test Coverage: `5718` rows (100% of MultiBully)
 - **Experiment 6b (`exp6b_combined_text_gold_weighted`):**
   - Config: `configs\exp6b_combined_text_gold_weighted.yaml`
-  - Primary Data: `data/processed/multibully.csv` ($N = 5,718$)
+  - Primary Data: `data/processed/multibully.csv` ($N = 5,718$ unique rows)
   - Auxiliary Data: `data/processed/hot_gold_only.csv` ($N = 3,189$ raw; 1,424 retained in training loader; 1,765 zero-supervision excluded)
   - Folds Cache: `data/processed/multibully_v2_cv_folds.csv`
+  - Outer Test Coverage: `5718` rows (100% of MultiBully, strictly zero auxiliary data)
 
-### 2. Distinction Between Processed HOT Datasets
+### 2. Per-Fold Sample Distribution (Computed from Canonical Cache)
+
+| Fold | MultiBully Train | MultiBully Val | MultiBully Test | Total MB Rows | E1d Actual Train | Retained HOT Aux (Train Only) | E6b Actual Train |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Fold 0** | 3,889 | 687 | 1,142 | 5,718 | **3,889** | 1,424 | **5,313** |
+| **Fold 1** | 3,885 | 689 | 1,144 | 5,718 | **3,885** | 1,424 | **5,309** |
+| **Fold 2** | 3,888 | 684 | 1,146 | 5,718 | **3,888** | 1,424 | **5,312** |
+| **Fold 3** | 3,881 | 693 | 1,144 | 5,718 | **3,881** | 1,424 | **5,305** |
+| **Fold 4** | 3,887 | 689 | 1,142 | 5,718 | **3,887** | 1,424 | **5,311** |
+
+> [!IMPORTANT]
+> **Partition Separation Rule:** In every fold, MultiBully validation sets (684 to 693 rows) are isolated strictly for model selection and checkpointing. They are **never** included in training. In E6b, all 1,424 retained HOT auxiliary rows are assigned strictly to training only.
+
+### 3. Distinction Between Processed HOT Datasets
 
 | Artifact | Rows | SHA-256 (Raw) | Hate Provenance | Sarcasm / Target / Severity | Role / Experiment |
 | :--- | :---: | :--- | :--- | :--- | :--- |
@@ -44,7 +59,7 @@ All canonical splits, human annotations, fold caches, and loss masks satisfy str
 | `hot_gold_only.csv` | 3,189 | `a655e0204afa53d5...` | Human gold (303 hate, 1,121 non-hate, 1,765 NaN) | **100% Masked to NaN (Zero pseudo-labels)** | **Actual E6b Auxiliary Input** (`exp6b_combined_text_gold_weighted`) |
 | `combined_multibully_hot_v2.csv` | 8,907 | `c3496e411dbced3c...` | Human gold (1,883 hate, 5,259 non-hate) | Contains Qwen pseudo-labels from hot_v2 | Combined reference file (NOT used by E1d/E6b) |
 
-### 3. Auxiliary Pseudo-Label Verification in E6b
+### 4. Auxiliary Pseudo-Label Verification in E6b
 - **Sarcasm Pseudo-labels in E6b:** `0` (100% masked to `NaN`).
 - **Target Pseudo-labels in E6b:** `0` (100% masked to `NaN`).
 - **Severity Pseudo-labels in E6b:** `0` (100% masked to `NaN`).
@@ -72,6 +87,8 @@ All canonical splits, human annotations, fold caches, and loss masks satisfy str
 
 ## C. Task-Wise Supervision & Loss Consumption
 
+### 1. Overall Task Supervision by Dataset Source
+
 | Source Dataset | Task | Total Rows | Valid Gold | Valid Pseudo | Missing / Masked | Loss Consumption (Rows) | Loss Policy |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | MultiBully (Processed) | **Hate** | 5,718 | 5,718 | 0 | 0 | **5,718** | Primary evaluation benchmark; 100% human gold |
@@ -87,6 +104,16 @@ All canonical splits, human annotations, fold caches, and loss masks satisfy str
 | HOT v2 (Reference) | **Target** | 3,189 | 0 | 1,035 | 2,154 | **1,035** | Contains Qwen pseudo-labels for sarcasm, target, severity |
 | HOT v2 (Reference) | **Severity** | 3,189 | 0 | 1,020 | 2,169 | **1,020** | Contains Qwen pseudo-labels for sarcasm, target, severity |
 
+### 2. Per-Fold Supervision Breakdown in Training Partitions
+
+| Fold | E1d Hate Labels | E6b Hate Labels | E1d/E6b Sarcasm Labels | E1d/E6b Target Labels | E1d/E6b Severity Labels |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **Fold 0** | 3,889 | **5,313** | 3,889 | 705 | 1,073 |
+| **Fold 1** | 3,885 | **5,309** | 3,885 | 703 | 1,071 |
+| **Fold 2** | 3,888 | **5,312** | 3,888 | 710 | 1,078 |
+| **Fold 3** | 3,881 | **5,305** | 3,881 | 703 | 1,075 |
+| **Fold 4** | 3,887 | **5,311** | 3,887 | 705 | 1,074 |
+
 **Zero-Supervision Row Handling:**
 - In `hot_gold_only.csv`, 1,765 rows correspond to offensive tweets where hate is masked to `NaN` and all other heads are `NaN`.
 - In `src/toxifusionnet/experiments/cv.py`, lines 123-137 automatically exclude these 1,765 zero-supervision rows upon loading.
@@ -95,9 +122,11 @@ All canonical splits, human annotations, fold caches, and loss masks satisfy str
 
 ---
 
-## D. Cross-Dataset Leakage & Overlap Audit
+## D. Cross-Dataset Leakage & Near-Duplicate Overlap Audit
 
 A full-corpus pairwise leakage audit was executed comparing all MultiBully test/validation examples against all HOT training examples:
+
+### 1. Exact Leakage & Identification Checks
 
 | Leakage Measure | Scope | Threshold | Observed Matches | Status |
 | :--- | :--- | :---: | :---: | :---: |
@@ -105,8 +134,16 @@ A full-corpus pairwise leakage audit was executed comparing all MultiBully test/
 | **Full Normalizer Pipeline Text** | 100% Full Corpus | Exact string equality | **0** | `PASS` |
 | **Duplicate ID Collision** | 100% Full Corpus | ID equality | **0** | `PASS` |
 | **Conflicting Hate Labels** | Matching text | Label discordance | **0** | `PASS` |
-| **Char N-Gram TF-IDF Overlap** | 18,234,702 pairs | Cosine $\ge 0.85$ | **0** (Max = 0.7703) | `PASS` |
-| **Word-Set Jaccard Overlap** | 18,234,702 pairs | Jaccard $\ge 0.80$ | **0** | `PASS` |
+
+### 2. Near-Duplicate Overlap & Evaluated Scope
+
+| Near-Duplicate Method | Evaluated Scope | Filtering / Candidate Selection | Threshold | Matches | Status |
+| :--- | :--- | :--- | :---: | :---: | :---: |
+| **Character 3-5 N-Gram TF-IDF** | 100% Full Corpus (18,234,702 pairs) | Evaluated across all pairs without token length filtering | Cosine $\ge 0.85$ | **0** (Max = 0.7703) | `PASS` |
+| **Word-Set Jaccard Similarity** | Texts with $\ge 3$ whitespace tokens | Inverted-index candidate screening on shared tokens (2,846,571 candidate pairs) | Jaccard $\ge 0.80$ | **0** | `PASS` |
+
+> [!NOTE]
+> **Documented Methodological Scope & Limitation:** Lexical overlap metrics (character TF-IDF and word Jaccard) detect surface and verbatim duplicates. They cannot establish semantic equivalence between paraphrases. The word-set Jaccard procedure filters out texts with fewer than three tokens (113 MultiBully, 59 HOT) to prevent degenerate 1-2 token collisions. Character TF-IDF cosine similarity evaluates all 18,234,702 pairs across the full corpus.
 
 **Per-Fold Validation & Test Leakage:**
 - **Fold_0:** Validation Overlap = `0`, Test Overlap = `0`.
@@ -124,7 +161,7 @@ A full-corpus pairwise leakage audit was executed comparing all MultiBully test/
 **Reconciliation of 1,559 versus 1,725:**
 - **Resolution Summary:** The figure **1,559** is the **net marginal difference** between whole-meme hate and text-only hate in the processed dataset ($3,139 - 1,580 = 1,559$). Because 111 examples exhibit reverse discordance (text hate $\cap$ meme non-hate), the true count of visual-only cyberbullying examples (discordant pairs where text is non-hate but the meme is hate) is **1,670** in processed MultiBully ($N = 5,718$, 29.21%) and **1,725** in raw MultiBully ($N = 5,865$, 29.41% total; 29.47% of labeled).
 
-**Processed MultiBully Dataset ($N = 5,718$):**
+**Processed MultiBully Dataset (1-to-1 ID Merged, $N = 5,718$ matched rows, 0 dropped):**
 - **Text-Only Hate (`Text-Label` derived):** Non-Hate = 4,138 (72.37%), Hate = 1,580 (27.63%).
 - **Whole-Meme Hate (`Img-Text-Label` derived):** Non-Hate = 2,579 (45.10%), Hate = 3,139 (54.90%).
 - **Visual-Only Cyberbullying (Text Non-Hate $\cap$ Meme Hate):** **1,670 memes (29.21%)**.
@@ -135,7 +172,7 @@ A full-corpus pairwise leakage audit was executed comparing all MultiBully test/
 - **Raw `Text-Label`:** Nonbully = 4,246, Bully = 1,608, Unlabeled = 11.
 - **Raw `Img-Text-Label`:** Bully = 3,222, Nonbully = 2,632, Unlabeled = 11.
 - **Raw Visual-Only Cyberbullying (`Text-Label == Nonbully` $\cap$ `Img-Text-Label == Bully`):** **1,725 memes (29.41% total, 29.47% labeled)**.
-- **Raw Reverse Discordance (`Text-Label == Bully` $\cap$ `Img-Text-Label == Nonbully`):** **111 memes**.
+- **Raw Reverse Discordance (`Text-Label == Bully` $\cap` `Img-Text-Label == Nonbully`):** **111 memes**.
 
 - **Methodological Rule:** Text-only models (E1c, E1d, E6b) must strictly evaluate against `Text-Label`. Conflating `Img-Text-Label` into a text-only model would penalize the model for visual bullying that text cannot observe.
 

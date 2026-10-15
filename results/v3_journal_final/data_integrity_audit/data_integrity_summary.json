@@ -1,5 +1,5 @@
 {
-  "audit_timestamp": "2026-10-15 05:33:52 UTC",
+  "audit_timestamp": "2026-10-15 06:03:49 UTC",
   "provenance_audit": {
     "raw_multibully": {
       "file_path": "data\\raw\\multibully.csv",
@@ -257,27 +257,240 @@
       "num_rows": 0
     }
   },
+  "per_fold_splits": {
+    "fold_0": {
+      "multibully_train_rows": 3889,
+      "multibully_val_rows": 687,
+      "multibully_test_rows": 1142,
+      "multibully_total_fold_rows": 5718,
+      "e1d_train_rows": 3889,
+      "hot_supervised_aux_train_rows": 1424,
+      "e6b_actual_train_rows": 5313,
+      "e1d_train_task_supervision": {
+        "sarcasm": 3889,
+        "hate": 3889,
+        "target": 705,
+        "severity": 1073
+      },
+      "e6b_train_task_supervision": {
+        "sarcasm": 3889,
+        "hate": 5313,
+        "target": 705,
+        "severity": 1073
+      },
+      "val_task_supervision": {
+        "sarcasm": 687,
+        "hate": 687,
+        "target": 123,
+        "severity": 189
+      },
+      "test_task_supervision": {
+        "sarcasm": 1142,
+        "hate": 1142,
+        "target": 209,
+        "severity": 318
+      }
+    },
+    "fold_1": {
+      "multibully_train_rows": 3885,
+      "multibully_val_rows": 689,
+      "multibully_test_rows": 1144,
+      "multibully_total_fold_rows": 5718,
+      "e1d_train_rows": 3885,
+      "hot_supervised_aux_train_rows": 1424,
+      "e6b_actual_train_rows": 5309,
+      "e1d_train_task_supervision": {
+        "sarcasm": 3885,
+        "hate": 3885,
+        "target": 703,
+        "severity": 1071
+      },
+      "e6b_train_task_supervision": {
+        "sarcasm": 3885,
+        "hate": 5309,
+        "target": 703,
+        "severity": 1071
+      },
+      "val_task_supervision": {
+        "sarcasm": 689,
+        "hate": 689,
+        "target": 126,
+        "severity": 191
+      },
+      "test_task_supervision": {
+        "sarcasm": 1144,
+        "hate": 1144,
+        "target": 208,
+        "severity": 318
+      }
+    },
+    "fold_2": {
+      "multibully_train_rows": 3888,
+      "multibully_val_rows": 684,
+      "multibully_test_rows": 1146,
+      "multibully_total_fold_rows": 5718,
+      "e1d_train_rows": 3888,
+      "hot_supervised_aux_train_rows": 1424,
+      "e6b_actual_train_rows": 5312,
+      "e1d_train_task_supervision": {
+        "sarcasm": 3888,
+        "hate": 3888,
+        "target": 710,
+        "severity": 1078
+      },
+      "e6b_train_task_supervision": {
+        "sarcasm": 3888,
+        "hate": 5312,
+        "target": 710,
+        "severity": 1078
+      },
+      "val_task_supervision": {
+        "sarcasm": 684,
+        "hate": 684,
+        "target": 123,
+        "severity": 189
+      },
+      "test_task_supervision": {
+        "sarcasm": 1146,
+        "hate": 1146,
+        "target": 204,
+        "severity": 313
+      }
+    },
+    "fold_3": {
+      "multibully_train_rows": 3881,
+      "multibully_val_rows": 693,
+      "multibully_test_rows": 1144,
+      "multibully_total_fold_rows": 5718,
+      "e1d_train_rows": 3881,
+      "hot_supervised_aux_train_rows": 1424,
+      "e6b_actual_train_rows": 5305,
+      "e1d_train_task_supervision": {
+        "sarcasm": 3881,
+        "hate": 3881,
+        "target": 703,
+        "severity": 1075
+      },
+      "e6b_train_task_supervision": {
+        "sarcasm": 3881,
+        "hate": 5305,
+        "target": 703,
+        "severity": 1075
+      },
+      "val_task_supervision": {
+        "sarcasm": 693,
+        "hate": 693,
+        "target": 125,
+        "severity": 190
+      },
+      "test_task_supervision": {
+        "sarcasm": 1144,
+        "hate": 1144,
+        "target": 209,
+        "severity": 315
+      }
+    },
+    "fold_4": {
+      "multibully_train_rows": 3887,
+      "multibully_val_rows": 689,
+      "multibully_test_rows": 1142,
+      "multibully_total_fold_rows": 5718,
+      "e1d_train_rows": 3887,
+      "hot_supervised_aux_train_rows": 1424,
+      "e6b_actual_train_rows": 5311,
+      "e1d_train_task_supervision": {
+        "sarcasm": 3887,
+        "hate": 3887,
+        "target": 705,
+        "severity": 1074
+      },
+      "e6b_train_task_supervision": {
+        "sarcasm": 3887,
+        "hate": 5311,
+        "target": 705,
+        "severity": 1074
+      },
+      "val_task_supervision": {
+        "sarcasm": 689,
+        "hate": 689,
+        "target": 125,
+        "severity": 190
+      },
+      "test_task_supervision": {
+        "sarcasm": 1142,
+        "hate": 1142,
+        "target": 207,
+        "severity": 316
+      }
+    }
+  },
   "experiment_inputs": {
     "E1d": {
       "config_file": "configs\\exp1d_multibully_text_weighted.yaml",
       "saved_fold0_config": "results\\v3_journal_final\\e1d_text_weighted\\fold0\\config.yaml",
       "primary_dataset": "data/processed/multibully.csv",
+      "primary_dataset_unique_rows": 5718,
       "auxiliary_dataset": null,
       "folds_cache": "data/processed/multibully_v2_cv_folds.csv",
-      "num_training_samples_per_fold": 4574,
-      "num_test_samples_total": 5718
+      "num_folds": 5,
+      "train_rows_per_fold": {
+        "fold_0": 3889,
+        "fold_1": 3885,
+        "fold_2": 3888,
+        "fold_3": 3881,
+        "fold_4": 3887
+      },
+      "val_rows_per_fold": {
+        "fold_0": 687,
+        "fold_1": 689,
+        "fold_2": 684,
+        "fold_3": 693,
+        "fold_4": 689
+      },
+      "test_rows_per_fold": {
+        "fold_0": 1142,
+        "fold_1": 1144,
+        "fold_2": 1146,
+        "fold_3": 1144,
+        "fold_4": 1142
+      },
+      "test_rows_total": 5718,
+      "provenance_notes": "E1d trains strictly on MultiBully train splits (3,881 to 3,889 rows per fold). Validation splits (684 to 693 rows) are isolated for model selection and never used for training. Outer test splits (1,142 to 1,146 rows) partition the full 5,718 dataset."
     },
     "E6b": {
       "config_file": "configs\\exp6b_combined_text_gold_weighted.yaml",
       "saved_fold0_config": "results\\v3_journal_final\\e6b_text_gold_weighted\\fold0\\config.yaml",
       "primary_dataset": "data/processed/multibully.csv",
+      "primary_dataset_unique_rows": 5718,
       "auxiliary_dataset": "data/processed/hot_gold_only.csv",
-      "folds_cache": "data/processed/multibully_v2_cv_folds.csv",
       "raw_aux_rows": 3189,
       "retained_supervised_aux_rows": 1424,
       "excluded_zero_supervision_aux_rows": 1765,
-      "num_training_samples_per_fold": 5998,
-      "num_test_samples_total": 5718
+      "folds_cache": "data/processed/multibully_v2_cv_folds.csv",
+      "num_folds": 5,
+      "train_rows_per_fold": {
+        "fold_0": 5313,
+        "fold_1": 5309,
+        "fold_2": 5312,
+        "fold_3": 5305,
+        "fold_4": 5311
+      },
+      "val_rows_per_fold": {
+        "fold_0": 687,
+        "fold_1": 689,
+        "fold_2": 684,
+        "fold_3": 693,
+        "fold_4": 689
+      },
+      "test_rows_per_fold": {
+        "fold_0": 1142,
+        "fold_1": 1144,
+        "fold_2": 1146,
+        "fold_3": 1144,
+        "fold_4": 1142
+      },
+      "test_rows_total": 5718,
+      "provenance_notes": "E6b trains on MultiBully train splits plus 1,424 retained supervised HOT auxiliary rows (5,305 to 5,313 actual training rows per fold). Exactly 1,765 zero-supervision rows are excluded. HOT auxiliary data is assigned strictly to training only (0 in val, 0 in test)."
     }
   },
   "e6b_pseudolabel_check": {
@@ -292,55 +505,40 @@
       "orig_category_code": 0.0,
       "orig_category_name": "Normal",
       "total_count": 1121,
-      "raw_meaning": "Normal",
       "cleaned_label_dist": {
         "non_hate": 1095,
         "hate": 26
       },
-      "v2_label_dist": {
-        "non_hate": 1121
-      },
       "gold_only_label_dist": {
         "non_hate": 1121
       },
-      "final_canonical_id": 0,
-      "complies_with_gold_policy": true
+      "final_canonical_id": 0
     },
     {
       "orig_category_code": 1.0,
       "orig_category_name": "Hate Speech",
       "total_count": 303,
-      "raw_meaning": "Hate Speech",
       "cleaned_label_dist": {
         "hate": 169,
         "non_hate": 134
       },
-      "v2_label_dist": {
-        "hate": 303
-      },
       "gold_only_label_dist": {
         "hate": 303
       },
-      "final_canonical_id": 1,
-      "complies_with_gold_policy": true
+      "final_canonical_id": 1
     },
     {
       "orig_category_code": 2.0,
       "orig_category_name": "Offensive Language",
       "total_count": 1765,
-      "raw_meaning": "Offensive Language",
       "cleaned_label_dist": {
         "non_hate": 956,
         "hate": 809
       },
-      "v2_label_dist": {
-        "NaN": 1765
-      },
       "gold_only_label_dist": {
         "NaN": 1765
       },
-      "final_canonical_id": -100,
-      "complies_with_gold_policy": "True"
+      "final_canonical_id": -100
     }
   ],
   "task_supervision_audit": [
@@ -504,11 +702,27 @@
         "test_overlap": 0
       }
     },
+    "char_ngram_full_corpus": {
+      "total_pairs_evaluated": 18234702,
+      "max_char_cosine_similarity": 0.7703,
+      "char_pairs_ge_85": 0,
+      "char_pairs_ge_80": 0,
+      "scope_description": "100% full corpus evaluated (all 18,234,702 pairs without token length filtering)"
+    },
+    "word_jaccard_candidate_scope": {
+      "multibully_texts_ge3_tokens": 5605,
+      "multibully_texts_lt3_tokens_excluded": 113,
+      "hot_texts_ge3_tokens": 3130,
+      "hot_texts_lt3_tokens_excluded": 59,
+      "candidate_pairs_evaluated": 2846571,
+      "jaccard_pairs_ge_80": 0,
+      "procedure_notes": "Word-set Jaccard filters out texts with fewer than three tokens (113 MultiBully, 59 HOT) to prevent trivial 1-2 token collisions, evaluating 2,846,571 candidate pairs generated via shared inverted-index tokens."
+    },
     "max_char_cosine_similarity": 0.7703,
     "char_pairs_ge_85": 0,
     "char_pairs_ge_80": 0,
     "jaccard_pairs_ge_80": 0,
-    "leakage_verdict": "PASS"
+    "methodological_limitation": "Lexical overlap metrics (character TF-IDF and word Jaccard) detect surface and verbatim duplicates. They cannot establish semantic equivalence between paraphrases."
   },
   "label_definition_consistency": {
     "multibully_text_label_hate_counts": {
@@ -586,6 +800,20 @@
       "hot_qwen_pseudo": 0.0
     },
     "source_confounding_verdict": "CONFIRMED_SEVERE_CONFOUNDING_AVERTED_BY_MASKING"
+  },
+  "section_verdicts": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS",
+    "D": "PASS",
+    "E": "PASS"
+  },
+  "section_details": {
+    "A": "All critical experiment files exist and E6b has zero pseudo-labels. External pre-curation files not on local disk: ['raw_hot_dataset'].",
+    "B": "Normal (1,121)->non_hate; Hate (303)->hate; Offensive (1,765)->NaN (-100); needs_review (732)->NaN.",
+    "C": "1,765 zero-supervision rows excluded; 1,424 supervised rows retained in train; 5 folds partition 5,718 test rows.",
+    "D": "0 exact matches, 0 ID collisions, 0 near-duplicates (char >=0.85 or jaccard >=0.80), 0 fold test/val overlaps.",
+    "E": "1-to-1 ID merge verified (5,718 rows); discordance (1,670 vs 111, delta=1,559) reconciled; confounding averted."
   },
   "overall_verdict": "PASS"
 }
