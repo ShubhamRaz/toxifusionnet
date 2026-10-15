@@ -34,23 +34,32 @@ def assign_group_ids(df: pd.DataFrame, text_col: str = "text") -> pd.DataFrame:
     return df
 
 
-def _sample_stratum(row) -> str:
-    h = str(row.get("hate", "none"))
-    s = str(row.get("sarcasm", "none"))
-    t = str(row.get("target")) if pd.notna(row.get("target")) else "none"
-    v = str(row.get("severity")) if pd.notna(row.get("severity")) else "none"
+def _normalize_label_val(val: Any) -> str:
+    """Normalize label values, mapping NaNs, None, and whitespace strings consistently to 'none'."""
+    if pd.isna(val):
+        return "none"
+    s = str(val).strip()
+    return s if s and s.lower() != "nan" else "none"
+
+
+def _sample_stratum(row) -> tuple[str, str]:
+    """Return (fine_stratum, base_stratum) for a sample with normalized labels."""
+    h = _normalize_label_val(row.get("hate"))
+    s = _normalize_label_val(row.get("sarcasm"))
+    t = _normalize_label_val(row.get("target"))
+    v = _normalize_label_val(row.get("severity"))
 
     if v == "high":
-        return f"SEV_HIGH_{s}"
+        return f"SEV_HIGH_{s}", "SEV_HIGH"
     if t in ("society", "organization"):
-        return f"TGT_{t}_{s}"
+        return f"TGT_{t}_{s}", f"TGT_{t}"
     if v == "low":
-        return f"SEV_LOW_{s}"
+        return f"SEV_LOW_{s}", "SEV_LOW"
     if h == "hate":
-        if t == "none":
-            return f"HATE_individual_{s}"
-        return f"HATE_{t}_{s}"
-    return f"NONHATE_{s}"
+        if t in ("community", "individual"):
+            return f"HATE_{t}_{s}", f"HATE_{t}"
+        return f"HATE_individual_{s}", "HATE_individual"
+    return f"NONHATE_{s}", "NONHATE"
 
 
 # Priority order: rare classes must dominate the group-level stratum assignment
@@ -72,6 +81,54 @@ def _get_priority(st: str) -> int:
     return 99
 
 
+def aggregate_rare_group_strata(
+    group_fine: dict[int, str],
+    group_base: dict[int, str],
+    min_groups: int = 10,
+    n_splits: int = 5,
+) -> dict[int, str]:
+    """Deterministically aggregate strata with fewer than min_groups members at the group level.
+
+    Guarantees that:
+    1. Every stratum passed to outer StratifiedKFold has at least n_splits members.
+    2. Every stratum in the inner training pool has at least 2 members for train_test_split.
+    """
+    from collections import Counter
+    counts = Counter(group_fine.values())
+    aggregated: dict[int, str] = {}
+
+    for gid, st in group_fine.items():
+        if counts[st] < min_groups:
+            base = group_base[gid]
+            # Sibling strata sharing the same base prefix with sufficient support
+            siblings = [s for s, c in counts.items() if s.startswith(base) and c >= min_groups]
+            if siblings:
+                aggregated[gid] = max(siblings, key=lambda s: counts[s])
+            else:
+                aggregated[gid] = base
+        else:
+            aggregated[gid] = st
+
+    # Secondary check: if any aggregated stratum still has < min_groups
+    counts2 = Counter(aggregated.values())
+    final: dict[int, str] = {}
+    for gid, st in aggregated.items():
+        if counts2[st] < min_groups:
+            final[gid] = "RARE_STRATUM"
+        else:
+            final[gid] = st
+
+    # Final guard: ensure no stratum has fewer members than n_splits
+    counts3 = Counter(final.values())
+    if "RARE_STRATUM" in counts3 and counts3["RARE_STRATUM"] < n_splits:
+        majority = max(counts3.keys(), key=lambda k: counts3[k] if k != "RARE_STRATUM" else -1)
+        for gid, st in list(final.items()):
+            if st == "RARE_STRATUM":
+                final[gid] = majority
+
+    return final
+
+
 def make_grouped_cv_splits(
     df: pd.DataFrame,
     n_splits: int = 5,
@@ -91,17 +148,26 @@ def make_grouped_cv_splits(
         fold_dfs: List of 5 DataFrames, one per fold, with a 'split' column ('train', 'val', 'test').
     """
     df = assign_group_ids(df)
-    df["sample_stratum"] = df.apply(_sample_stratum, axis=1)
+    strata_res = df.apply(_sample_stratum, axis=1)
+    df["sample_stratum"] = [x[0] for x in strata_res]
+    df["base_stratum"] = [x[1] for x in strata_res]
 
     # For each group, pick the highest priority stratum among its constituent samples
-    group_strata: Dict[int, str] = {}
+    group_fine: Dict[int, str] = {}
+    group_base: Dict[int, str] = {}
     for gid, group_rows in df.groupby("group_id"):
-        sorted_strata = sorted(group_rows["sample_stratum"].unique(), key=_get_priority)
-        group_strata[gid] = sorted_strata[0]
+        sorted_pairs = sorted(
+            zip(group_rows["sample_stratum"], group_rows["base_stratum"]),
+            key=lambda pair: _get_priority(pair[0])
+        )
+        group_fine[gid], group_base[gid] = sorted_pairs[0]
+
+    min_g = max(2 * n_splits, 10)
+    final_strata = aggregate_rare_group_strata(group_fine, group_base, min_groups=min_g, n_splits=n_splits)
 
     group_df = pd.DataFrame({
-        "group_id": list(group_strata.keys()),
-        "stratum": list(group_strata.values())
+        "group_id": list(final_strata.keys()),
+        "stratum": list(final_strata.values())
     })
 
     # Stratified K-Fold on the unique groups
@@ -174,8 +240,9 @@ def audit_fold_integrity(fold_dfs: List[pd.DataFrame], original_len: int) -> Dic
             hate = int((sub["hate"] == "hate").sum()) if "hate" in sub else 0
             sarc = int((sub["sarcasm"] == "sarcastic").sum()) if "sarcasm" in sub else 0
 
-            # Val zero-support check
-            if part == "val" and high_sev == 0:
+            # Val zero-support check (only when dataset contains high severity instances)
+            total_high_sev = int((d["severity"] == "high").sum()) if "severity" in d else 0
+            if part == "val" and high_sev == 0 and total_high_sev > 0:
                 checks["passed"] = False
 
             fold_stat["counts"][part] = {

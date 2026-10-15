@@ -17,7 +17,7 @@ from sklearn.model_selection import StratifiedKFold, train_test_split
 log = logging.getLogger("toxifusionnet")
 
 from ..config import load_config
-from ..data.grouped_splits import audit_fold_integrity, make_grouped_cv_splits, normalize_ocr_text
+from ..data.grouped_splits import assign_group_ids, audit_fold_integrity, make_grouped_cv_splits, normalize_ocr_text
 from ..data.schema import load_processed_csv
 from ..training.metrics import evaluate_predictions, flatten_metrics
 from ..training.stats import bootstrap_ci, group_bootstrap_ci
@@ -43,6 +43,7 @@ def make_fold_splits(df: pd.DataFrame, k: int, seed: int, val_frac: float = 0.15
 
 
 CANONICAL_FOLD_CACHE_SHA256 = "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
+CANONICAL_COMBINED_FOLD_CACHE_SHA256 = "fd00161698dbfdc16381513b369b5d74d294dccf359f9cd937a70f33e7aa8ba7"
 
 
 def compute_normalized_fold_cache_sha256(cache_path: str | Path) -> str:
@@ -75,27 +76,104 @@ def validate_fold_cache_checksum(cache_path: str | Path, expected_sha: str = CAN
 
 def validate_fold_cache(fold_assign: pd.DataFrame, expected_ids: set | None = None, folds: int = 5) -> dict[int, list]:
     """Strict pre-training validation of fold cache integrity and test partition coverage."""
+    required_cols = {"id", "split", "fold"}
+    if not required_cols.issubset(fold_assign.columns):
+        raise ValueError(f"Fold cache missing required columns: {required_cols - set(fold_assign.columns)}")
+
     actual_folds = set(fold_assign["fold"].unique())
     if actual_folds != set(range(folds)):
         raise ValueError(f"Fold cache must contain folds 0..{folds-1}, got {actual_folds}")
+
     test_ids_by_fold = {}
     all_test_ids = []
+    expected_set = set(expected_ids) if expected_ids is not None else None
+
     for f in range(folds):
         f_df = fold_assign[fold_assign["fold"] == f]
+        if f_df["id"].duplicated().any():
+            dups = f_df[f_df["id"].duplicated()]["id"].tolist()[:5]
+            raise ValueError(f"Fold cache integrity violation in fold {f}: duplicate IDs within fold! Examples: {dups}")
+
+        invalid_splits = set(f_df["split"].unique()) - {"train", "val", "test"}
+        if invalid_splits:
+            raise ValueError(f"Fold {f} contains invalid split values: {invalid_splits}")
+
         tr = set(f_df[f_df["split"] == "train"]["id"])
         va = set(f_df[f_df["split"] == "val"]["id"])
         te = set(f_df[f_df["split"] == "test"]["id"])
         if len(tr.intersection(va)) > 0 or len(tr.intersection(te)) > 0 or len(va.intersection(te)) > 0:
             raise ValueError(f"Fold cache integrity violation in fold {f}: train/val/test splits overlap!")
+
+        if expected_set is not None:
+            f_ids = set(f_df["id"])
+            if f_ids != expected_set:
+                missing_f = expected_set - f_ids
+                unexpected_f = f_ids - expected_set
+                err_parts = []
+                if missing_f:
+                    err_parts.append(f"missing {len(missing_f)} IDs (e.g. {list(missing_f)[:5]})")
+                if unexpected_f:
+                    err_parts.append(f"unexpected {len(unexpected_f)} IDs (e.g. {list(unexpected_f)[:5]})")
+                raise ValueError(f"Fold {f} ID mismatch: {', '.join(err_parts)}")
+
         test_ids_by_fold[f] = sorted(list(te))
         all_test_ids.extend(te)
+
+    # Verify exactly one outer-test assignment per sample
     if len(all_test_ids) != len(set(all_test_ids)):
-        raise ValueError("Duplicate test IDs detected across folds in fold cache!")
-    if expected_ids:
-        missing = set(expected_ids) - set(all_test_ids)
+        from collections import Counter
+        counts = Counter(all_test_ids)
+        dups = [item for item, c in counts.items() if c > 1][:5]
+        raise ValueError(f"Duplicate test IDs detected across folds in fold cache! Examples: {dups}")
+
+    if expected_set is not None:
+        missing = expected_set - set(all_test_ids)
         if missing:
             raise ValueError(f"Fold cache missing {len(missing)} dataset IDs! (examples: {list(missing)[:5]})")
+        unexpected = set(all_test_ids) - expected_set
+        if unexpected:
+            raise ValueError(f"Fold cache contains {len(unexpected)} unexpected IDs not in dataset! (examples: {list(unexpected)[:5]})")
+
+    if "source_dataset" in fold_assign.columns:
+        if fold_assign.duplicated(subset=["fold", "source_dataset", "id"]).any():
+            raise ValueError("Duplicate (source_dataset, id) detected within a fold in fold cache!")
+
     return test_ids_by_fold
+
+
+def _evaluate_cv_slice(P_slice: pd.DataFrame, tasks: list[str]) -> dict[str, Any]:
+    """Compute complete pooled and per-fold metrics for a dataset slice."""
+    res = evaluate_predictions(P_slice, tasks)
+    flat = flatten_metrics(res)
+    per_fold = [flatten_metrics(evaluate_predictions(g, tasks)) for _, g in P_slice.groupby("fold")]
+
+    cis, group_cis = {}, {}
+    groups = normalize_ocr_text(P_slice["text"]) if "text" in P_slice else pd.Series(np.arange(len(P_slice)).astype(str), index=P_slice.index)
+    for t in tasks:
+        if f"gold_{t}" in P_slice and f"pred_{t}" in P_slice:
+            valid = (P_slice[f"gold_{t}"] != -100) & (P_slice[f"gold_{t}"].notna())
+            if valid.any():
+                cis[f"{t}_macro_f1"] = bootstrap_ci(P_slice.loc[valid, f"gold_{t}"], P_slice.loc[valid, f"pred_{t}"])
+                group_cis[f"{t}_macro_f1"] = group_bootstrap_ci(groups.loc[valid], P_slice.loc[valid, f"gold_{t}"], P_slice.loc[valid, f"pred_{t}"])
+
+    fold_stats = {}
+    for metric_key in ["mean_macro_f1"] + [f"{t}_macro_f1" for t in tasks]:
+        vals = [float(x.get(metric_key, np.nan)) for x in per_fold if metric_key in x and not np.isnan(x.get(metric_key, np.nan))]
+        if vals:
+            fold_stats[metric_key] = {
+                "values": vals,
+                "mean": float(np.mean(vals)),
+                "std": float(np.std(vals, ddof=1)) if len(vals) > 1 else 0.0,
+            }
+
+    return {
+        "pooled": res,
+        "pooled_flat": flat,
+        "bootstrap_ci95": cis,
+        "group_bootstrap_ci95": group_cis,
+        "fold_stats": fold_stats,
+        "per_fold": per_fold,
+    }
 
 
 def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Path, folds: int = 5, seed: int = 42,
@@ -142,14 +220,21 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             log.info("Using existing canonical fold cache: %s (SHA-256 [CRLF-normalized]: %s)", folds_cache, sha)
             if cache_p.name == "multibully_v2_cv_folds.csv":
                 validate_fold_cache_checksum(cache_p, CANONICAL_FOLD_CACHE_SHA256)
+            elif cache_p.name == "combined_multibully_hot_cv_folds.csv":
+                validate_fold_cache_checksum(cache_p, CANONICAL_COMBINED_FOLD_CACHE_SHA256)
             fold_assign = pd.read_csv(cache_p)
             validate_fold_cache(fold_assign, expected_ids=set(df["id"]), folds=folds)
-            # Reconstruct fold_dfs from cached assignment
+            # Reconstruct fold_dfs from cached assignment while strictly preserving group_id
             fold_dfs = []
+            merge_cols = ["id", "split"]
+            if "group_id" in fold_assign.columns:
+                merge_cols.append("group_id")
             for f in range(folds):
-                d = df.drop(columns=["split"], errors="ignore").merge(
-                    fold_assign[fold_assign["fold"] == f][["id", "split"]], on="id"
+                d = df.drop(columns=["split", "group_id"], errors="ignore").merge(
+                    fold_assign[fold_assign["fold"] == f][merge_cols], on="id"
                 )
+                if "group_id" not in d.columns:
+                    d = assign_group_ids(d)
                 d["fold"] = f
                 if aux_df is not None:
                     aux_copy = aux_df.copy()
@@ -167,12 +252,24 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
                     fold_dfs[f] = pd.concat([d, aux_copy], ignore_index=True)
             if folds_cache:
                 Path(folds_cache).parent.mkdir(parents=True, exist_ok=True)
-                cached = pd.concat([d[["id", "split", "fold", "group_id"]] for d in fold_dfs])
+                cache_cols = ["id", "split", "fold", "group_id"]
+                if "source_dataset" in fold_dfs[0].columns:
+                    cache_cols.insert(1, "source_dataset")
+                cached = pd.concat([d[[c for c in cache_cols if c in d.columns]] for d in fold_dfs], ignore_index=True)
                 cached.to_csv(folds_cache, index=False)
                 log.info("Saved newly generated fold cache to %s", folds_cache)
         fold_gen = enumerate(fold_dfs)
     else:
         fold_gen = make_fold_splits(df, folds, seed)
+        fold_dfs = [d for _, d in fold_gen]
+        fold_gen = enumerate(fold_dfs)
+
+    # Pre-training integrity audit: stop execution if validation fails
+    if grouped:
+        audit = audit_fold_integrity(fold_dfs, len(df))
+        if not audit["passed"]:
+            raise ValueError(f"Pre-training fold integrity audit failed! Fold details: {audit}")
+        log.info("Pre-training fold integrity audit passed across all %d folds.", folds)
 
     pooled, tf_pooled = [], []
     fold_class_weights = {}
@@ -209,32 +306,34 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
         P = pd.concat(parts, ignore_index=True)
         P.to_csv(out_dir / f"pooled_{name}.csv", index=False)
         tasks = [t for t in ("sarcasm", "hate", "target", "severity") if f"pred_{t}" in P]
-        res = evaluate_predictions(P, tasks)
-        per_fold = [flatten_metrics(evaluate_predictions(g, tasks)) for _, g in P.groupby("fold")]
 
-        # Compute 95% bootstrap confidence intervals for primary task Macro-F1s
-        cis, group_cis = {}, {}
-        groups = normalize_ocr_text(P["text"]) if "text" in P else pd.Series(np.arange(len(P)).astype(str), index=P.index)
-        for t in tasks:
-            if f"gold_{t}" in P and f"pred_{t}" in P:
-                valid = (P[f"gold_{t}"] != -100) & (P[f"gold_{t}"].notna())
-                if valid.any():
-                    cis[f"{t}_macro_f1"] = bootstrap_ci(P.loc[valid, f"gold_{t}"], P.loc[valid, f"pred_{t}"])
-                    group_cis[f"{t}_macro_f1"] = group_bootstrap_ci(groups.loc[valid], P.loc[valid, f"gold_{t}"], P.loc[valid, f"pred_{t}"])
+        # Slices for overall and source-specific metrics
+        slices = {"overall": P}
+        if "source_dataset" in P.columns and P["source_dataset"].nunique() > 1:
+            for src in sorted(P["source_dataset"].dropna().unique()):
+                sub = P[P["source_dataset"] == src].reset_index(drop=True)
+                if len(sub) > 0:
+                    slices[str(src)] = sub
+
+        slice_metrics = {sname: _evaluate_cv_slice(sdf, tasks) for sname, sdf in slices.items()}
+        overall_m = slice_metrics["overall"]
 
         out[name] = {
-            "pooled": res,
-            "pooled_flat": flatten_metrics(res),
-            "bootstrap_ci95": cis,
-            "group_bootstrap_ci95": group_cis,
+            "pooled": overall_m["pooled"],
+            "pooled_flat": overall_m["pooled_flat"],
+            "bootstrap_ci95": overall_m["bootstrap_ci95"],
+            "group_bootstrap_ci95": overall_m["group_bootstrap_ci95"],
+            "fold_stats": overall_m["fold_stats"],
             "class_weights_by_fold": fold_class_weights if name == "model" else {},
             "training_meta_by_fold": fold_training_meta if name == "model" else {},
-            "per_fold_hate_macro_f1": [float(x.get("hate_macro_f1", np.nan)) for x in per_fold],
-            "per_fold_mean_macro_f1": [float(x.get("mean_macro_f1", np.nan)) for x in per_fold],
-            "per_fold_sarcasm_macro_f1": [float(x.get("sarcasm_macro_f1", np.nan)) for x in per_fold],
-            "per_fold_target_macro_f1": [float(x.get("target_macro_f1", np.nan)) for x in per_fold],
-            "per_fold_severity_macro_f1": [float(x.get("severity_macro_f1", np.nan)) for x in per_fold],
-            "per_fold_flat": per_fold,
+            "per_fold_hate_macro_f1": [float(x.get("hate_macro_f1", np.nan)) for x in overall_m["per_fold"]],
+            "per_fold_mean_macro_f1": [float(x.get("mean_macro_f1", np.nan)) for x in overall_m["per_fold"]],
+            "per_fold_sarcasm_macro_f1": [float(x.get("sarcasm_macro_f1", np.nan)) for x in overall_m["per_fold"]],
+            "per_fold_target_macro_f1": [float(x.get("target_macro_f1", np.nan)) for x in overall_m["per_fold"]],
+            "per_fold_severity_macro_f1": [float(x.get("severity_macro_f1", np.nan)) for x in overall_m["per_fold"]],
+            "per_fold_flat": overall_m["per_fold"],
+            "sources": {k: v for k, v in slice_metrics.items() if k != "overall"},
+            "slices": slice_metrics,
         }
     (out_dir / "cv_metrics.json").write_text(json.dumps(out, indent=2, default=float))
     return out
