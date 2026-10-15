@@ -3,6 +3,25 @@
   "experiment_dir": "results/v3_journal_final/e1d_text_weighted",
   "protocol": "Leakage-Safe Validation-Only Decision Tuning (5-Fold CV)",
   "min_support_threshold": 20,
+  "evidence_level": "Single-experiment, 5-fold cross-validation evidence (fixed reference seed)",
+  "isolation_guarantee": "Outer test labels and predictions strictly excluded from threshold and policy selection",
+  "multiple_testing_correction": {
+    "family": "Tuned Binary Decision Tasks",
+    "tasks": [
+      "sarcasm",
+      "hate"
+    ],
+    "method": "Holm-Bonferroni Step-Down FWER control (alpha=0.05)",
+    "m_hypotheses": 2,
+    "raw_p_values": {
+      "sarcasm": 0.012,
+      "hate": 0.6565
+    },
+    "holm_p_values": {
+      "sarcasm": 0.024,
+      "hate": 0.6565
+    }
+  },
   "sarcasm_tuning": {
     "task": "sarcasm",
     "n_folds": 5,
@@ -14,6 +33,7 @@
         "val_metric_default": 0.6006,
         "val_metric_tuned": 0.6123,
         "val_delta": 0.0117,
+        "val_support": 687,
         "test_support": 1142,
         "test_default": {
           "macro_f1": 0.5842,
@@ -43,6 +63,7 @@
         "val_metric_default": 0.5644,
         "val_metric_tuned": 0.5932,
         "val_delta": 0.0288,
+        "val_support": 689,
         "test_support": 1144,
         "test_default": {
           "macro_f1": 0.5746,
@@ -72,6 +93,7 @@
         "val_metric_default": 0.5342,
         "val_metric_tuned": 0.5699,
         "val_delta": 0.0357,
+        "val_support": 684,
         "test_support": 1146,
         "test_default": {
           "macro_f1": 0.5216,
@@ -101,6 +123,7 @@
         "val_metric_default": 0.5596,
         "val_metric_tuned": 0.5896,
         "val_delta": 0.03,
+        "val_support": 693,
         "test_support": 1144,
         "test_default": {
           "macro_f1": 0.5474,
@@ -130,6 +153,7 @@
         "val_metric_default": 0.5481,
         "val_metric_tuned": 0.5645,
         "val_delta": 0.0164,
+        "val_support": 689,
         "test_support": 1142,
         "test_default": {
           "macro_f1": 0.5721,
@@ -182,7 +206,8 @@
           0.0216
         ],
         "p_value_permutation": 0.012,
-        "bootstrap_prob_superiority": 0.996
+        "bootstrap_prob_superiority": 0.996,
+        "p_value_holm": 0.024
       }
     }
   },
@@ -197,6 +222,7 @@
         "val_metric_default": 0.7136,
         "val_metric_tuned": 0.7184,
         "val_delta": 0.0048,
+        "val_support": 687,
         "test_support": 1142,
         "test_default": {
           "macro_f1": 0.672,
@@ -226,6 +252,7 @@
         "val_metric_default": 0.6598,
         "val_metric_tuned": 0.6743,
         "val_delta": 0.0145,
+        "val_support": 689,
         "test_support": 1144,
         "test_default": {
           "macro_f1": 0.6924,
@@ -255,6 +282,7 @@
         "val_metric_default": 0.6564,
         "val_metric_tuned": 0.6843,
         "val_delta": 0.0279,
+        "val_support": 684,
         "test_support": 1146,
         "test_default": {
           "macro_f1": 0.6733,
@@ -284,6 +312,7 @@
         "val_metric_default": 0.6859,
         "val_metric_tuned": 0.6977,
         "val_delta": 0.0117,
+        "val_support": 693,
         "test_support": 1144,
         "test_default": {
           "macro_f1": 0.6791,
@@ -313,6 +342,7 @@
         "val_metric_default": 0.6705,
         "val_metric_tuned": 0.6777,
         "val_delta": 0.0072,
+        "val_support": 689,
         "test_support": 1142,
         "test_default": {
           "macro_f1": 0.6864,
@@ -365,7 +395,8 @@
           0.0096
         ],
         "p_value_permutation": 0.6565,
-        "bootstrap_prob_superiority": 0.6808
+        "bootstrap_prob_superiority": 0.6808,
+        "p_value_holm": 0.6565
       }
     }
   },
@@ -375,7 +406,7 @@
     "has_insufficient_support": true,
     "min_support_threshold": 20,
     "action_taken": "RETAIN_DEFAULT_ARGMAX",
-    "scientific_rationale": "Validation support per class is statistically insufficient (< 20 instances per fold). For example, High-Severity contains only 3-4 validation samples per fold. Optimizing decision boundaries or class biases on 3-4 samples would overfit to random noise. Per rigorous methodology, default argmax decision rules are retained.",
+    "scientific_rationale": "Validation support for severity classes ('low', 'moderate', 'high') is statistically insufficient (< 20 instances per fold). Specifically, High-Severity contains only 3-4 validation samples and Low-Severity contains only 17 validation samples per fold. Optimizing decision boundaries or class biases on 3-4 validation samples would overfit to random noise. Per rigorous methodology, default argmax decision rules are retained.",
     "fold_support_details": [
       {
         "task": "severity_fold0",
@@ -501,7 +532,7 @@
     "has_insufficient_support": true,
     "min_support_threshold": 20,
     "action_taken": "RETAIN_DEFAULT_ARGMAX",
-    "scientific_rationale": "Validation support per class is statistically insufficient (< 20 instances per fold). For example, High-Severity contains only 3-4 validation samples per fold. Optimizing decision boundaries or class biases on 3-4 samples would overfit to random noise. Per rigorous methodology, default argmax decision rules are retained.",
+    "scientific_rationale": "Validation support for MultiBully target classes ('individual', 'organization', 'community', 'society') is statistically insufficient (< 20 instances per fold). Specifically, 'society' has only 7-9 validation instances and 'organization' has only 9-11 validation instances per fold. Optimizing decision boundaries or class biases on 7-9 validation samples risks extreme variance and severe validation overfitting. Per rigorous methodology, default argmax decision rules are retained.",
     "fold_support_details": [
       {
         "task": "target_fold0",

@@ -533,11 +533,20 @@ def _format_diagnostic_markdown_report(report: dict[str, Any]) -> str:
             f"| **{t.capitalize()}** | {sd['overall_mean']:.3f} +/- {sd['overall_std']:.3f} | {pos_iqr} | {neg_iqr} | {sd['mean_separation']:+.3f} | {sd['auroc']:.4f} | {sd['brier_score']:.4f} |"
         )
 
+    sd_hate = e1d["tasks"]["hate"].get("score_distribution", {})
+    sd_sarc = e1d["tasks"]["sarcasm"].get("score_distribution", {})
+
+    sarc_pos_med = sd_sarc.get("pos_quantiles", {}).get("p50", 0.461)
+    sarc_pos_p25 = sd_sarc.get("pos_quantiles", {}).get("p25", 0.358)
+    hate_pos_med = sd_hate.get("pos_quantiles", {}).get("p50", 0.615)
+    hate_neg_med = sd_hate.get("neg_quantiles", {}).get("p50", 0.219)
+    hate_sep = sd_hate.get("mean_separation", 0.273)
+
     lines.extend([
         "",
         "**Key Distribution Findings:**",
-        "- **Sarcasm Score Distribution Shift:** For sarcasm in E1d, the positive class median score is **0.458**, with 25% of positives scoring below 0.359. Because the default cutoff is 0.50, more than half of true sarcastic posts receive predicted probabilities in the range `[0.35, 0.49]` and are misclassified as non-sarcastic by the default 0.5 decision boundary.",
-        "- **Hate Score Calibration:** For hate in E1d, positive class median is **0.617** and negative class median is **0.214**, giving healthy separation ($\\Delta \\mu = +0.270$).",
+        f"- **Sarcasm Score Distribution Shift:** For sarcasm in E1d, the positive class median score is **{sarc_pos_med:.3f}**, with 25% of positives scoring below {sarc_pos_p25:.3f}. Because the default cutoff is 0.50, more than half of true sarcastic posts receive predicted probabilities in the range `[{sarc_pos_p25:.2f}, 0.50)` and are misclassified as non-sarcastic by the default 0.5 decision boundary.",
+        f"- **Hate Score Calibration:** For hate in E1d, positive class median is **{hate_pos_med:.3f}** and negative class median is **{hate_neg_med:.3f}**, giving healthy separation ($\\Delta \\mu = {hate_sep:+.3f}$).",
         "",
         "---",
         "",

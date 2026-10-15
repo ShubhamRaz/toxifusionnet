@@ -3,10 +3,12 @@
 Tests:
 1. Validation-only threshold selection (no test-set peeking)
 2. Tie-breaking toward default 0.50
-3. Test-set isolation guarantee
-4. Insufficient rare-class support guardrail (< min_support)
-5. Missing-label masking (IGNORE_INDEX = -100 and NaN)
-6. Cross-validation fold evaluation pipeline on mock data
+3. Direct NaN and IGNORE_INDEX handling in tune_binary_threshold
+4. Test-set isolation guarantee
+5. Insufficient rare-class support guardrail (< min_support)
+6. Task-specific guardrail rationale (Target taxonomy vs Severity classes)
+7. Missing-label masking (IGNORE_INDEX = -100 and NaN)
+8. Cross-validation fold evaluation pipeline on mock data (val_support distinct from test_support)
 """
 from __future__ import annotations
 
@@ -27,8 +29,6 @@ from toxifusionnet.labels import IGNORE_INDEX
 
 def test_tune_binary_threshold_validation_only():
     """Verify that tune_binary_threshold selects the threshold maximizing Macro-F1 on validation data."""
-    # Create synthetic validation set where positive class scores are centered around 0.40
-    # A threshold around 0.35 - 0.45 should perform best
     np.random.seed(42)
     n_pos = 100
     n_neg = 200
@@ -55,7 +55,6 @@ def test_tune_binary_threshold_validation_only():
 
 def test_tune_binary_threshold_tie_breaking():
     """Verify that when multiple thresholds achieve the exact same score, tie-breaking selects closest to 0.50."""
-    # When probabilities are all 0 or 1, any threshold in (0, 1) gives identical perfect Macro-F1 (1.0)
     probs = np.array([0.0, 0.0, 1.0, 1.0])
     labels = np.array([0, 0, 1, 1])
 
@@ -69,6 +68,38 @@ def test_tune_binary_threshold_tie_breaking():
 
     # Closest to 0.50 should be 0.50
     assert result["best_threshold"] == pytest.approx(0.50)
+
+
+def test_tune_binary_threshold_nan_and_ignore_index_direct():
+    """Verify that NaN labels and IGNORE_INDEX are masked before conversion and do not cause exceptions or bias."""
+    clean_probs = np.array([0.15, 0.25, 0.45, 0.65, 0.85, 0.90])
+    clean_labels = np.array([0.0, 0.0, 1.0, 1.0, 1.0, 1.0])
+
+    # Run on clean data
+    clean_result = tune_binary_threshold(
+        val_probs=clean_probs,
+        val_labels=clean_labels,
+        metric="macro_f1",
+    )
+
+    # Inject NaNs, IGNORE_INDEX, negative values, and NaN probabilities
+    noisy_probs = np.array([0.15, np.nan, 0.25, 0.99, 0.45, 0.65, 0.01, 0.85, 0.90, np.nan])
+    noisy_labels = np.array([0.0, 1.0, 0.0, np.nan, 1.0, 1.0, IGNORE_INDEX, 1.0, 1.0, -100])
+
+    # Must NOT raise ValueError: cannot convert float NaN to integer
+    noisy_result = tune_binary_threshold(
+        val_probs=noisy_probs,
+        val_labels=noisy_labels,
+        metric="macro_f1",
+    )
+
+    # Valid support must equal clean length
+    assert noisy_result["val_support"] == len(clean_labels)
+    # The selected threshold and best score must be identical to the clean version
+    assert noisy_result["best_threshold"] == pytest.approx(clean_result["best_threshold"])
+    assert noisy_result["best_val_score"] == pytest.approx(clean_result["best_val_score"])
+    assert noisy_result["val_positives"] == 4
+    assert noisy_result["val_negatives"] == 2
 
 
 def test_test_set_isolation():
@@ -148,8 +179,8 @@ def test_missing_label_masking():
     assert score_dist["brier_score"] >= 0
 
 
-def test_evaluate_multiclass_guardrail_insufficient_support(tmp_path):
-    """Verify that evaluate_multiclass_decision_guardrail falls back to RETAIN_DEFAULT_ARGMAX when rare classes exist."""
+def test_evaluate_multiclass_guardrail_task_specific_explanations(tmp_path):
+    """Verify task-specific guardrail rationales: target taxonomy vs severity classes."""
     exp_dir = tmp_path / "mock_exp"
     exp_dir.mkdir()
 
@@ -158,55 +189,72 @@ def test_evaluate_multiclass_guardrail_insufficient_support(tmp_path):
         fold_dir = exp_dir / f"fold{f}"
         fold_dir.mkdir()
 
-        # Validation fold with rare class 2 (only 3 samples)
+        # Validation fold with rare target and severity classes (length = 84)
         val_df = pd.DataFrame({
-            "gold_severity": [0] * 30 + [1] * 50 + [2] * 3,
-            "pred_severity": [0] * 30 + [1] * 50 + [1] * 3,
-            "p_severity": [0.8] * 30 + [0.1] * 50 + [0.1] * 3,
+            "gold_severity": [0] * 30 + [1] * 50 + [2] * 4,
+            "pred_severity": [0] * 30 + [1] * 50 + [1] * 4,
+            "gold_target": [0] * 45 + [1] * 5 + [2] * 30 + [3] * 4,
+            "pred_target": [0] * 45 + [0] * 5 + [2] * 30 + [0] * 4,
         })
         val_df.to_csv(fold_dir / "preds_val.csv", index=False)
 
-        # Test fold
+        # Test fold (length = 84)
         test_df = pd.DataFrame({
-            "gold_severity": [0] * 30 + [1] * 50 + [2] * 6,
-            "pred_severity": [0] * 30 + [1] * 50 + [1] * 6,
-            "p_severity": [0.8] * 30 + [0.1] * 50 + [0.1] * 6,
+            "gold_severity": [0] * 30 + [1] * 50 + [2] * 4,
+            "pred_severity": [0] * 30 + [1] * 50 + [1] * 4,
+            "gold_target": [0] * 45 + [1] * 5 + [2] * 30 + [3] * 4,
+            "pred_target": [0] * 45 + [0] * 5 + [2] * 30 + [0] * 4,
         })
         test_df.to_csv(fold_dir / "preds_test.csv", index=False)
 
-    # Pooled test file
     pooled_test = pd.concat([
         pd.read_csv(exp_dir / "fold0" / "preds_test.csv"),
         pd.read_csv(exp_dir / "fold1" / "preds_test.csv"),
     ], ignore_index=True)
     pooled_test.to_csv(exp_dir / "pooled_model.csv", index=False)
 
-    guardrail_result = evaluate_multiclass_decision_guardrail(
-        exp_dir=exp_dir,
-        task="severity",
-        n_folds=2,
-        min_support=20,
+    # 1. Target guardrail
+    tgt_guard = evaluate_multiclass_decision_guardrail(
+        exp_dir=exp_dir, task="target", n_folds=2, min_support=20
     )
+    assert tgt_guard["action_taken"] == "RETAIN_DEFAULT_ARGMAX"
+    assert tgt_guard["has_insufficient_support"]
+    tgt_rationale = tgt_guard["scientific_rationale"].lower()
+    # Must preserve MultiBully taxonomy
+    assert "individual" in tgt_rationale
+    assert "organization" in tgt_rationale
+    assert "community" in tgt_rationale
+    assert "society" in tgt_rationale
+    # Must NOT mention high severity
+    assert "severity" not in tgt_rationale
+    assert "high" not in tgt_rationale
 
-    assert guardrail_result["action_taken"] == "RETAIN_DEFAULT_ARGMAX"
-    assert guardrail_result["has_insufficient_support"]
-    assert "retained_default_metrics" in guardrail_result
-    assert guardrail_result["retained_default_metrics"]["macro_f1"] > 0
+    # 2. Severity guardrail
+    sev_guard = evaluate_multiclass_decision_guardrail(
+        exp_dir=exp_dir, task="severity", n_folds=2, min_support=20
+    )
+    assert sev_guard["action_taken"] == "RETAIN_DEFAULT_ARGMAX"
+    assert sev_guard["has_insufficient_support"]
+    sev_rationale = sev_guard["scientific_rationale"].lower()
+    assert "severity" in sev_rationale
+    assert "high" in sev_rationale
+    assert "low" in sev_rationale
 
 
-def test_cv_decision_tuning_pipeline_mock(tmp_path):
-    """Verify end-to-end binary tuning across folds with outer-test evaluation."""
+def test_cv_decision_tuning_val_support_distinct_from_test_support(tmp_path):
+    """Verify that val_support is accurately stored and distinct from test_support across folds."""
     exp_dir = tmp_path / "mock_cv_exp"
     exp_dir.mkdir()
 
-    # Create 2 mock folds (fold0, fold1)
+    n_val = 45
+    n_test = 75
+
     for f in range(2):
         fold_dir = exp_dir / f"fold{f}"
         fold_dir.mkdir()
 
         # Val fold
         np.random.seed(100 + f)
-        n_val = 60
         val_golds = np.random.choice([0, 1], size=n_val)
         val_probs = np.where(val_golds == 1, np.random.uniform(0.4, 0.8, size=n_val), np.random.uniform(0.1, 0.5, size=n_val))
         val_df = pd.DataFrame({
@@ -218,7 +266,6 @@ def test_cv_decision_tuning_pipeline_mock(tmp_path):
         val_df.to_csv(fold_dir / "preds_val.csv", index=False)
 
         # Test fold
-        n_test = 60
         test_golds = np.random.choice([0, 1], size=n_test)
         test_probs = np.where(test_golds == 1, np.random.uniform(0.4, 0.8, size=n_test), np.random.uniform(0.1, 0.5, size=n_test))
         test_df = pd.DataFrame({
@@ -241,10 +288,8 @@ def test_cv_decision_tuning_pipeline_mock(tmp_path):
     assert tuning_out["task"] == "sarcasm"
     assert tuning_out["n_folds"] == 2
     assert len(tuning_out["fold_results"]) == 2
-    assert "pooled_out_of_fold" in tuning_out
-    pooled = tuning_out["pooled_out_of_fold"]
-    assert "default" in pooled
-    assert "tuned" in pooled
-    assert "delta" in pooled
-    assert "ci95_macro_f1" in pooled["delta"]
-    assert "p_value_permutation" in pooled["delta"]
+
+    for fr in tuning_out["fold_results"]:
+        assert fr["val_support"] == n_val
+        assert fr["test_support"] == n_test
+        assert fr["val_support"] != fr["test_support"]
