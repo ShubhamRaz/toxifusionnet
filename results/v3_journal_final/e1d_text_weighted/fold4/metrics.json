@@ -1,0 +1,917 @@
+{
+  "best_epoch": 8,
+  "best_step": 488,
+  "best_val_score": 0.536210317424137,
+  "total_steps": 488,
+  "successful_updates": 488,
+  "attempted_batches": 496,
+  "skipped_updates": 8,
+  "steps_budget": 488,
+  "eval_checkpoint": "results/v3_journal_final/e1d_text_weighted/fold4/model.pt",
+  "eval_checkpoint_type": "best_val_macro_f1",
+  "pretrained_vocab": null,
+  "device": "cuda",
+  "n_params": 281996075,
+  "label_source": "{\"hate\": \"gold-derived\", \"target\": \"gold\", \"sarcasm\": \"gold\", \"severity\": \"gold\"}",
+  "class_balancing": {
+    "sarcasm": {
+      "task": "sarcasm",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "not_sarcastic",
+        "sarcastic"
+      ],
+      "num_classes": 2,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "not_sarcastic": 2445,
+        "sarcastic": 1442
+      },
+      "total_supervised": 3887,
+      "raw_weights": [
+        0.8915646502426912,
+        1.1609396452515446
+      ],
+      "normalized_weights": [
+        0.8687578897641289,
+        1.1312421102358712
+      ],
+      "weights": [
+        0.8687578897641289,
+        1.1312421102358712
+      ],
+      "mean_active_weight": 1.0
+    },
+    "hate": {
+      "task": "hate",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "non_hate",
+        "hate"
+      ],
+      "num_classes": 2,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "non_hate": 2813,
+        "hate": 1074
+      },
+      "total_supervised": 3887,
+      "raw_weights": [
+        0.8312035825614524,
+        1.3452101384443833
+      ],
+      "normalized_weights": [
+        0.7638286549464588,
+        1.2361713450535412
+      ],
+      "weights": [
+        0.7638286549464588,
+        1.2361713450535412
+      ],
+      "mean_active_weight": 1.0
+    },
+    "target": {
+      "task": "target",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ],
+      "num_classes": 4,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "individual": 705,
+        "organization": 55,
+        "community": 171,
+        "society": 47
+      },
+      "total_supervised": 978,
+      "raw_weights": [
+        0.5889045004398403,
+        2.1084246596581404,
+        1.1957527174978566,
+        2.2808173227101
+      ],
+      "normalized_weights": [
+        0.38154461634919995,
+        1.3660246733886816,
+        0.7747147653065687,
+        1.4777159449555495
+      ],
+      "weights": [
+        0.38154461634919995,
+        1.3660246733886816,
+        0.7747147653065687,
+        1.4777159449555495
+      ],
+      "mean_active_weight": 1.0
+    },
+    "severity": {
+      "task": "severity",
+      "mode": "sqrt_balanced",
+      "label_space": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "num_classes": 3,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "low": 96,
+        "moderate": 957,
+        "high": 21
+      },
+      "total_supervised": 1074,
+      "raw_weights": [
+        1.9311050377094112,
+        0.6116254445577882,
+        4.128876245132451
+      ],
+      "normalized_weights": [
+        0.8683538088861927,
+        0.27502765205534424,
+        1.8566185390584633
+      ],
+      "weights": [
+        0.8683538088861927,
+        0.27502765205534424,
+        1.8566185390584633
+      ],
+      "mean_active_weight": 1.0
+    }
+  },
+  "val": {
+    "sarcasm": {
+      "n": 689,
+      "accuracy": 0.5892597968069666,
+      "macro_precision": 0.5516667631228659,
+      "macro_recall": 0.5480964353057376,
+      "macro_f1": 0.548073156768809,
+      "weighted_f1": 0.5819333271847944,
+      "per_class": {
+        "0": {
+          "precision": 0.6573875802997858,
+          "recall": 0.713953488372093,
+          "f1": 0.6845039018952063,
+          "support": 430
+        },
+        "1": {
+          "precision": 0.44594594594594594,
+          "recall": 0.38223938223938225,
+          "f1": 0.41164241164241167,
+          "support": 259
+        }
+      },
+      "confusion_matrix": [
+        [
+          307,
+          123
+        ],
+        [
+          160,
+          99
+        ]
+      ],
+      "auroc": 0.5910568375684655,
+      "classes": [
+        "not_sarcastic",
+        "sarcastic"
+      ]
+    },
+    "hate": {
+      "n": 689,
+      "accuracy": 0.7256894049346879,
+      "macro_precision": 0.6653469889869562,
+      "macro_recall": 0.6786256723974264,
+      "macro_f1": 0.6704909197185202,
+      "weighted_f1": 0.7309743662851721,
+      "per_class": {
+        "0": {
+          "precision": 0.8283898305084746,
+          "recall": 0.7835671342685371,
+          "f1": 0.8053553038105047,
+          "support": 499
+        },
+        "1": {
+          "precision": 0.5023041474654378,
+          "recall": 0.5736842105263158,
+          "f1": 0.5356265356265356,
+          "support": 190
+        }
+      },
+      "confusion_matrix": [
+        [
+          391,
+          108
+        ],
+        [
+          81,
+          109
+        ]
+      ],
+      "auroc": 0.774385613331927,
+      "classes": [
+        "non_hate",
+        "hate"
+      ]
+    },
+    "target": {
+      "n": 173,
+      "accuracy": 0.7167630057803468,
+      "macro_precision": 0.48241341991341985,
+      "macro_recall": 0.44525000000000003,
+      "macro_f1": 0.44807019612467086,
+      "weighted_f1": 0.7063977759193791,
+      "per_class": {
+        "0": {
+          "precision": 0.8106060606060606,
+          "recall": 0.856,
+          "f1": 0.8326848249027238,
+          "support": 125
+        },
+        "1": {
+          "precision": 0.2857142857142857,
+          "recall": 0.4,
+          "f1": 0.3333333333333333,
+          "support": 10
+        },
+        "2": {
+          "precision": 0.5,
+          "recall": 0.4,
+          "f1": 0.4444444444444444,
+          "support": 30
+        },
+        "3": {
+          "precision": 0.3333333333333333,
+          "recall": 0.125,
+          "f1": 0.18181818181818182,
+          "support": 8
+        }
+      },
+      "confusion_matrix": [
+        [
+          107,
+          7,
+          9,
+          2
+        ],
+        [
+          5,
+          4,
+          1,
+          0
+        ],
+        [
+          16,
+          2,
+          12,
+          0
+        ],
+        [
+          4,
+          1,
+          2,
+          1
+        ]
+      ],
+      "classes": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ]
+    },
+    "severity": {
+      "n": 190,
+      "accuracy": 0.8368421052631579,
+      "macro_precision": 0.6766283524904214,
+      "macro_recall": 0.43024132730015086,
+      "macro_f1": 0.4782069970845481,
+      "weighted_f1": 0.8286891974835047,
+      "per_class": {
+        "0": {
+          "precision": 0.13333333333333333,
+          "recall": 0.11764705882352941,
+          "f1": 0.125,
+          "support": 17
+        },
+        "1": {
+          "precision": 0.896551724137931,
+          "recall": 0.9230769230769231,
+          "f1": 0.9096209912536443,
+          "support": 169
+        },
+        "2": {
+          "precision": 1.0,
+          "recall": 0.25,
+          "f1": 0.4,
+          "support": 4
+        }
+      },
+      "confusion_matrix": [
+        [
+          2,
+          15,
+          0
+        ],
+        [
+          13,
+          156,
+          0
+        ],
+        [
+          0,
+          3,
+          1
+        ]
+      ],
+      "classes": [
+        "low",
+        "moderate",
+        "high"
+      ]
+    },
+    "sarcasm_subset": {
+      "sarcastic": {
+        "n": 259,
+        "n_hate": 102,
+        "hate_recall": 0.5196078431372549,
+        "false_negative_rate": 0.4803921568627451,
+        "false_positive_rate": 0.18471337579617833,
+        "hate_f1": 0.5760869565217391
+      },
+      "non_sarcastic": {
+        "n": 430,
+        "n_hate": 88,
+        "hate_recall": 0.6363636363636364,
+        "false_negative_rate": 0.36363636363636365,
+        "false_positive_rate": 0.2309941520467836,
+        "hate_f1": 0.5022421524663677
+      }
+    },
+    "end_to_end_target": {
+      "n": 672,
+      "accuracy": 0.6994047619047619,
+      "macro_precision": 0.42777248947256974,
+      "macro_recall": 0.3787800935203741,
+      "macro_f1": 0.38980072511210634,
+      "weighted_f1": 0.7072225631701989,
+      "per_class": {
+        "0": {
+          "precision": 0.4011627906976744,
+          "recall": 0.552,
+          "f1": 0.46464646464646464,
+          "support": 125
+        },
+        "1": {
+          "precision": 0.4,
+          "recall": 0.2,
+          "f1": 0.26666666666666666,
+          "support": 10
+        },
+        "2": {
+          "precision": 0.2413793103448276,
+          "recall": 0.23333333333333334,
+          "f1": 0.23728813559322035,
+          "support": 30
+        },
+        "3": {
+          "precision": 0.25,
+          "recall": 0.125,
+          "f1": 0.16666666666666666,
+          "support": 8
+        },
+        "4": {
+          "precision": 0.8463203463203464,
+          "recall": 0.7835671342685371,
+          "f1": 0.813735691987513,
+          "support": 499
+        }
+      },
+      "confusion_matrix": [
+        [
+          69,
+          2,
+          6,
+          1,
+          47
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          8
+        ],
+        [
+          9,
+          0,
+          7,
+          0,
+          14
+        ],
+        [
+          3,
+          0,
+          2,
+          1,
+          2
+        ],
+        [
+          91,
+          1,
+          14,
+          2,
+          391
+        ]
+      ],
+      "classes": [
+        "individual",
+        "organization",
+        "community",
+        "society",
+        "none"
+      ]
+    },
+    "end_to_end_severity": {
+      "n": 689,
+      "accuracy": 0.7024673439767779,
+      "macro_precision": 0.4620440656673196,
+      "macro_recall": 0.40771305053546003,
+      "macro_f1": 0.42346497878530076,
+      "weighted_f1": 0.7080079168421026,
+      "per_class": {
+        "0": {
+          "precision": 0.0625,
+          "recall": 0.058823529411764705,
+          "f1": 0.06060606060606061,
+          "support": 17
+        },
+        "1": {
+          "precision": 0.457286432160804,
+          "recall": 0.5384615384615384,
+          "f1": 0.4945652173913043,
+          "support": 169
+        },
+        "2": {
+          "precision": 0.5,
+          "recall": 0.25,
+          "f1": 0.3333333333333333,
+          "support": 4
+        },
+        "3": {
+          "precision": 0.8283898305084746,
+          "recall": 0.7835671342685371,
+          "f1": 0.8053553038105047,
+          "support": 499
+        }
+      },
+      "confusion_matrix": [
+        [
+          1,
+          6,
+          0,
+          10
+        ],
+        [
+          7,
+          91,
+          0,
+          71
+        ],
+        [
+          0,
+          3,
+          1,
+          0
+        ],
+        [
+          8,
+          99,
+          1,
+          391
+        ]
+      ],
+      "classes": [
+        "low",
+        "moderate",
+        "high",
+        "none"
+      ]
+    },
+    "mean_macro_f1": 0.536210317424137
+  },
+  "val_flat": {
+    "mean_macro_f1": 0.536210317424137,
+    "sarcasm_macro_f1": 0.548073156768809,
+    "sarcasm_acc": 0.5892597968069666,
+    "sarcasm_bal_acc": 0.5480964353057376,
+    "sarcasm_auroc": 0.5910568375684655,
+    "hate_macro_f1": 0.6704909197185202,
+    "hate_acc": 0.7256894049346879,
+    "hate_bal_acc": 0.6786256723974264,
+    "hate_auroc": 0.774385613331927,
+    "target_macro_f1": 0.44807019612467086,
+    "target_acc": 0.7167630057803468,
+    "target_bal_acc": 0.44525000000000003,
+    "severity_macro_f1": 0.4782069970845481,
+    "severity_acc": 0.8368421052631579,
+    "severity_bal_acc": 0.43024132730015086,
+    "hate_FNR_sarcastic": 0.4803921568627451,
+    "hate_F1_sarcastic": 0.5760869565217391,
+    "hate_FNR_non_sarcastic": 0.36363636363636365,
+    "hate_F1_non_sarcastic": 0.5022421524663677,
+    "e2e_target_macro_f1": 0.38980072511210634,
+    "e2e_severity_macro_f1": 0.42346497878530076
+  },
+  "test": {
+    "sarcasm": {
+      "n": 1142,
+      "accuracy": 0.6120840630472855,
+      "macro_precision": 0.5769203645915975,
+      "macro_recall": 0.5713860310479332,
+      "macro_f1": 0.5721229436306785,
+      "weighted_f1": 0.6048704512328263,
+      "per_class": {
+        "0": {
+          "precision": 0.6743886743886743,
+          "recall": 0.7338935574229691,
+          "f1": 0.7028839704896043,
+          "support": 714
+        },
+        "1": {
+          "precision": 0.4794520547945205,
+          "recall": 0.4088785046728972,
+          "f1": 0.44136191677175285,
+          "support": 428
+        }
+      },
+      "confusion_matrix": [
+        [
+          524,
+          190
+        ],
+        [
+          253,
+          175
+        ]
+      ],
+      "auroc": 0.6197560800020943,
+      "classes": [
+        "not_sarcastic",
+        "sarcastic"
+      ]
+    },
+    "hate": {
+      "n": 1142,
+      "accuracy": 0.7373029772329247,
+      "macro_precision": 0.6803877246352319,
+      "macro_recall": 0.6962829864835872,
+      "macro_f1": 0.6864256922248948,
+      "weighted_f1": 0.7428331169077106,
+      "per_class": {
+        "0": {
+          "precision": 0.8389175257731959,
+          "recall": 0.788135593220339,
+          "f1": 0.8127340823970037,
+          "support": 826
+        },
+        "1": {
+          "precision": 0.5218579234972678,
+          "recall": 0.6044303797468354,
+          "f1": 0.5601173020527859,
+          "support": 316
+        }
+      },
+      "confusion_matrix": [
+        [
+          651,
+          175
+        ],
+        [
+          125,
+          191
+        ]
+      ],
+      "auroc": 0.7882773469825605,
+      "classes": [
+        "non_hate",
+        "hate"
+      ]
+    },
+    "target": {
+      "n": 286,
+      "accuracy": 0.7132867132867133,
+      "macro_precision": 0.48136500283491795,
+      "macro_recall": 0.4593756967670011,
+      "macro_f1": 0.4469091139883219,
+      "weighted_f1": 0.7067994521345626,
+      "per_class": {
+        "0": {
+          "precision": 0.8325358851674641,
+          "recall": 0.8405797101449275,
+          "f1": 0.8365384615384616,
+          "support": 207
+        },
+        "1": {
+          "precision": 0.34782608695652173,
+          "recall": 0.5,
+          "f1": 0.41025641025641024,
+          "support": 16
+        },
+        "2": {
+          "precision": 0.4117647058823529,
+          "recall": 0.42,
+          "f1": 0.4158415841584158,
+          "support": 50
+        },
+        "3": {
+          "precision": 0.3333333333333333,
+          "recall": 0.07692307692307693,
+          "f1": 0.125,
+          "support": 13
+        }
+      },
+      "confusion_matrix": [
+        [
+          174,
+          10,
+          22,
+          1
+        ],
+        [
+          5,
+          8,
+          3,
+          0
+        ],
+        [
+          23,
+          5,
+          21,
+          1
+        ],
+        [
+          7,
+          0,
+          5,
+          1
+        ]
+      ],
+      "classes": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ]
+    },
+    "severity": {
+      "n": 316,
+      "accuracy": 0.8417721518987342,
+      "macro_precision": 0.4441952168791929,
+      "macro_recall": 0.49792192495372706,
+      "macro_f1": 0.4593131481096561,
+      "weighted_f1": 0.8412137006701415,
+      "per_class": {
+        "0": {
+          "precision": 0.21739130434782608,
+          "recall": 0.17857142857142858,
+          "f1": 0.19607843137254902,
+          "support": 28
+        },
+        "1": {
+          "precision": 0.9151943462897526,
+          "recall": 0.9151943462897526,
+          "f1": 0.9151943462897526,
+          "support": 283
+        },
+        "2": {
+          "precision": 0.2,
+          "recall": 0.4,
+          "f1": 0.26666666666666666,
+          "support": 5
+        }
+      },
+      "confusion_matrix": [
+        [
+          5,
+          22,
+          1
+        ],
+        [
+          17,
+          259,
+          7
+        ],
+        [
+          1,
+          2,
+          2
+        ]
+      ],
+      "classes": [
+        "low",
+        "moderate",
+        "high"
+      ]
+    },
+    "sarcasm_subset": {
+      "sarcastic": {
+        "n": 428,
+        "n_hate": 169,
+        "hate_recall": 0.5857988165680473,
+        "false_negative_rate": 0.41420118343195267,
+        "false_positive_rate": 0.20463320463320464,
+        "hate_f1": 0.616822429906542
+      },
+      "non_sarcastic": {
+        "n": 714,
+        "n_hate": 147,
+        "hate_recall": 0.6258503401360545,
+        "false_negative_rate": 0.3741496598639456,
+        "false_positive_rate": 0.21516754850088182,
+        "hate_f1": 0.5096952908587258
+      }
+    },
+    "end_to_end_target": {
+      "n": 1112,
+      "accuracy": 0.6996402877697842,
+      "macro_precision": 0.37211509954288763,
+      "macro_recall": 0.36939337654076043,
+      "macro_f1": 0.36181588540241805,
+      "weighted_f1": 0.7103233315185138,
+      "per_class": {
+        "0": {
+          "precision": 0.4037735849056604,
+          "recall": 0.5169082125603864,
+          "f1": 0.4533898305084746,
+          "support": 207
+        },
+        "1": {
+          "precision": 0.15384615384615385,
+          "recall": 0.125,
+          "f1": 0.13793103448275862,
+          "support": 16
+        },
+        "2": {
+          "precision": 0.2463768115942029,
+          "recall": 0.34,
+          "f1": 0.2857142857142857,
+          "support": 50
+        },
+        "3": {
+          "precision": 0.2,
+          "recall": 0.07692307692307693,
+          "f1": 0.1111111111111111,
+          "support": 13
+        },
+        "4": {
+          "precision": 0.8565789473684211,
+          "recall": 0.788135593220339,
+          "f1": 0.8209331651954602,
+          "support": 826
+        }
+      },
+      "confusion_matrix": [
+        [
+          107,
+          5,
+          20,
+          1,
+          74
+        ],
+        [
+          0,
+          2,
+          3,
+          0,
+          11
+        ],
+        [
+          12,
+          1,
+          17,
+          1,
+          19
+        ],
+        [
+          3,
+          0,
+          4,
+          1,
+          5
+        ],
+        [
+          143,
+          5,
+          25,
+          2,
+          651
+        ]
+      ],
+      "classes": [
+        "individual",
+        "organization",
+        "community",
+        "society",
+        "none"
+      ]
+    },
+    "end_to_end_severity": {
+      "n": 1142,
+      "accuracy": 0.7162872154115587,
+      "macro_precision": 0.41273075743229104,
+      "macro_recall": 0.4669291532268415,
+      "macro_f1": 0.4324690067515528,
+      "weighted_f1": 0.7239610609465155,
+      "per_class": {
+        "0": {
+          "precision": 0.08823529411764706,
+          "recall": 0.10714285714285714,
+          "f1": 0.0967741935483871,
+          "support": 28
+        },
+        "1": {
+          "precision": 0.5015479876160991,
+          "recall": 0.5724381625441696,
+          "f1": 0.5346534653465347,
+          "support": 283
+        },
+        "2": {
+          "precision": 0.2222222222222222,
+          "recall": 0.4,
+          "f1": 0.2857142857142857,
+          "support": 5
+        },
+        "3": {
+          "precision": 0.8389175257731959,
+          "recall": 0.788135593220339,
+          "f1": 0.8127340823970037,
+          "support": 826
+        }
+      },
+      "confusion_matrix": [
+        [
+          3,
+          8,
+          0,
+          17
+        ],
+        [
+          8,
+          162,
+          5,
+          108
+        ],
+        [
+          1,
+          2,
+          2,
+          0
+        ],
+        [
+          22,
+          151,
+          2,
+          651
+        ]
+      ],
+      "classes": [
+        "low",
+        "moderate",
+        "high",
+        "none"
+      ]
+    },
+    "mean_macro_f1": 0.5411927244883878
+  },
+  "test_flat": {
+    "mean_macro_f1": 0.5411927244883878,
+    "sarcasm_macro_f1": 0.5721229436306785,
+    "sarcasm_acc": 0.6120840630472855,
+    "sarcasm_bal_acc": 0.5713860310479332,
+    "sarcasm_auroc": 0.6197560800020943,
+    "hate_macro_f1": 0.6864256922248948,
+    "hate_acc": 0.7373029772329247,
+    "hate_bal_acc": 0.6962829864835872,
+    "hate_auroc": 0.7882773469825605,
+    "target_macro_f1": 0.4469091139883219,
+    "target_acc": 0.7132867132867133,
+    "target_bal_acc": 0.4593756967670011,
+    "severity_macro_f1": 0.4593131481096561,
+    "severity_acc": 0.8417721518987342,
+    "severity_bal_acc": 0.49792192495372706,
+    "hate_FNR_sarcastic": 0.41420118343195267,
+    "hate_F1_sarcastic": 0.616822429906542,
+    "hate_FNR_non_sarcastic": 0.3741496598639456,
+    "hate_F1_non_sarcastic": 0.5096952908587258,
+    "e2e_target_macro_f1": 0.36181588540241805,
+    "e2e_severity_macro_f1": 0.4324690067515528
+  }
+}

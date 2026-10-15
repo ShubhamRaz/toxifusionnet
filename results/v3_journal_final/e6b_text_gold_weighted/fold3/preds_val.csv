@@ -1,0 +1,694 @@
+id,text,source_dataset,narrative,gold_sarcasm,gold_hate,gold_target,gold_severity,pred_sarcasm,conf_sarcasm,p_sarcasm,pred_hate,conf_hate,p_hate,pred_target,conf_target,pred_severity,conf_severity,fusion_gate
+11.jpg,ADDING MEDIEVAL WEAPONS TO DOGS PLAYING ON BEACH NEEDS TO BECOME A THING,multibully,,0,1,3,1,0,0.6406781,0.3593219,0,0.85063756,0.14936243,2,0.33156848,1,0.7516384,0.4722142
+33.jpg,Perfect licence plate doesn't exis.. BJ69420,multibully,,0,0,-100,-100,1,0.5810323,0.5810323,0,0.8297433,0.17025666,1,0.32970962,1,0.8569787,0.4622924
+34.png,i did not divide the country the republican decision to obstruct every single thing i proposed to help us dig out of the financial crisis they caused divided the country,multibully,,0,1,1,2,0,0.6565353,0.3434647,0,0.6627258,0.33727425,1,0.34262094,1,0.7331984,0.46781883
+35.jpg,at what age did you discover that pen covers are meant to hold the page from flipping when studying or wriiting,multibully,,0,0,-100,-100,0,0.63870925,0.36129078,0,0.92668915,0.07331087,0,0.32342967,1,0.68577754,0.47195446
+37.jpg,12 year old me being ready the night before the School trip,multibully,,0,0,-100,-100,0,0.588573,0.41142702,0,0.9741644,0.025835562,0,0.60751635,1,0.80483925,0.46817455
+40.png,how many fucking accounts do you assholes have?,multibully,,0,1,3,1,0,0.61267155,0.38732848,1,0.6148043,0.6148043,3,0.40993607,1,0.7116301,0.42387015
+51.jpg,"don't get away from mind,beat your mind...#indian #india #love #instagram #photography #follow#mumbai #fashion #bollywood#instagood #like #delhi #bhfyp#photooftheday #indianwedding#likeforlikes#likeforlikes#likeforlikes#likeforlikes#likeforlikes#likeforlikes#likeforlikes#indianfood#style#model#desi#insta#beautiful#followforfollowback#kerala#tiktok#food#art #bhfyp#quarantine",multibully,,0,0,-100,-100,0,0.6422331,0.3577669,0,0.63675416,0.36324584,2,0.49961156,1,0.82755506,0.45045376
+90.png,when the black kids start fighting at school,multibully,,0,0,-100,-100,0,0.6228028,0.37719718,0,0.6428942,0.3571058,2,0.64158714,2,0.5197032,0.46573943
+104.png,hey mom the goats asshole is inside out. what do?,multibully,,1,0,-100,-100,0,0.5684266,0.43157336,1,0.6815633,0.6815633,0,0.74572486,1,0.7529591,0.43189126
+116.png,"my dishwasher is acting strange, can anybody help",multibully,,0,0,-100,-100,0,0.680784,0.31921598,0,0.85008353,0.1499165,0,0.6227583,1,0.6571393,0.46530712
+129.jpg,Cutness overload,multibully,,0,0,-100,-100,0,0.57188416,0.42811587,0,0.9516827,0.048317343,0,0.5907694,1,0.68847966,0.4761927
+131.jpg,some MFs looks like this Still says bhai abhi chemistry ki book touch tak nhi kiya hu,multibully,,1,0,-100,-100,0,0.5625336,0.43746635,0,0.8339369,0.16606304,0,0.63517815,1,0.6053781,0.4624184
+138.png,you can't be the victim of a school shooting if you're the school shooter,multibully,,0,0,-100,-100,0,0.68204004,0.31796,0,0.8230584,0.1769416,0,0.53060955,1,0.8722654,0.46264133
+153.jpg,dilli in summers dilli in winters SCOOPWHOOP.com,multibully,,0,1,1,1,0,0.59012187,0.4098782,0,0.86595464,0.13404533,1,0.62688875,1,0.5703571,0.46938217
+154.png,i'm not saying it was muslims but it was muslims,multibully,,0,1,2,1,0,0.6224572,0.3775428,1,0.66253954,0.66253954,2,0.7971104,1,0.5412614,0.4465322
+164.png,"""if that uckin bastard wins, we're all going to hang from nooses! you better fix this shit!"" -hillary clinton email to donna brazile october 17, 2016",multibully,,0,1,0,1,0,0.7675896,0.23241034,1,0.5816918,0.5816918,0,0.98874015,1,0.9860641,0.43871897
+171.jpg,"Just when i thought i had figured out life,i saw this.",multibully,,0,0,-100,-100,0,0.85744596,0.14255401,0,0.99411446,0.005885606,0,0.9034748,1,0.84836686,0.46918356
+173.jpg,7 Lagta hai mehfil me utarna padega dobara kuch log bhool gaye hai andaaz hamara,multibully,,0,0,-100,-100,0,0.55833143,0.44166857,1,0.5036546,0.5036546,0,0.6374838,0,0.58191407,0.42534015
+180.png,really? eating pork is gross but marriage to a minor isn't?,multibully,,0,0,-100,-100,0,0.7082161,0.29178393,0,0.506179,0.49382097,2,0.5042469,1,0.93219763,0.4453172
+189.jpg,"Meeting someone for the first time Brain: I love her Me: Nah, she just nice and polite Brain I said we are in love today.",multibully,,0,0,-100,-100,0,0.7863077,0.2136923,0,0.73204774,0.2679523,0,0.888329,1,0.8305887,0.43754467
+194.png,siri take me home starting route to jail,multibully,,0,0,-100,-100,1,0.5918636,0.5918636,0,0.6543709,0.34562913,0,0.9284697,1,0.9679851,0.42320395
+200.png,"someone needs to invent car fax for vaginas ""i have only been with one guy."" ""yeah sure, show me the whorefax.""",multibully,,1,0,-100,-100,0,0.6045529,0.3954471,1,0.5143307,0.5143307,0,0.5922522,1,0.81933063,0.43774384
+214.png,do you still suck dick? faggot,multibully,,1,1,0,1,0,0.56758946,0.43241057,1,0.74029195,0.74029195,0,0.90464133,1,0.9448586,0.4261052
+223.jpg,Normal people: Me:,multibully,,0,0,-100,-100,1,0.52406394,0.52406394,0,0.7909673,0.20903271,2,0.44125584,1,0.8042057,0.4617623
+228.png,you sicced all of your corrupt  goons after me for 3 years and i came out clean. now it's my turn to send my justice-seeking patriots after you and your corrupt goons let's see how you all come out!!!,multibully,,0,1,0,1,0,0.8554882,0.14451188,1,0.69297075,0.69297075,2,0.46356094,2,0.50740385,0.4473142
+235.jpg,GAY LOVERS FIND OUT THEY ARE BROTHERS,multibully,,0,1,0,1,0,0.6293964,0.37060362,0,0.65694803,0.34305197,2,0.5944387,1,0.8989356,0.45051974
+236.png,"don't shoot, i'm from the group why dont you post and comment? i'm shy, but i like stuff",multibully,,0,0,-100,-100,0,0.7578062,0.2421938,0,0.6065732,0.39342675,0,0.6249347,1,0.8805776,0.44630358
+239.jpg,Against MI in Chepauk Steve Smith lbw Kieron Pollard 33 29 113.79 4 CRICKET_KI_DIWANI Virat Kohli lbw Jasprit Bumrah 33 29 113.79 4,multibully,,0,1,0,1,1,0.5249266,0.5249266,1,0.5083914,0.5083914,0,0.9772514,1,0.94964904,0.45426732
+242.png,how you like me now ?,multibully,,0,0,-100,-100,0,0.66705143,0.3329486,0,0.929547,0.07045297,0,0.8279963,1,0.7890253,0.44978806
+244.png,stop editing your pics. what if you go missing? how are we gonna find you if you look like barbie on fb and chupacabra in real life?,multibully,,0,0,-100,-100,0,0.69910985,0.30089018,0,0.5141475,0.48585245,0,0.40582544,1,0.77312875,0.44005919
+249.jpg,when you go offline your photo me,multibully,,0,0,-100,-100,0,0.6310721,0.36892787,0,0.84131324,0.15868682,0,0.50492984,1,0.6451785,0.46017274
+258.png,burning things that don't mean anything to you,multibully,,0,0,-100,-100,0,0.83479553,0.16520448,0,0.9853618,0.0146382125,0,0.58228034,1,0.79515237,0.48179483
+270.png,they still think i'm not a muslim they still think i'm a chick,multibully,,0,0,-100,-100,0,0.6783069,0.32169315,1,0.76799077,0.76799077,2,0.81972295,1,0.9480463,0.3986838
+274.png,"if you have a problem with me..call me if you don't have my number, then that means you don't know me well enough to have a problem",multibully,,0,0,-100,-100,0,0.65394604,0.346054,0,0.80539477,0.19460522,0,0.39404076,1,0.7699184,0.4527137
+278.png,"oh, you're tired of my anti-trump posts? why don't you pray for me to stop?",multibully,,0,1,0,1,0,0.76491493,0.23508506,1,0.70213467,0.70213467,0,0.94484234,1,0.9684976,0.4508835
+282.png,a head diaper is required when you have shit for brains,multibully,,0,0,-100,-100,0,0.6835038,0.31649622,0,0.8680995,0.13190047,0,0.78129804,0,0.5117299,0.45944118
+308.png,when you're trying to listen to the teacher in your school and the foreign exchange student keeps on crying,multibully,,0,0,-100,-100,0,0.57313436,0.42686558,0,0.7150297,0.28497025,2,0.50132823,1,0.7499078,0.4615383
+311.jpg,people complaining about their relationships me who's never been in a relationship,multibully,,0,1,0,1,0,0.77324665,0.22675338,0,0.93682677,0.06317328,0,0.5257338,1,0.80560106,0.45279163
+315.jpg,Delhi Vs Punjab   CSK Vs MI,multibully,,0,0,-100,-100,1,0.5393069,0.5393069,0,0.7464863,0.25351366,0,0.6888158,1,0.9233807,0.45898017
+316.png,you mean i don't have to pick it and i can eat it?!,multibully,,0,0,-100,-100,0,0.73329365,0.26670635,0,0.85351396,0.14648603,0,0.60135967,1,0.772157,0.46416625
+333.jpg,"sambhandh and water are the same . no color, no form** but still for ** existance of life ** most importance..... good afternoon",multibully,,0,0,-100,-100,0,0.7162349,0.2837651,0,0.88202417,0.11797582,0,0.50352186,1,0.7788294,0.46123415
+352.png,how women win an argument,multibully,,0,0,-100,-100,0,0.66802096,0.331979,0,0.8627807,0.13721928,0,0.3365179,1,0.8935102,0.46567112
+354.png,when you see your goat with another man,multibully,,0,0,-100,-100,0,0.7035548,0.29644513,0,0.79666245,0.20333757,0,0.79496515,1,0.7776802,0.45676148
+355.jpg,When you she says good night at 10pm but you see her online at 2 am. Dhoka hua hain Bhench*d,multibully,,0,1,0,1,1,0.5268119,0.5268119,1,0.57010275,0.57010275,0,0.948975,1,0.8973548,0.43309128
+361.jpg,"Me: Goodnight, Take care, Sweet dreams She: gn, Tc, Sd Me: Saala merko itna chota diya",multibully,,0,1,0,1,1,0.5316435,0.5316435,1,0.61280304,0.61280304,0,0.9743902,1,0.8759674,0.42807707
+363.jpg,1. Eats 2. Sleeps 3. Respects everyone 4. Even after knowing he would die went on battlefield for his brother If somebody calls you Kumbhkaran take it with respect,multibully,,0,0,-100,-100,0,0.5669684,0.43303165,1,0.53950787,0.53950787,0,0.87864673,1,0.8147865,0.42076382
+369.jpg,@mainaasami Corona my career Me watching selfies,multibully,,0,0,-100,-100,0,0.5961899,0.40381005,0,0.87746376,0.12253625,0,0.50012106,1,0.63537306,0.4652092
+373.jpg,Priyanka in saree with navel show Best combination ever,multibully,,0,0,-100,-100,0,0.6547316,0.34526843,1,0.5340643,0.5340643,0,0.9475266,1,0.9187854,0.43505308
+377.jpg,ONE DAY YOU AND ME,multibully,,0,0,-100,-100,0,0.77928174,0.22071828,0,0.9698721,0.0301279,0,0.46746328,1,0.7554431,0.48167405
+385.jpg,Lord Bobby using headphones in 2008,multibully,,0,0,-100,-100,0,0.66101706,0.33898297,0,0.65363604,0.34636396,0,0.9711502,1,0.9203021,0.45150536
+388.png,when people are still talking about epstein's pedo ring after 3 mass shootings in a week you're going to need a bigger,multibully,,0,0,-100,-100,0,0.7196434,0.28035656,1,0.5332335,0.5332335,0,0.64029574,1,0.9100081,0.456899
+391.jpg,"world's first space hotel scheduled to open in 2027 space tourism is becoming an increasingly hot topic,and there are several companies trying to make it happen-from virgin galactic to elon musk's spaceX",multibully,,0,0,-100,-100,0,0.598667,0.40133297,0,0.8761502,0.12384985,0,0.30736876,1,0.7634143,0.46822318
+402.png,i don't know who gave my child a whistle but i will find you and i will kill you,multibully,,0,0,-100,-100,0,0.7700121,0.22998793,0,0.6043818,0.39561814,0,0.96908635,1,0.89262307,0.43494937
+403.jpg,brooklyn nine-nine,multibully,,0,0,-100,-100,0,0.6479995,0.35200042,0,0.7679323,0.23206773,0,0.85710514,1,0.9248849,0.4604596
+405.jpg,भारतीय हिन्दू वामपंथी दल…Right wing comunist party,multibully,,0,0,-100,-100,1,0.564259,0.564259,1,0.68844426,0.68844426,1,0.55932623,1,0.8599289,0.44700357
+408.png,the terrible actions this all began with of one man doing a terrible job for mankind,multibully,,0,0,-100,-100,0,0.91340315,0.08659687,0,0.7729477,0.22705223,0,0.40083364,1,0.8019631,0.47460613
+410.png,when your dishwasher is broken so you take it back to walmart to get a new one,multibully,,0,0,-100,-100,0,0.69115627,0.30884367,0,0.87509406,0.12490596,0,0.80708516,1,0.740495,0.4660904
+413.jpg,TF is she lookin at?,multibully,,0,0,-100,-100,0,0.5444721,0.45552787,1,0.5437781,0.5437781,0,0.9739628,1,0.90124893,0.42645606
+414.png,some people say religion is a labor of love,multibully,,0,0,-100,-100,0,0.7529444,0.2470556,0,0.6156171,0.38438284,2,0.57609767,2,0.52414906,0.47001153
+419.jpg,me going to sleep at 4 am my mom waking up at 4 am,multibully,,0,0,-100,-100,0,0.58408386,0.41591612,0,0.8186069,0.1813931,0,0.832993,1,0.75495917,0.45231342
+420.png,that's black people for ya what did you expect,multibully,,1,0,-100,-100,0,0.7048235,0.29517648,0,0.5302231,0.46977696,2,0.77936804,1,0.8760917,0.44971246
+422.png,"telling a girl you jerk off to her is the ultimate compliment, with all the free porn there is, she was chosen",multibully,,0,1,0,1,0,0.7962699,0.20373009,0,0.50047946,0.4995206,0,0.7986869,1,0.94856143,0.44137606
+431.jpg,when coinDCX comes with an offer you can't deny:mere pass ek scheme hai,multibully,,0,1,1,1,0,0.5499815,0.45001855,0,0.88149476,0.11850529,0,0.6909554,1,0.6073936,0.46030563
+438.png,"my parents lived better with a high school diploma than i do with a 4 year degree of the 3 million available jobs today, less than 20% require a 4 year degree ""we are lending money we don't have to kids who can't pay it back to train them for jobs that no longer exist. that's nuts -mike rowe",multibully,,0,0,-100,-100,0,0.63054526,0.36945468,0,0.80043834,0.19956169,2,0.36116636,1,0.7897066,0.4664596
+445.jpg,Mini Portable Projector Sirf 999/- Me LINK KIDHAR HAI? -LINK BIO MEIN HAI-,multibully,,0,0,-100,-100,1,0.51563233,0.51563233,0,0.7574173,0.24258266,1,0.603255,1,0.7448274,0.45474324
+449.jpg,Heartbreaking Picture From Assam fter Earthquake,multibully,,1,0,-100,-100,0,0.61834353,0.38165647,0,0.8936424,0.10635762,0,0.6198209,1,0.63233846,0.46802554
+457.jpg,WHEN YOU CAN'T REMEMBER THE WORD 'AQUARIUM' LIQUID ZOO,multibully,,0,0,-100,-100,0,0.5878534,0.41214663,0,0.9427072,0.057292838,0,0.5733038,1,0.61822927,0.4693349
+461.jpg,Bowlers with their famous celebrations after their wicket,multibully,,0,0,-100,-100,0,0.634499,0.365501,0,0.911084,0.088916,1,0.5414401,1,0.80238503,0.47293755
+484.png,bitch please go back to england,multibully,,1,1,2,1,0,0.6123527,0.38764724,1,0.61638284,0.61638284,0,0.68088245,1,0.9707748,0.41234368
+488.png,i hate 3 things: vampires. werewolves and witches,multibully,,0,0,-100,-100,0,0.600819,0.399181,0,0.7202658,0.27973422,3,0.42902917,1,0.8478394,0.46541923
+501.jpg,sab postponed ho sakta hai but THE POLITICAL RALLIES!!! I think it comes under essential services,multibully,,1,1,1,1,1,0.7189562,0.7189562,0,0.67378765,0.32621235,1,0.80689704,1,0.93101704,0.4697019
+511.jpg,"Once you carry your own water,you will learn the value of every drop'This is a deep",multibully,,0,0,-100,-100,0,0.82814723,0.17185272,0,0.95066303,0.049336977,0,0.6710038,1,0.73524916,0.47278917
+519.jpg,main aaj bhi bowlers ko bure tarha todta hu,multibully,,0,0,-100,-100,0,0.6057137,0.39428627,0,0.7953196,0.2046804,0,0.5516448,1,0.79409176,0.46894106
+520.png,"also, my best friend emma says: fuck off forever and ever",multibully,,0,0,-100,-100,0,0.83795655,0.16204347,1,0.5104918,0.5104918,0,0.9494412,1,0.7716427,0.43220648
+536.png,you come home and found this.. what do you do ???,multibully,,0,0,-100,-100,0,0.6151617,0.38483828,0,0.95307505,0.04692496,0,0.7440029,1,0.88448995,0.45875823
+540.png,what are you doing ? nothing babe just women stuff you crashed the car again?,multibully,,0,1,2,1,0,0.53069544,0.4693046,1,0.62270063,0.62270063,0,0.89605165,1,0.9169499,0.43159884
+543.jpg,"To his family and country, Mr Abdelgawad is now a hero who fulfilled a nearly impossible mission that could hve cost his life had it gone wrong",multibully,,0,0,-100,-100,0,0.79508877,0.2049112,0,0.73787713,0.26212284,0,0.9755283,1,0.93196356,0.45765394
+550.png,i just wanna show you something comment what you think he's gonna show this goat fucker??,multibully,,0,0,-100,-100,0,0.70331687,0.29668316,1,0.5016701,0.5016701,0,0.9951284,1,0.83007455,0.43883666
+555.jpg,nothing can beat the taste of roadside tea,multibully,,0,0,-100,-100,0,0.7047874,0.29521257,0,0.919714,0.08028601,0,0.37909988,1,0.727079,0.47808272
+582.png,"part of america, ""muslims have always been starting in colonial times"" and they were hijackers and terrorists back then too you f'n jackass",multibully,,0,1,2,1,0,0.75246406,0.24753587,1,0.7962286,0.7962286,2,0.8221131,2,0.87342787,0.43590468
+584.png,"oh, he's using you for sex? stop bitching, sex is awesome. complain when he's using you for laundry ..or a human shield",multibully,,1,0,-100,-100,0,0.7895151,0.21048489,1,0.75250775,0.75250775,0,0.92673653,1,0.9245501,0.4220093
+591.jpg,WAIT  A SECOND THIS ISN'T MY NEST,multibully,,1,0,-100,-100,0,0.52508956,0.4749104,0,0.88900656,0.11099342,0,0.46238443,1,0.68550825,0.45944166
+597.jpg,*ye jo halka halka suroor plays* college freshers: SCOOPWHOOP.com,multibully,,0,0,-100,-100,1,0.571,0.571,0,0.6954453,0.3045547,1,0.83362895,1,0.5312266,0.45963725
+610.png,there is no such thing as an appropriate joke that's why it's a joke,multibully,,1,0,-100,-100,0,0.7484042,0.25159585,0,0.91569024,0.08430981,0,0.8018598,1,0.7928526,0.46813262
+615.jpg,me who can't addord netflix People discussing latest Netflix show SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.5949574,0.40504256,0,0.8899917,0.11000828,1,0.77841824,1,0.56018597,0.47551903
+619.jpg,"2 Gujarat Men Try Delivering Paan Masala Via A Drone, Cops Arrest Them After Video Goes Viral…Modern problems require modern solutions",multibully,,1,1,0,1,1,0.61330175,0.61330175,1,0.786169,0.786169,2,0.94678843,1,0.9049551,0.3983742
+631.jpg,Aur batao Hamari yaad aati hai ky,multibully,,0,0,-100,-100,1,0.5572101,0.5572101,0,0.57417244,0.42582753,0,0.6082581,1,0.65306646,0.437971
+649.jpg,"Success actor hone k liye talent ni, Baap successful mangta hai - Karan the Motherboard Johar",multibully,,1,1,0,1,0,0.56154674,0.4384532,0,0.7585145,0.2414855,0,0.86193234,1,0.895759,0.45650506
+650.png,dishwasher is broken? slap her a few times,multibully,,1,1,0,1,0,0.58447117,0.41552883,0,0.68145525,0.31854475,0,0.9873481,1,0.5793264,0.44075036
+653.jpg,Mohabbat thi isileaye jane diya Road roller hoti toh abi theek kar deta,multibully,,1,0,-100,-100,0,0.5211933,0.47880667,1,0.65158135,0.65158135,0,0.9522613,1,0.74981034,0.42204154
+659.jpg,Bro corona virus ki vaccine tera bhai banayega..! Bhai kidhar mili daaru mujhe bhi bata naa please,multibully,,0,0,-100,-100,1,0.6434701,0.6434701,1,0.8140546,0.8140546,0,0.6931004,1,0.7478959,0.424825
+667.jpg,"Ratan Tata :- Take my credit card, buy me a coke and get something for yourself too Me and the boys:-",multibully,,0,0,-100,-100,0,0.58213586,0.41786414,0,0.5867747,0.4132253,0,0.8440069,1,0.85558486,0.42384824
+673.jpg,Person Responsible for Mumbai's Power cut As delhi lost to Mumbai Indians In yesterday's IPL Match Revenge Taken Successfully !,multibully,,1,0,-100,-100,0,0.5706128,0.42938718,1,0.5235588,0.5235588,0,0.9025556,1,0.95956635,0.44261795
+678.png,lol she thinks she's a goat,multibully,,0,0,-100,-100,0,0.68680567,0.31319433,0,0.69224846,0.30775154,0,0.8862254,1,0.6979669,0.4530823
+680.png,how i see kim burell everytime she grabs a mic!,multibully,,0,0,-100,-100,0,0.6976429,0.30235705,0,0.63961166,0.36038834,0,0.9983569,1,0.95512825,0.4402297
+684.png,the look you give your friend when you know hes lyin,multibully,,0,0,-100,-100,0,0.82116526,0.17883475,0,0.788753,0.21124703,0,0.9542487,1,0.87876886,0.43301123
+696.png,when you walk in your room and your uncle is naked on your bed. this is where the fun begins,multibully,,0,1,0,1,0,0.6601551,0.3398449,1,0.55987185,0.55987185,0,0.774389,1,0.76432216,0.42928207
+698.png,you are the funny one maybe i'll kill you last,multibully,,0,0,-100,-100,0,0.9318927,0.0681073,0,0.78820926,0.21179068,0,0.9903447,1,0.92670316,0.4351387
+709.jpg,"beingmoron@beingmoron Someone trying to build conversation sending me: "" aur bataa"" Me: iska answer To Aata Hi Nahi Mujhe",multibully,,0,0,-100,-100,0,0.5300586,0.46994138,0,0.7215647,0.27843532,0,0.5770236,0,0.53211945,0.45564955
+717.jpg,"Mom appreciated me for helping her in House work Me, who just changed the bedsheet becoz the tea was dropped",multibully,,0,0,-100,-100,0,0.6650345,0.33496553,0,0.8095235,0.19047654,0,0.8120742,1,0.61807054,0.46100467
+736.png,when you have scented pokeballs,multibully,,0,0,-100,-100,0,0.60462326,0.39537677,0,0.8938805,0.10611947,0,0.5033137,1,0.64295125,0.47007018
+739.jpg,Random kid in class:- 5 mins later :,multibully,,0,0,-100,-100,1,0.55858594,0.55858594,0,0.82695913,0.17304088,0,0.6525906,1,0.78958124,0.45456356
+759.jpg,Me in every semester *Me Please God Study Takes notes Attending Lesson,multibully,,0,0,-100,-100,0,0.5271037,0.47289625,0,0.9397724,0.06022757,0,0.42291263,1,0.71681714,0.4668334
+773.jpg,he cheated on her..She said she will only take him back if he tatood her face 20 times over his body.He did..Then she said she dont want him back,multibully,,0,1,0,1,0,0.75497276,0.24502729,1,0.59812856,0.59812856,0,0.989301,1,0.915401,0.4363994
+775.jpg,if you are student and want to be fit naturally then follow @fitness.tycoon_,multibully,,0,0,-100,-100,0,0.5989993,0.40100074,0,0.77025527,0.22974476,0,0.48408878,1,0.784441,0.4585814
+793.jpg,how she describes your dick while y'all are dating vs. after y'all break up,multibully,,1,0,-100,-100,0,0.7455141,0.2544859,1,0.5319209,0.5319209,0,0.8932581,1,0.91954076,0.42722416
+794.png,having a bad day? you could be a siamese twin attached to a gay brother who has a date and you're the only one with an ass,multibully,,0,0,-100,-100,0,0.7509679,0.24903212,1,0.79310685,0.79310685,2,0.4938355,1,0.9130754,0.40677977
+801.jpg,Ye virat ka k,multibully,,0,0,-100,-100,1,0.5199541,0.5199541,0,0.8282988,0.17170113,0,0.70130706,1,0.5577023,0.4638277
+823.jpg,sister wadding,multibully,,0,0,-100,-100,0,0.6123684,0.38763157,0,0.56674737,0.4332526,0,0.83035874,1,0.8235624,0.4406315
+843.jpg,food delivery mom taking care of her kids while at work,multibully,,0,0,-100,-100,0,0.60856533,0.39143464,0,0.89868295,0.10131698,2,0.41713172,1,0.8278377,0.46678466
+870.png,do i make you horny baby.... do i??????,multibully,,1,0,-100,-100,0,0.5436012,0.45639884,1,0.52973425,0.52973425,0,0.92407817,1,0.9785568,0.430228
+880.png,man survives a kodak bear attack with just a 22 pistol the friend he shot in the knee was not as lucky,multibully,,0,0,-100,-100,0,0.57828707,0.42171296,0,0.56574786,0.4342521,0,0.81520164,1,0.7678698,0.45234388
+887.jpg,When Parents Discuss About Marriage Boys: Girls:,multibully,,0,0,-100,-100,0,0.51350945,0.48649052,0,0.9092203,0.09077976,2,0.52304167,1,0.89249766,0.4603665
+888.png,man of the year,multibully,,0,0,-100,-100,0,0.61215025,0.38784975,0,0.9350681,0.06493191,0,0.3803126,1,0.7553926,0.48178643
+902.png,"when you used to be cool, but now you're basically mentally retarded from years of drug abuse, fat from getting sober, and have no friends",multibully,,0,1,0,1,0,0.9179344,0.082065605,0,0.84025705,0.15974294,0,0.73349434,1,0.81334156,0.44816834
+909.jpg,*Maldives bans Indian Tourists* Bollywood celebs: Andhera hogya hai jeevan mein bilkul,multibully,,0,1,0,1,0,0.5043176,0.49568245,1,0.8338821,0.8338821,2,0.9536579,1,0.9000288,0.40836322
+915.jpg,After seeing my 20 missed calls* TUMNE CALL KIYA THA..?   NAHI 20 BAAR GALTI SE LAG GAYA THA..!!,multibully,,0,0,-100,-100,0,0.53565717,0.46434283,0,0.59298885,0.4070111,0,0.94938517,1,0.8609684,0.44911474
+917.jpg,"KKR dugout had 54 written on a placard.could be code for something intricate, or could just be telling Morgan to use 5-4 field….Uttkarsh Bhatt..Bta rhe h 5 m  se 4 match haar chuke h or mat harna mdrchd",multibully,,0,1,0,1,1,0.6073997,0.6073997,1,0.58411795,0.58411795,0,0.9262701,1,0.83064234,0.4393189
+922.png,how you guys think you looks like but when pados wale pandit jee sees you,multibully,,0,0,-100,-100,1,0.65270895,0.65270895,1,0.722047,0.722047,0,0.98175794,1,0.9929518,0.42467102
+923.jpg,Teammates Helping Each Other,multibully,,1,0,-100,-100,0,0.5663408,0.43365926,0,0.9587189,0.041281104,0,0.30357024,1,0.8163813,0.47287807
+933.jpg,"CAN'T BELIVE WERE THIS CLOSE IN FEBRURY TO GET RID OF THIS PENDAMIC …Daily New Cases..Feb 15,2020,mar 15 2020, apr 13,2020, may 12,2020, jun 10,2020, jun 9,2020, Aug 7, 2020, Sep 5, 2020, Oct 4, 2020, Nov 2,2020, Dec 1,2020, Dec 30,2020, jan 28,2021, Feb, 26,2021, Mar 27, 2021, Apr 25,2021",multibully,,0,0,-100,-100,0,0.53811187,0.46188813,0,0.94598097,0.05401901,0,0.3569522,1,0.8004616,0.4732086
+948.png,ain't nothing but a goat,multibully,,0,0,-100,-100,0,0.7523509,0.24764912,0,0.90350145,0.09649856,0,0.7553708,1,0.62403345,0.46355426
+965.jpg,Boys going to meet crush Boys in sister's wedding,multibully,,0,0,-100,-100,0,0.60023105,0.39976898,0,0.76698047,0.23301952,2,0.63483506,1,0.92279124,0.4516374
+966.png,"""i don't think all of the suffering of african-americans during the period of slavery can ever equate to what's been done to white conservative americans in the past 8 years of obama's presidency"" michelle bachman yes, she really said this! conservatives are destroying our future | cadof.org """,multibully,,0,0,-100,-100,0,0.80307305,0.19692695,1,0.63132286,0.63132286,2,0.4895402,1,0.64454573,0.45637572
+975.jpg,"He had two phones,1 for Uber/Ola & 1 for streaming! I asked why so?He said,apne  kaam se kaam rakho .Idhar koi motivational tweet ka material nahi hai.",multibully,,0,0,-100,-100,0,0.6564339,0.34356615,0,0.62275445,0.37724555,0,0.68917996,1,0.8199266,0.4520756
+989.jpg,me when i try to comfort someone',multibully,,0,0,-100,-100,0,0.9066464,0.093353555,0,0.98776895,0.012231005,0,0.93441254,1,0.8222568,0.45048326
+1006.png,"lets erect a memorial to all the americans murdered by an illegal alien make it 1,500 miles long 30 feet tall and put it on the southern border",multibully,,0,0,-100,-100,0,0.7664541,0.23354588,0,0.624548,0.37545195,2,0.4861596,1,0.5608073,0.46959445
+1019.jpg,Dad's love,multibully,,0,0,-100,-100,0,0.71963596,0.28036407,0,0.92524266,0.07475733,0,0.6457749,1,0.8045901,0.46379519
+1071.jpg,one day to my man because he deserves that shit,multibully,,0,0,-100,-100,0,0.8744285,0.12557144,0,0.97135913,0.02864086,0,0.9201363,1,0.77778757,0.46904513
+1075.jpg,having the right woman in your life is like printing your own money,multibully,,0,0,-100,-100,0,0.77258116,0.22741888,0,0.95762837,0.04237169,0,0.60783494,1,0.85286874,0.4668667
+1078.png,what the people deserve: the right to love who they want the right to equal pay and respect the right to become a citicen and work hard like the rest,multibully,,0,0,-100,-100,0,0.7753984,0.22460161,0,0.8589399,0.14106007,2,0.512203,1,0.7329124,0.46986657
+1084.png,"apparently you can get a pull start on your dishwasher, who knew",multibully,,1,0,-100,-100,0,0.7241052,0.27589485,0,0.9145326,0.085467376,0,0.5988006,1,0.67451,0.47792158
+1085.jpg,"Me:Fill her up please.Gas station attendant:Fill it all the way up?Me:Yes sir,I want a full tank.",multibully,,1,0,-100,-100,1,0.5793765,0.5793765,0,0.7495025,0.2504975,0,0.7809852,1,0.8161514,0.45975977
+1101.jpg,when the restaurant is small but the owner is creative,multibully,,0,0,-100,-100,0,0.6462578,0.35374218,0,0.9419991,0.05800096,0,0.3671034,1,0.7145699,0.47943267
+1126.png,stomp on my flag i'll pound your ass,multibully,,0,0,-100,-100,0,0.6715115,0.32848853,1,0.69474626,0.69474626,0,0.9578548,1,0.87098384,0.4433301
+1160.png,proof you can be a fruit and a vegetable,multibully,,0,0,-100,-100,0,0.7242034,0.2757966,0,0.9410597,0.05894027,0,0.33762506,1,0.75204855,0.4765517
+1169.jpg,"honey, tell me what's wrong  Every ''C"" in pacific ocean is pronounced differently.",multibully,,0,0,-100,-100,0,0.63824314,0.36175683,0,0.79820025,0.20179974,2,0.4526996,1,0.8537689,0.45588297
+1176.png,dad: we need to tell you something.. your mother and i are siblings alabama kids:,multibully,,0,0,-100,-100,1,0.5724342,0.5724342,0,0.66364837,0.3363516,2,0.49992955,1,0.94144094,0.41965538
+1177.jpg,FALL IN LOVE WITH SOMEONE WHO DOESN'T MAKE YOU THINK LOVE IS HARD. THISWALLWASBORINGME,multibully,,0,0,-100,-100,0,0.90191853,0.09808148,0,0.9223426,0.0776574,0,0.84534645,1,0.7255641,0.45049453
+1181.jpg,We all have that one friend who is always hungry TAG YOUR FRIEND!,multibully,,0,0,-100,-100,0,0.9160064,0.08399364,0,0.9344756,0.06552442,0,0.5764371,1,0.7797714,0.4470645
+1196.png,"you find it offensive, i find it funny... that's why i'm happier than you",multibully,,0,0,-100,-100,0,0.86418045,0.13581958,0,0.79469514,0.20530488,0,0.8915676,1,0.91970164,0.44575724
+1201.jpg,Beta ek zamaana tha jab ham resturant me khane jaya karte the SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.56455827,0.43544173,0,0.67570233,0.3242977,1,0.62885594,0,0.5632839,0.460532
+1207.jpg,"long distance couples after 3 months of lockdown ye kahan dark hai, ye toh zindagi hai SCOOPWHOOP.com",multibully,,0,0,-100,-100,0,0.5689915,0.43100852,0,0.8183915,0.18160848,3,0.4944666,1,0.8704213,0.44128865
+1208.png,rev up those gas chambers,multibully,,1,0,-100,-100,0,0.5829921,0.41700792,0,0.87590545,0.12409455,0,0.40119386,1,0.72852397,0.46777436
+1216.png,when you accidentally fall in the toilet,multibully,,0,0,-100,-100,0,0.5290645,0.4709355,0,0.9122835,0.0877165,0,0.6065672,1,0.70346373,0.4696508
+1221.jpg,Yoga mats were invented in the 90s People before the 90s: SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.627084,0.37291604,0,0.85471666,0.14528339,1,0.39317968,1,0.67621094,0.4743355
+1230.png,what! no i am not asian,multibully,,0,0,-100,-100,0,0.50419134,0.4958087,0,0.61541253,0.38458744,0,0.525242,1,0.90389186,0.4496306
+1234.png,all women should be believed until one of those bitches accuses a democrat,multibully,,1,1,2,1,0,0.8027028,0.19729716,1,0.66901845,0.66901845,2,0.62253773,1,0.83094454,0.4504543
+1237.jpg,me on a diet chole bhature,multibully,,0,0,-100,-100,0,0.5618125,0.4381875,1,0.56410104,0.56410104,0,0.8596556,1,0.8877284,0.43830335
+1244.png,when you're going 90 mph in a school zone and the pre-schoolers are crossing the street this is where the fun begins,multibully,,1,1,0,1,0,0.54383224,0.45616773,0,0.89685434,0.10314561,0,0.38102826,1,0.81274575,0.46016365
+1247.jpg,me my career,multibully,,0,0,-100,-100,0,0.55521804,0.444782,0,0.9533174,0.046682607,0,0.38699025,1,0.7050548,0.47603136
+1248.png,"when your ex says ""you won't find a b*tch half the woman i am""",multibully,,0,0,-100,-100,0,0.8250692,0.1749308,0,0.5234022,0.4765978,0,0.94632936,1,0.9195093,0.42137736
+1285.jpg,Girls after applying coconut oil Expectation Reality,multibully,,0,0,-100,-100,1,0.52898264,0.52898264,0,0.83059734,0.1694027,1,0.33066788,1,0.8561676,0.46285313
+1288.png,"when i was in high school i got braces a friend told me, ""you're so black, even your teeth are behind bars,""",multibully,,1,0,-100,-100,0,0.7676527,0.23234724,1,0.55711013,0.55711013,2,0.5349438,1,0.90217906,0.43739027
+1294.png,i cant compare my love of bacon to anything because bacon is the standard that i compare all else to,multibully,,0,0,-100,-100,0,0.72573286,0.27426714,0,0.90624714,0.093752846,0,0.4096197,1,0.70271146,0.47213286
+1295.jpg,"A Cambridge phD scholar met Sushant Singh Rajput at Paris airport, thought he was a Physicist Namrata Datta said, "" I had no idea he was a bollyhood star. I thought he was a physicist studing in France. The way he was explaining physics was mesmerising.""",multibully,,0,0,-100,-100,0,0.54934245,0.45065755,0,0.509144,0.49085596,0,0.79347575,1,0.91197366,0.44177932
+1302.png,and i even got a job in congress! these americans are so stupid!!! yep.........and then i beat the usa immigration sytem by marrying my own brother!,multibully,,0,1,0,1,0,0.6455203,0.35447964,1,0.77843523,0.77843523,2,0.791132,1,0.86627585,0.4288126
+1304.png,i said i wanted to see his kids so he came in my eye,multibully,,1,0,-100,-100,0,0.63340884,0.36659116,0,0.91385233,0.08614763,0,0.9866477,1,0.9248443,0.44434127
+1307.jpg,When i lost my new pencil on first day of school. EVERYBODY .... SAB KE SAB CHOR HAI SAALE,multibully,,0,0,-100,-100,0,0.6122443,0.38775572,0,0.8396136,0.16038635,0,0.50297046,1,0.54158044,0.45069975
+1315.jpg,"Delhi Guy : mujhe aaj office se ghar aane mei 2 ghante lag gaye oh no Bengaluru Guy *who spent 2 hours just at silk board* : jahaan humaare sapne poore hote hai, waha inke struggle shuru hote hai",multibully,,1,0,-100,-100,1,0.53247106,0.53247106,1,0.57187307,0.57187307,0,0.44328246,1,0.80270916,0.43037853
+1324.png,"the face you make when you don't understand what ""stop resisting"" means",multibully,,0,0,-100,-100,0,0.78240776,0.21759227,0,0.8911027,0.10889735,0,0.61870754,1,0.8450821,0.47030306
+1325.jpg,HDFC BANK - BANK MEME`S KE DUNIYA BANK LITE,multibully,,0,0,-100,-100,1,0.6489073,0.6489073,0,0.8159969,0.18400313,1,0.7121821,1,0.63360137,0.45566684
+1334.png,deep the stupid runs swallow your mother should have,multibully,,1,1,0,1,0,0.713151,0.28684905,1,0.551046,0.551046,0,0.9095648,1,0.78001547,0.43906808
+1339.jpg,What if we used 100% of your brain?,multibully,,0,0,-100,-100,0,0.69783306,0.30216697,0,0.9022772,0.09772288,0,0.3509291,1,0.8323111,0.47871396
+1343.jpg,Mitron wo rakhi k liye bolegi Tum Friendhsip band pe tikke rehna,multibully,,0,0,-100,-100,1,0.5191393,0.5191393,1,0.5526449,0.5526449,0,0.97268367,1,0.89245987,0.43771267
+1348.png,i remember when your mom dropped you off to school she got a fine for littering,multibully,,0,0,-100,-100,0,0.7469492,0.25305077,0,0.68183506,0.31816494,0,0.84988153,1,0.7943553,0.45080385
+1352.png,"gotta be careful who you fuck with. people will learn you, just to hurt you",multibully,,0,0,-100,-100,0,0.8269465,0.17305352,0,0.5563959,0.44360414,0,0.34944966,1,0.9124572,0.44318184
+1354.png,the flavor in this dish was nonexistent customers started a religion just to believe it was there,multibully,,0,0,-100,-100,0,0.6831841,0.3168159,0,0.746075,0.25392503,2,0.4543672,1,0.6951695,0.4666903
+1365.jpg,me:talks to the smart girl for notes cause i was absent pados wali aunty:wouldn't that mean your in a relationship,multibully,,0,0,-100,-100,1,0.55052346,0.55052346,1,0.61788946,0.61788946,0,0.8794281,1,0.8169572,0.41016778
+1369.jpg,Man karta he tum koi esa (password)lagau ki koi tumhe dekhe to pehle (OTP)mere pass aaye,multibully,,0,0,-100,-100,0,0.55055,0.44945002,1,0.63494927,0.63494927,0,0.374139,1,0.6810179,0.43907052
+1374.png,if your grandma's couch was always covered in plastic it's because she was a squirter,multibully,,0,0,-100,-100,0,0.7379949,0.2620051,1,0.524011,0.524011,0,0.9244793,1,0.75716454,0.4395553
+1386.png,nobody: arabic talk show: good morning i hate women,multibully,,0,1,2,1,0,0.54670626,0.45329374,1,0.8009099,0.8009099,2,0.85468346,1,0.9732646,0.39819318
+1392.png,women of power,multibully,,1,0,-100,-100,0,0.671,0.329,0,0.9033694,0.09663059,2,0.39058796,1,0.7135343,0.4803952
+1398.png,"girls reaction when teacher says ""get out of class"" boys reaction gorilla in a fuckin coupe reaction",multibully,,0,0,-100,-100,0,0.65336454,0.34663546,1,0.57679343,0.57679343,0,0.55141556,1,0.85118353,0.43459958
+1405.jpg,SRH Removed Warner as Captain after his continuos failures. Eion Morgan,multibully,,0,0,-100,-100,0,0.52209896,0.47790107,0,0.7802343,0.21976574,0,0.9851098,1,0.94742554,0.45689386
+1406.png,you talk like a fag and your shit's all retarded,multibully,,0,1,0,1,0,0.8745535,0.12544648,0,0.63199687,0.36800316,0,0.98782814,1,0.77699375,0.4454474
+1414.png,it can't be homicide if there is no race,multibully,,0,1,0,1,0,0.77819866,0.2218013,1,0.5572188,0.5572188,2,0.5603499,1,0.87609345,0.44145975
+1415.jpg,"When someone says 'Meri aankhon m aaj ye aansu ki wajah tum ho"" Le me: Na rahenge aankh, na rahenge aansu.",multibully,,0,0,-100,-100,0,0.6619471,0.33805296,0,0.55343103,0.4465689,0,0.9755892,1,0.7821653,0.426266
+1422.png,"""america has stolen the jews the jews of god his jewelry the negroes they are the true hebrews"" google it",multibully,,0,1,2,1,0,0.8811588,0.11884122,1,0.8552906,0.8552906,2,0.76510686,2,0.8101224,0.4422477
+1426.png,you just went full goat fucker never go full goat fucker,multibully,,0,1,0,1,0,0.69755757,0.3024425,1,0.6610081,0.6610081,0,0.96868837,1,0.83430755,0.44030058
+1430.png,"dad, dishwasher is loaded again '' ''",multibully,,0,0,-100,-100,0,0.6490762,0.35092372,0,0.84449154,0.1555085,0,0.7950399,1,0.69255024,0.45965728
+1434.png,take me out for dinner first then you have my permission to play lol,multibully,,0,0,-100,-100,0,0.6257252,0.3742748,0,0.62091684,0.3790832,0,0.8339542,1,0.8100697,0.4388044
+1448.png,if you're protesting against this man visiting the uk. ...but protesting for this woman to return to the uk.. ...then you're a special kind of stupid,multibully,,0,0,-100,-100,0,0.76742256,0.23257741,1,0.81939375,0.81939375,2,0.7432716,1,0.9798426,0.4181549
+1463.jpg,MOST OF THE BOYS WEAKNESSES,multibully,,0,0,-100,-100,0,0.58279175,0.41720822,0,0.86798614,0.1320138,2,0.5120035,1,0.90173954,0.4577005
+1465.jpg,Vishnu @Haramibaba2 When you find out how she is getting promotion so Fast,multibully,,0,0,-100,-100,1,0.5210803,0.5210803,0,0.6047037,0.39529628,0,0.96295875,1,0.7946388,0.4381246
+1477.jpg,PUBG SAVED LIVES HUNDREDS OF LIVES DURING GAS LEAK INCIDENT venkatapuram resident patala suresh who was awake till 2AM playing pubg found the smell of gas leak at vizag LG company informed police and saves the life of many Mymom* My son oubg ACE tier,multibully,,0,0,-100,-100,1,0.576735,0.576735,0,0.522346,0.47765395,0,0.84177977,1,0.82656807,0.43920475
+1479.jpg,When Feminist get To Know 'Practise Makes A Man Perfect' Not Woman,multibully,,0,1,2,1,0,0.7234392,0.27656084,0,0.7590377,0.24096236,2,0.48503402,1,0.94117635,0.45581505
+1485.jpg,"When you ask her what's wrong and she says ""Nothing"", but then she spends rest of the day looking at you like..",multibully,,0,0,-100,-100,0,0.82429713,0.17570293,0,0.8126772,0.18732274,0,0.9486459,1,0.7861902,0.44635546
+1499.jpg,DESI ADUKT TROLLS This is the reason why we guys Loves to attend marriage functions,multibully,,0,0,-100,-100,0,0.55783254,0.44216746,1,0.67300093,0.67300093,0,0.52616465,1,0.92249125,0.4093524
+1503.jpg,"Alive,yet dead: In UP, these men fight to prove their existence MEANWHILE HIS FAMILY MEMBERS TO GOVT: Dekho Yeh Zinda Hai",multibully,,0,0,-100,-100,0,0.7547719,0.24522808,1,0.61545414,0.61545414,3,0.47374082,2,0.848555,0.45373106
+1511.jpg,WHEN YOU ARE STARING AT YOUR CRUSH IN FRONT OF HER MOM,multibully,,0,0,-100,-100,0,0.830691,0.16930905,0,0.63230205,0.36769798,0,0.98734635,1,0.7862972,0.4303124
+1517.jpg,When you're travelling in a train and suddenly hear clapping sounds @Humorousbeeing,multibully,,0,0,-100,-100,0,0.59525055,0.4047494,0,0.81428623,0.18571375,0,0.7635784,1,0.6031033,0.46160752
+1528.png,ask that dumb ass question again and i'll head out,multibully,,0,0,-100,-100,0,0.64886695,0.35113308,1,0.6518847,0.6518847,0,0.9646157,1,0.88810676,0.42519444
+1549.jpg,"You have $400,your ex really needs $100,your girl also needs $200.How much do you have?$400and unread messages I like this guy.",multibully,,0,0,-100,-100,0,0.76601,0.23399006,0,0.6433793,0.35662073,0,0.9365727,1,0.89945996,0.4408275
+1551.jpg,*shopkeeper *me ekdum kadak maal hai,multibully,,0,0,-100,-100,1,0.5755909,0.5755909,0,0.61910933,0.3808907,2,0.36170682,1,0.6797081,0.4500177
+1557.jpg,worst barber in the shop Excuse me!brother.brother idhar..*Me not trying to make an eye contact*,multibully,,0,0,-100,-100,0,0.5877308,0.4122692,1,0.73646873,0.73646873,0,0.893132,1,0.87055236,0.42310756
+1558.png,"me giving nicknames to men who have wasted my time: we will call you, ""almost.""",multibully,,0,0,-100,-100,0,0.83030856,0.16969144,0,0.7255441,0.2744559,0,0.4101276,1,0.87035006,0.44802946
+1565.jpg,Two reasons I don't trust people:1.I don't know them 2.I know them,multibully,,0,0,-100,-100,0,0.74670035,0.25329965,0,0.8771218,0.12287818,3,0.32445335,1,0.9109647,0.460801
+1571.jpg,experts:you should have an aggressive  approach to face spin bowling in tests.Rishabh pant:jaan de denge iske liye aggressive ki kya baat kar rahe ho aap,multibully,,0,0,-100,-100,1,0.5882026,0.5882026,1,0.64316285,0.64316285,0,0.87455946,1,0.9682929,0.4379531
+1575.jpg,darwaza matt kholana bohot khatarnaak log hai tumhare birthday pe tumhe he peetenge or kharcha bhi tumhi se karayenge,multibully,,0,0,-100,-100,0,0.5809,0.4191,1,0.5735426,0.5735426,3,0.50516593,1,0.815713,0.42443964
+1582.png,it's not because you're muslim anti-semitic anti-america,multibully,,1,1,0,1,0,0.8003421,0.19965789,1,0.8411312,0.8411312,2,0.80209684,2,0.8461422,0.43266094
+1588.png,"you care more about your truck than you care about me well, my truck blows gaskets, not other dudes so.",multibully,,0,1,0,1,0,0.6388091,0.36119094,0,0.6714995,0.32850054,0,0.65948176,1,0.79739606,0.4587791
+1589.jpg,A mesmerising temple inside the cave in Malaysia lord murugan,multibully,,0,0,-100,-100,1,0.5263533,0.5263533,1,0.5034872,0.5034872,0,0.5735788,1,0.76945424,0.4489455
+1614.png,exclusive footage of barack and michelle's 1st kiss,multibully,,0,0,-100,-100,0,0.713098,0.28690204,0,0.5909236,0.4090764,0,0.9746081,1,0.8536514,0.43143448
+1627.jpg,I've finally found it..after 15 years the scroll of truth!people can have entirely opposite opinions&still love each other NYEHHH Bhakts,multibully,,0,0,-100,-100,0,0.75006306,0.24993692,0,0.5331675,0.4668325,2,0.3959852,1,0.8880076,0.43305457
+1646.png,shit... the dishwasher is broken again,multibully,,0,0,-100,-100,0,0.6481688,0.35183117,0,0.8340326,0.16596742,0,0.7702534,1,0.6036889,0.45935544
+1654.png,i like my women like i like my subs 6 and 12,multibully,,0,0,-100,-100,0,0.68241566,0.3175843,0,0.8766381,0.12336183,0,0.50019366,1,0.8502174,0.44634676
+1661.jpg,lemme handle that..,multibully,,0,0,-100,-100,0,0.66291434,0.33708572,0,0.9686941,0.031305913,0,0.8926786,1,0.6377964,0.46724865
+1675.jpg,i don't know if you agree or not but mangoes taste different when you pluck them yourself and eat,multibully,,0,0,-100,-100,0,0.69982344,0.30017656,0,0.7783434,0.22165659,2,0.38194007,1,0.72429407,0.47179097
+1678.jpg,dhinchakpooja_official Let's collaborate!im an Indian rapper #dhichakpooja Thodi Sharam karlo Bhen!,multibully,,0,1,0,1,1,0.59153724,0.59153724,1,0.6109555,0.6109555,0,0.96254295,1,0.93969125,0.43634528
+1680.jpg,"Me: "" If i get drunk please take care of me"" My friends:",multibully,,0,0,-100,-100,0,0.7414238,0.25857624,0,0.5846086,0.4153914,0,0.9414282,1,0.8141175,0.43110108
+1692.jpg,mere college me mote boob wali ladki ka naam kya hai WAAH BHOSDIKE WAAH,multibully,,0,1,0,1,1,0.59883845,0.59883845,1,0.8153614,0.8153614,2,0.72896737,1,0.95387405,0.4147005
+1694.jpg,OMG KO OMFG LIKHNE SE AAPKA U.S. KA VISA NAHI LAGNE WALA BC FB/RealBcBilli,multibully,,0,0,-100,-100,1,0.50169575,0.50169575,1,0.69068086,0.69068086,2,0.40486816,1,0.8203643,0.42609394
+1698.jpg,When a girl knows she is gonna fail this semester So she start giving professor hot looks @sab.chutzpah.hai,multibully,,0,1,0,1,1,0.60406053,0.60406053,1,0.72642875,0.72642875,0,0.5671975,1,0.68967414,0.41316152
+1707.jpg,Boss:we need to stop testing our products on animals Me:but why..?Boss:because we make DI_IDOS!,multibully,,0,0,-100,-100,0,0.5466589,0.45334113,1,0.52533215,0.52533215,2,0.6283905,1,0.85148007,0.4453439
+1709.jpg,coinDCX is giving bitcoin of worth 100Rs to it's every new user!! 100 rupay ke bitcoin dega!,multibully,,0,0,-100,-100,0,0.64298505,0.35701498,0,0.86072963,0.13927041,1,0.37855434,1,0.7335663,0.4682393
+1711.jpg,never give up! 119 129 121 122 next IG-BcBillu,multibully,,0,0,-100,-100,0,0.5827113,0.41728875,0,0.91970944,0.08029054,0,0.6908434,1,0.6450367,0.4543466
+1718.jpg,FACEBOOK I LOVE YOU BLOODY... DOWN MARKET SARAHAH YOUR EYES IS SO BEAUTIFUL  OMG..WHO IS DIS?? PING ME AT INBOX,multibully,,1,0,-100,-100,0,0.7325353,0.26746473,0,0.60316825,0.39683172,0,0.7025161,0,0.5773841,0.42432576
+1722.jpg,Mummy meri girlfriend pregnant ho gayi hai! par tu toh abhi khud hi baccha hai! DON'T UNDERSTIMATE GOLU!,multibully,,0,0,-100,-100,0,0.514862,0.485138,1,0.72029763,0.72029763,0,0.79924953,1,0.967627,0.42411512
+1729.jpg,Time change People's change But my friend's height still same Tag that friend,multibully,,0,0,-100,-100,0,0.7522285,0.2477715,0,0.936058,0.06394203,0,0.7881411,1,0.54418904,0.45872682
+1742.jpg,HER BRA BE STRONGER THAN  THE MOST RELATIONSHIP THESE DAYS instacomedy.com,multibully,,0,0,-100,-100,0,0.7084389,0.29156116,0,0.8177237,0.18227628,0,0.3287509,1,0.6228018,0.45954856
+1753.jpg,Me to My Grandchildren in 2070 - Beemari to Hmare Jamane Me Hua Karti thi,multibully,,0,0,-100,-100,0,0.54742175,0.45257828,0,0.6686872,0.3313128,0,0.6431229,1,0.9149345,0.43775126
+1754.jpg,MAY THE LIGHT OF LAMPS HARAMKHOR! SEEDHE HAPPY DIWALI BOLA KAR.,multibully,,0,0,-100,-100,0,0.5236081,0.47639194,0,0.7324115,0.26758853,0,0.47234988,1,0.7946302,0.4538589
+1764.jpg,Dr. Batra's Hair Transplant Over 60 lakh hair sucessfully transplanted Before After  DrBatra's,multibully,,0,0,-100,-100,0,0.53253263,0.4674674,0,0.57550955,0.42449045,0,0.96019375,1,0.819622,0.45153153
+1765.jpg,When a realative advices me not ot go outside due to cvid and next day I saw him in market Me -,multibully,,0,0,-100,-100,0,0.5327665,0.46723345,0,0.69225484,0.30774513,0,0.81092244,1,0.7318184,0.44726253
+1771.jpg,"Beta,Bhindi ki sabji kha lo. Who pasand nahi hai. Phir kya pasand hai? Bhindi ki Beti?",multibully,,0,1,0,1,1,0.52873707,0.52873707,1,0.70632267,0.70632267,2,0.5918848,1,0.75615627,0.43714702
+1772.jpg,MAA WOH DEKHO AIRTEL WALI BANDI JIO KA SIM PHENK KE MAAR SAALI KO,multibully,,0,1,0,1,1,0.6440559,0.6440559,1,0.80284345,0.80284345,0,0.6146263,1,0.7615632,0.41141576
+1779.jpg,"RCB win the thriller by 1 run and go tot top of the table. Amazing bowling by RCB. Earlier ABD, then Bowlers. What a comeback! A step closer to E Sala Cup Namde.",multibully,,0,0,-100,-100,0,0.6019072,0.3980928,0,0.66055626,0.33944374,0,0.88658184,1,0.9374572,0.45285186
+1784.jpg,Desi Trolls GIRL FRIEND BEARDED BEARDLESS,multibully,,0,0,-100,-100,0,0.59260553,0.40739447,1,0.7954615,0.7954615,2,0.46804273,1,0.9164525,0.41596267
+1786.jpg,Mango Juice is really good for health APPROX 0% BOYS NOTICED THE MANGO JUICE FIRST @gandufacts,multibully,,0,0,-100,-100,0,0.7382166,0.26178345,0,0.8921778,0.1078222,0,0.48535657,1,0.89501923,0.46148843
+1815.jpg,"duse built a secret apartment in an unused corner of a busy shopping mall, and lived there for 4 years before being discovered MODERN PROBLMES REQUIRE MODREN SOLUTIONS",multibully,,0,0,-100,-100,0,0.5372492,0.46275082,0,0.873032,0.12696804,0,0.71454805,1,0.7641667,0.4623258
+1817.jpg,Ex Hi! I have an exam tomorrow So? Any cheating tips?,multibully,,0,0,-100,-100,1,0.5852565,0.5852565,0,0.72572285,0.27427715,0,0.94641894,1,0.9425183,0.4482569
+1820.jpg,Tarun Kumar I;m your big fan Love from India........... It means lots of love ILLUSION 100 SPEECH 100,multibully,,0,1,0,1,0,0.65252405,0.34747598,0,0.51137453,0.4886255,0,0.9811844,1,0.99280035,0.4299729
+1822.jpg,Find someone who holds your hand like Delhi police  after arresting you.,multibully,,1,0,-100,-100,0,0.5641952,0.4358048,0,0.6210058,0.37899426,2,0.43711835,1,0.87254316,0.45465446
+1827.jpg,"THANK YOU MICRISAFT & GOOGLE Satya Nadella Iam heartbroken by the current situation in India. I'm grateful in U.S government is mobilizing to help . Microsoft will continue to use its voice, resources, and technomlogy to aid relief efforts, and support the purchase of critical oxygen concentration devices.  Sundar Pichai Devastated to see the worsening Covid crisis in India. Google &Googlers are providing Rd 135 Crore in funding for medical supplies, orgs supporting high-risk communities, and grants to help spread critical information.",multibully,,0,0,-100,-100,0,0.62402314,0.37597683,0,0.61482346,0.3851765,0,0.4341625,1,0.8789521,0.4432823
+1830.jpg,"Beta, kya ye hmari Sanskriti hai? Aunty ye to Riya hai Aapki Saanskriti kisi aor ped ke neeche hogi.",multibully,,0,0,-100,-100,1,0.6829093,0.6829093,1,0.7302929,0.7302929,0,0.7918456,1,0.91846913,0.41135642
+1845.jpg,THIS IS WHST HAPPENS WHEN YOU LEAVE TRASH,multibully,,0,0,-100,-100,0,0.6847549,0.3152451,0,0.9516502,0.048349828,0,0.76113665,1,0.7009025,0.46555132
+1847.jpg,couples in comments single me who made that post,multibully,,0,0,-100,-100,0,0.6941087,0.30589125,0,0.92135304,0.078646906,0,0.26753947,1,0.78194857,0.46341464
+1860.jpg,if she is my swimming instructor then I have 100% attendance with extra work,multibully,,0,0,-100,-100,0,0.5502848,0.44971514,0,0.79984623,0.20015378,0,0.7490463,1,0.83545846,0.46291375
+1869.jpg,Haa! Rahul sun! kal schoolme aayega to open - drive me Gta vice city lete aana,multibully,,0,0,-100,-100,1,0.7258998,0.7258998,1,0.67936146,0.67936146,0,0.95024437,1,0.962198,0.43853232
+1874.jpg,When parents are at home when no one is at home,multibully,,0,0,-100,-100,0,0.5850706,0.41492942,0,0.9577526,0.042247463,2,0.5132244,1,0.84136444,0.46701735
+1884.jpg,*Before porn banned* *Aftee porn banned*,multibully,,1,0,-100,-100,1,0.51424456,0.51424456,1,0.6501263,0.6501263,3,0.3448778,1,0.95934856,0.43976447
+1892.jpg,Isse aage ni jayega madam,multibully,,0,0,-100,-100,1,0.59436977,0.59436977,0,0.5943368,0.4056632,0,0.98476666,1,0.8055177,0.43057975
+1910.jpg,"did you know? In north korea,the punishment for watching porn is death Same here in India.Bas ek baar parents ke pakad me aa jao. Maa kasam maut ka nanga naach hoga.",multibully,,0,0,-100,-100,0,0.5135386,0.4864614,1,0.82747906,0.82747906,2,0.71543556,1,0.90467703,0.42020524
+1912.jpg,AAJ KAL LAUNDO KE PAAS SAMOSE KHANE KE PAISE NHI HOTE PAR MOOCH AUR DAADHI AISE RAKHENGE JAISE RIYASAT KE RAJKUMAR HAIN FB/RealBcBilli,multibully,,0,0,-100,-100,1,0.523991,0.523991,1,0.73450714,0.73450714,1,0.3760598,1,0.8089377,0.42611188
+1915.jpg,This is Kedarnath What a beauty,multibully,,0,0,-100,-100,0,0.78342485,0.2165751,0,0.8972282,0.10277181,0,0.9271928,1,0.9091218,0.4438703
+1917.jpg,"the kid in the viral video where he is seen threatning a cop is raipur mayor aijaz dhebar's nephew congress minister aijaz dhebar who is raipur's mayor he was roaming outside without mask and when he was stopped by cops for challan,he threatned them that he will get them suspended",multibully,,0,0,-100,-100,1,0.6433287,0.6433287,1,0.7565944,0.7565944,0,0.9732851,1,0.9405268,0.41502327
+1926.jpg,"""kitni seeti ke baad cooker band karna hai?""",multibully,,0,0,-100,-100,0,0.55897284,0.44102716,0,0.79848045,0.20151955,1,0.3769499,1,0.60105574,0.46639413
+1927.jpg,unacademy upstox RCB 89-7 12,multibully,,0,0,-100,-100,0,0.6160927,0.3839073,0,0.95365113,0.04634891,1,0.51636016,1,0.67943376,0.47108242
+1928.jpg,When someone unfollow me on instagram Unfollow kyu?Dikkt hai to Block kar na Madharchod,multibully,,0,1,0,1,1,0.5547012,0.5547012,1,0.78237176,0.78237176,2,0.59353775,1,0.8657437,0.41532692
+1942.jpg,BC CALCULATION BHI TAB FAIL HO JATI HAI JAB '' EK ROTI MEIN PEIT BHAR GAYA KEHNE WALI LADKIYAAN 2 TIKKI AUR 20 GOLGAPPE KHA JATI HAI BAKCHOD BILLI Insta @BcbilliOfficial fb.com/BakchodBilli,multibully,,0,0,-100,-100,0,0.5808575,0.4191425,0,0.5843679,0.41563216,1,0.4683766,1,0.6855664,0.45694888
+1944.jpg,the moment that little boy learning why gentleman always let the ladies go first,multibully,,0,0,-100,-100,0,0.728338,0.27166203,0,0.8952523,0.10474773,0,0.7203834,1,0.9247465,0.44880038
+1973.jpg,married men in girl's DM,multibully,,0,0,-100,-100,0,0.5563083,0.4436917,0,0.77041745,0.22958256,2,0.5478477,1,0.9143836,0.45670336
+1974.jpg,my books whole year -the night before exam,multibully,,0,0,-100,-100,0,0.5243605,0.47563946,0,0.9462787,0.053721357,1,0.4282173,1,0.72669524,0.4798078
+1985.jpg,Barber working on sideburns,multibully,,0,0,-100,-100,0,0.6809605,0.31903952,0,0.87097824,0.12902182,0,0.7178498,1,0.7315211,0.46592623
+1992.jpg,"zindagi mein ladkiyan aati rahengi, jaati rahengi apne ko sirf apne goal pe focus karna hai",multibully,,0,0,-100,-100,0,0.6657339,0.33426607,0,0.78565264,0.21434732,3,0.43678832,1,0.8670982,0.45524806
+1999.jpg,stop texting them if they ignore you.Even yourself respect has some self respect.,multibully,,0,0,-100,-100,0,0.81389534,0.18610464,0,0.77785707,0.22214292,0,0.44356257,1,0.8899784,0.4495564
+2007.jpg,today-punjab kings vs rajasthan royals who do you think will   win today?,multibully,,0,0,-100,-100,1,0.52876484,0.52876484,0,0.65797424,0.34202576,0,0.8272845,1,0.94912684,0.44878277
+2016.jpg,tie me to bed and do whatever you want,multibully,,1,0,-100,-100,0,0.7528852,0.24711482,0,0.87721264,0.1227874,0,0.7957637,1,0.758615,0.4620107
+2024.jpg,Desi adult trolls When you are with your family When you are alone,multibully,,1,0,-100,-100,0,0.57234335,0.42765665,1,0.7153845,0.7153845,3,0.44055122,1,0.910315,0.41614243
+2028.jpg,Sher kaise dahadta hai?!Translate from Hindi Relatable,multibully,,1,0,-100,-100,1,0.5810117,0.5810117,0,0.6526095,0.34739047,0,0.56902915,1,0.8241282,0.44478607
+2048.jpg,Other People* *Me Happiness*,multibully,,1,0,-100,-100,0,0.5972858,0.4027142,0,0.91781443,0.082185544,2,0.37033212,1,0.8246463,0.47283718
+2059.jpg,doctors made a 3D print of an ultrasound for an expecting mother who is blind,multibully,,0,0,-100,-100,0,0.63002926,0.36997077,0,0.70189893,0.29810107,2,0.5287882,1,0.891728,0.4614789
+2065.jpg,Me trying to have sex with my Gf as quiet as possible Gf:,multibully,,1,0,-100,-100,0,0.649109,0.35089096,0,0.62960917,0.37039083,0,0.90766597,1,0.7384789,0.44183287
+2070.jpg,Bura na maano holi he,multibully,,1,0,-100,-100,0,0.5790936,0.4209064,0,0.75004125,0.24995878,0,0.8707145,1,0.5932149,0.45398355
+2080.jpg,bahar nikal Bsdk BC ye tha kaun jo gaali deke bhaag gya?Pakka kohli hoga,multibully,,1,1,1,1,1,0.6570549,0.6570549,1,0.61863714,0.61863714,0,0.74805105,1,0.8377893,0.4361953
+2092.jpg,*Girl uploads a pic* Random boys in comment section: tum hushn pari Tum jaan-e-jahan Tum sabse haseen Tum sabse jawan,multibully,,1,1,0,1,0,0.5048056,0.49519438,1,0.5774961,0.5774961,0,0.7945207,1,0.5031027,0.4200073
+2095.jpg,kaise kaise log rahte hain yahan,multibully,,1,0,-100,-100,0,0.5565516,0.44344842,0,0.8887168,0.111283176,1,0.60224694,1,0.7691387,0.46850008
+2103.jpg,when you are hanging out froml last 3 hours and finally decide to take a selfie with SQUAD:,multibully,,1,0,-100,-100,0,0.64135164,0.35864836,0,0.86684704,0.13315296,0,0.51380444,1,0.73319197,0.46483287
+2105.jpg,No comments.Only Amar Prem,multibully,,0,0,-100,-100,0,0.7343427,0.26565728,0,0.92152864,0.078471355,0,0.789989,1,0.6511407,0.45659655
+2111.jpg,Bengali Girl in saree Le me,multibully,,1,0,-100,-100,1,0.50583345,0.50583345,1,0.53976154,0.53976154,0,0.84035593,1,0.878537,0.43096194
+2114.jpg,"if she can type ""lol""without laughing then she can type ""I love you""without loving you.Stay woke",multibully,,0,0,-100,-100,0,0.84810024,0.15189971,0,0.68805283,0.31194717,0,0.98494565,1,0.7488981,0.43692744
+2126.jpg,EXAM KE EK RAAT 2 HI LOG SUKOON KI NEEND SOTE HAIM 1]  TOPPER JISKO SAB KUCH AATA HAI 2] WOH JISKO KUCHH NHI AATA HAI BAKCHOD BILLI Insta @BcbilliOfficial fb.com/BakchodBilli,multibully,,1,1,3,1,1,0.56864005,0.56864005,0,0.5726911,0.42730898,1,0.6165113,1,0.59949,0.45130393
+2159.jpg,teri pyari pyari do ankhiyaan,multibully,,1,0,-100,-100,0,0.6247555,0.37524456,0,0.8657353,0.13426465,0,0.8592313,1,0.77727264,0.42614454
+2160.jpg,"GHAR ME JO SABSE CHOTE HOTE HAI UNKI AADHI ZINDAGI''DARWAGA'' KHOLNE AUR BAND KARNE ''PAANI"" PILANE AUR ""RELATIVES"" KO STATION CHODNE ME HI NIKAL JAATI HAI BC BAKCHOD BILLI Insta @BcbilliOfficial fb.com/BakchodBilli",multibully,,1,0,-100,-100,0,0.5922272,0.40777278,0,0.5787558,0.4212442,3,0.3168484,1,0.62651634,0.44268596
+2172.jpg,"Orange Rasna guy when asked ""double apple mint piyega na?""",multibully,,1,0,-100,-100,1,0.5232081,0.5232081,1,0.586602,0.586602,0,0.455643,1,0.7161887,0.44939017
+2175.jpg,why do i fall in love with every woman i see... who shows me the least bit of attention?,multibully,,0,0,-100,-100,0,0.79474294,0.20525703,0,0.6571935,0.3428065,0,0.75053155,1,0.9820265,0.43248028
+2177.jpg,best things in the summer,multibully,,0,0,-100,-100,0,0.63656056,0.36343938,0,0.9601122,0.039887737,0,0.31914657,1,0.72178596,0.48288417
+2190.jpg,"Answer sheets of Roll No 33, 34,and 35.",multibully,,1,0,-100,-100,0,0.541573,0.458427,0,0.9368354,0.06316463,2,0.3225227,1,0.69145674,0.47729796
+2214.jpg,For Boy Friend For Best Friend,multibully,,1,0,-100,-100,0,0.7843302,0.21566984,0,0.88466215,0.11533783,0,0.52211386,1,0.8332494,0.4472782
+2218.jpg,*Summer exists*,multibully,,1,0,-100,-100,0,0.53492826,0.4650717,0,0.91541564,0.08458435,0,0.33474252,1,0.6979065,0.47706234
+2224.jpg,Every wife's dream,multibully,,1,0,-100,-100,0,0.67080003,0.3292,0,0.9199831,0.080016956,0,0.49388814,1,0.85238904,0.4662366
+2232.jpg,no one umpires on 9th april mujhe jald hi bohat saare paise milne waale hain  #MIVsRCB,multibully,,1,1,1,1,1,0.563946,0.563946,0,0.71744096,0.28255904,0,0.6411202,1,0.85097605,0.461605
+2234.jpg,high speed data transfer,multibully,,1,1,2,1,0,0.5579202,0.4420798,0,0.93308824,0.06691179,1,0.5873355,1,0.6949723,0.47757983
+2239.jpg,classes started at 09:00 am me at 09:20 am moi komming saaaarrrrr,multibully,,1,0,-100,-100,1,0.510833,0.510833,0,0.82736474,0.1726353,0,0.6324592,1,0.67163813,0.45101914
+2240.jpg,inspirational movies be like: villain who practiced all his life hero who did a two months crash course,multibully,,1,1,0,1,0,0.662467,0.337533,0,0.9195253,0.080474675,0,0.75088084,1,0.82420367,0.47113633
+2242.jpg,"maruti suzuki wagonR modified into a limousine for just Rs 2.3 lakh i thought it was a bad photoshop, later i found out it was a bad modification",multibully,,1,1,1,1,0,0.5942276,0.40577242,0,0.77063584,0.22936411,0,0.68924934,1,0.73862886,0.46044552
+2250.jpg,traditional yet seductive that's what a saree does,multibully,,0,0,-100,-100,0,0.783872,0.21612802,0,0.57112825,0.42887175,0,0.8418853,1,0.8053643,0.44417608
+2257.jpg,"pays electricity , DTH and mobile bill via phonepe people who have to do all these manually:",multibully,,1,0,-100,-100,0,0.57763124,0.42236874,0,0.9268376,0.07316234,1,0.32400402,1,0.6910718,0.47504616
+2258.jpg,kids when you make sssssss sound in bathroom kya kiye moot diye,multibully,,0,0,-100,-100,1,0.5148478,0.5148478,1,0.55313504,0.55313504,0,0.6020254,1,0.82433593,0.4342847
+2264.jpg,husbands of indian wives don't really undertand the purpose of wearning a transparent saree,multibully,,0,1,0,1,0,0.5466266,0.4533733,1,0.7741893,0.7741893,2,0.8642027,1,0.95139235,0.42415076
+2268.jpg,"when a girl tells you she lost her virginity, so you offer to give her yours my mommy raised a gentleman.",multibully,,1,1,0,1,0,0.7990176,0.20098238,0,0.66422516,0.33577484,0,0.90332466,1,0.88430554,0.4388001
+2273.jpg,me and my best friend laughing at something stupid nobody else finds funny,multibully,,0,0,-100,-100,0,0.80270135,0.19729868,0,0.7154995,0.28450042,0,0.9103177,1,0.57592934,0.43772107
+2280.jpg,for boyfriend for best friend and here we are we don't even know her but still we get both photos,multibully,,1,1,0,1,0,0.70442945,0.2955705,0,0.72183776,0.27816227,0,0.66044635,1,0.7813906,0.44756913
+2317.jpg,one day you and me,multibully,,0,0,-100,-100,0,0.78093463,0.21906538,0,0.9693887,0.030611357,0,0.47423884,1,0.7562969,0.48155648
+2323.jpg,gf; you've never smiled at my since we started dating. bf; i thought you wanted a serious relationship,multibully,,1,0,-100,-100,0,0.73131406,0.26868594,0,0.570262,0.42973796,0,0.9096919,1,0.8908966,0.43781137
+2324.jpg,"""IPL got postponed meanwhile dhoni fans waiting for his farewell match be like;",multibully,,0,0,-100,-100,0,0.5348554,0.46514457,1,0.52841336,0.52841336,0,0.9878284,1,0.93654644,0.4562096
+2328.jpg,this boys to memers: B***diwalon Har Match Ke Baad Haari Hui Team Ka T-shirt Pehna Dete Ho,multibully,,0,1,0,1,1,0.62019753,0.62019753,1,0.63984,0.63984,2,0.59604937,1,0.87347615,0.44362116
+2331.jpg,1st person in your taglist will getting married in 2021,multibully,,0,0,-100,-100,0,0.6641502,0.33584982,0,0.94168043,0.058319595,0,0.5410364,1,0.9287953,0.46458077
+2333.jpg,Desi kuddi in desi attire best combination ever,multibully,,0,0,-100,-100,1,0.5743207,0.5743207,1,0.65694463,0.65694463,0,0.8874071,1,0.9205778,0.431561
+2340.jpg,wedding albums nowadays 10 yrs ago,multibully,,1,0,-100,-100,0,0.64989036,0.3501096,0,0.9776424,0.022357563,0,0.36861122,1,0.6878247,0.47581142
+2356.jpg,"couples after lockdown yaad karo, hum peechle janam mein premi the..",multibully,,1,0,-100,-100,1,0.5260252,0.5260252,1,0.64228517,0.64228517,0,0.5975054,1,0.876661,0.41382298
+2370.jpg,chappri bohot chappri fir aate hai vo jo apne user name k bagal me koi blue emoji lagate hai yash,multibully,,1,1,0,1,1,0.53010154,0.53010154,1,0.67218983,0.67218983,1,0.32567808,1,0.7766191,0.425188
+2371.jpg,"The most important thing in life is to have good friends, not lots of friends.",multibully,,0,0,-100,-100,0,0.7929314,0.20706859,0,0.96747977,0.032520253,3,0.33097708,1,0.81473786,0.47139353
+2374.jpg,"when you close schools at a thousand cases but reopen at 1.7 million: the risk i took was calculated, but man, am i bad at math",multibully,,1,1,1,1,0,0.5955714,0.40442854,0,0.89796215,0.102037884,0,0.3972017,1,0.76163304,0.4680488
+2376.jpg,BJP when muslims question their decisions my country BJP when hindus ask about the steady economic decline our country,multibully,,0,1,1,1,0,0.50568354,0.4943165,1,0.6498539,0.6498539,2,0.73838335,1,0.86471903,0.42790973
+2378.jpg,* UP wale going to bihar to watch p*rn *bihar wale going to UP to buy liquor,multibully,,1,1,2,1,1,0.5866055,0.5866055,1,0.5010103,0.5010103,2,0.6321998,1,0.9222786,0.44031316
+2383.jpg,SCOOPWHOOP.com  Old Monk Rum Apni saari samasya mujhe de do,multibully,,1,0,-100,-100,0,0.5504577,0.44954225,1,0.6902,0.6902,0,0.42991745,1,0.5131145,0.4247819
+2399.jpg,Indian economic growth in 2010 Indian economic growth in 2020 SCOOPWHOOP.com,multibully,,1,0,-100,-100,0,0.5273948,0.4726053,0,0.74708277,0.25291717,1,0.5340114,1,0.8173188,0.4502592
+2413.jpg,mom calling me me with earphones on SCOOPWHOOP.com,multibully,,1,0,-100,-100,0,0.65333885,0.3466612,0,0.8169386,0.18306145,0,0.59367955,0,0.57848865,0.44853577
+2417.jpg,R.I.P Instagram Likes REST IN PEACE SCOOPWHOOP.com,multibully,,1,0,-100,-100,0,0.6977121,0.3022879,0,0.8396162,0.16038379,1,0.5708637,1,0.6449469,0.46789312
+2421.jpg,SCOOPWHOOP.com HINDUS MUSLIMS government needs to find differences between this and this picture. They're the same picture.,multibully,,0,0,-100,-100,1,0.5063745,0.5063745,1,0.71799666,0.71799666,2,0.65666175,1,0.7217727,0.42834264
+2429.jpg,me my problems SCOOPWHOOP.com,multibully,,1,0,-100,-100,0,0.60260475,0.39739522,0,0.95403475,0.04596521,1,0.74953365,0,0.5438937,0.47224957
+2431.jpg,Appraisals 2020* SCOOPWHOOP.com,multibully,,1,0,-100,-100,1,0.55972314,0.55972314,0,0.9091646,0.090835415,1,0.788671,1,0.7121517,0.46257275
+2433.jpg,waiting for iPhone waiting for iPhone memes SCOOPWHOOP.com SCOOPWHOOP.com,multibully,,1,0,-100,-100,0,0.65720344,0.3427966,0,0.83480895,0.16519101,1,0.6658175,0,0.51235354,0.46680674
+2436.jpg,when you opt for BSc after two years of JEE/NET coaching main pitaji ki nazron mein waisa hi gira hua hoon.thoda sa aur gir jaaoonga.,multibully,,0,0,-100,-100,1,0.50889987,0.50889987,0,0.7273321,0.27266788,1,0.48399666,1,0.6274449,0.45715517
+2442.jpg,"principal: chalo bachho koi poem sunao!! Me:mota mrta moti pe, bhukha mrta roti pe master ji ki 3 betiya main mrta sabse choti pe principal master ji choti beti me",multibully,,1,1,3,1,1,0.5579728,0.5579728,1,0.60319996,0.60319996,0,0.79771376,1,0.62956536,0.4460816
+2459.jpg,mentally we're here Pochinki SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.7282606,0.27173942,0,0.9398094,0.060190655,1,0.7011357,1,0.50538725,0.47960204
+2463.jpg,me throughout the year a day before holi SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.66851115,0.33148885,0,0.9693503,0.030649722,1,0.70911956,0,0.52245176,0.47780856
+2474.jpg,"*during sex* *pati* darling ladka nikalu ya ladki?*wife* dard se meri g**nd fati ja rhi hai, phle jo dala hai wo bahar nikal",multibully,,1,1,0,1,1,0.6113482,0.6113482,1,0.78922254,0.78922254,0,0.6415722,1,0.959287,0.41807866
+2481.jpg,Kabhi kabhi lagta hai apun hi bhagwaan hai,multibully,,1,0,-100,-100,0,0.6533613,0.34663868,0,0.8580232,0.14197674,0,0.5411632,1,0.7125368,0.44083104
+2488.jpg,*when you go to market with your sister but she can't bargain like your mom(pro skills)kya aurat bnegi re tu..?che...,multibully,,1,1,0,1,1,0.5491754,0.5491754,1,0.7617542,0.7617542,0,0.5781106,1,0.9622731,0.4208351
+2512.jpg,"Pakistani NGO'S arranges a rally of over 20,000 people to raise awareness about Corono Virus. Maarenge bhi hum aur bachaayenge bhi hum",multibully,,1,1,2,1,0,0.52336574,0.47663426,1,0.69080174,0.69080174,2,0.6110212,1,0.749154,0.42498666
+2513.jpg,Best face swap ever,multibully,,1,0,-100,-100,0,0.69592816,0.30407184,0,0.82943577,0.17056423,0,0.6685108,1,0.8153143,0.45969972
+2516.jpg,like father like son. carbon copy hai na! hum toh baalti me peetey hai,multibully,,1,1,0,1,0,0.6767217,0.32327834,1,0.61392957,0.61392957,0,0.7419114,1,0.8990032,0.42305857
+2524.jpg,sir he is abusing me what you said? WTF i just said cricket in chinees,multibully,,1,1,0,1,0,0.6311644,0.36883563,1,0.6484549,0.6484549,0,0.98465294,1,0.9721923,0.43371162
+2536.jpg,"Lockdown ke baavjoot jb koi phone pe puche ""Kahan hai? CHAND PE HAI APUN",multibully,,1,1,0,1,1,0.5899333,0.5899333,1,0.53761095,0.53761095,1,0.44827354,1,0.58189285,0.44264764
+2548.jpg,people mispronoucing common english words grammar nerds-Zinda Pakadna Hai B*sdiwalon Ko,multibully,,1,1,0,1,1,0.53487426,0.53487426,1,0.70650434,0.70650434,2,0.79581606,1,0.8592428,0.42972493
+2550.jpg,"Diwakar Deepak @Rom _Rom_ji *Kholi and Rohit going as opener*. Meanwhile KL Rahul, Ishan Kishan and Dhawan: -",multibully,,1,0,-100,-100,1,0.7507416,0.7507416,1,0.7639891,0.7639891,0,0.9830256,1,0.93948627,0.42895108
+2569.jpg,"A girl starts walking Indian Aunties be like-""Aaj chalna seekh rahi hai kal kisi ladke ke sath Bhaag jaegi""",multibully,,1,1,2,1,1,0.5639114,0.5639114,1,0.8198111,0.8198111,2,0.89671785,1,0.9436184,0.40138042
+2573.jpg,why should we hire you? Ye to aap log sochiye na,multibully,,1,0,-100,-100,1,0.5952614,0.5952614,0,0.5239923,0.4760077,0,0.43069777,1,0.9364781,0.4591912
+2591.jpg,Ek Aunty thi deewani si.. Rasode me kon tha.. Bas Yahi puchta karti thi..,multibully,,0,0,-100,-100,1,0.5300718,0.5300718,1,0.8124401,0.8124401,0,0.687996,1,0.86837614,0.4133911
+2601.jpg,"Abhishek Bachchan and Tushar kapoor while not getting any films but being targeted for Nepotism Humko maro, humko zinda mat chhodo saalo",multibully,,1,1,-100,0,1,0.6246982,0.6246982,1,0.73605275,0.73605275,0,0.97532177,1,0.9845865,0.4253006
+2613.jpg,Kabhi man me suicide ka khayal aaye toh apne dosto ka photo nikalo use dekho aur socho jab ye chutiya log zinda hai to mai kyun marun.,multibully,,0,1,-100,0,0,0.59308285,0.40691715,1,0.69485104,0.69485104,2,0.44256085,1,0.816186,0.42699313
+2631.jpg,Me to my Exams Paas kyu aa rahe ho,multibully,,0,0,-100,-100,1,0.7099896,0.7099896,0,0.7086636,0.29133642,1,0.547597,1,0.55781126,0.4506786
+2632.jpg,"Nikal Michael Vaughan,pehli fursat mein nikal...Michael Vaughan ..Told ya..India are going to get hammered in the Test Series..#AUSvIND #4-0",multibully,,1,1,0,1,1,0.546719,0.546719,1,0.5675492,0.5675492,0,0.9619682,1,0.9825732,0.44687828
+2635.jpg,Meme share karta hai Nahi Fir tujhe is duniya me rahne ka koi haq nahi,multibully,,1,1,-100,0,0,0.6292106,0.3707894,1,0.7716447,0.7716447,3,0.5257105,1,0.8976064,0.43037373
+2646.jpg,"Paris.I like France but wherever I travel America,Europe,Middle East people just assume I am French, they even speak to me in french when I say I am Indian they assume I am French based in India Thodi si duniya kya dekh li Dimag kharab ho gaya hai tera",multibully,,1,1,0,1,0,0.6160058,0.38399416,1,0.6630483,0.6630483,2,0.9285983,1,0.561559,0.43398973
+2659.jpg,Tera beta kya karta hai Mera beta American flag or Indian flag wale retard memes bnata hai,multibully,,0,0,-100,-100,0,0.5111671,0.48883292,1,0.82131064,0.82131064,2,0.6698594,1,0.78690714,0.42340493
+2663.jpg,In Pics: Trump Supporters Storms US Capitol Hill Haryana: Police Dig Trenches To Block Protesting Farmers From Marching Towards Delhi,multibully,,1,0,-100,-100,1,0.50834227,0.50834227,1,0.6381733,0.6381733,2,0.51828784,1,0.8501062,0.4407264
+2687.jpg,When Ur Net Income is of 14lac But u somehow convert it o 65 lacby using Some Credit Card Tricks: Hackerman,multibully,,1,0,-100,-100,0,0.6160709,0.383929,0,0.9064803,0.09351967,0,0.3233373,1,0.74461,0.46382698
+2699.jpg,She: mere pass kuch pehenne k liye nahi hai  Also she,multibully,,0,0,-100,-100,1,0.5115385,0.5115385,1,0.59316623,0.59316623,0,0.73535925,1,0.9372165,0.4233125
+2720.jpg,"Kareena aged 10 had attended SAIF'S marriage with amrita in 1991 &said,'congrats uncle' &Saif replied,""THANK YOU BETA"" Saikat Layek Uncle to bade betichod nikle",multibully,,1,1,0,1,0,0.5130999,0.4869001,1,0.5741375,0.5741375,0,0.9844854,1,0.8319314,0.41599378
+2722.jpg,"Nick got no chill. परिणीति ने जीजू से जूते चुराई मे मांगे 37 करोड़ रूपए, निक जोनस ने कहा - लावड़ा मेरा | मुँह में ले",multibully,,1,1,0,1,1,0.5828786,0.5828786,1,0.66065204,0.66065204,0,0.9920797,1,0.888978,0.42718157
+2735.jpg,work from office work from home,multibully,,0,0,-100,-100,0,0.56303567,0.4369643,0,0.94355863,0.056441315,0,0.32926238,1,0.7719125,0.47665605
+2737.jpg,Picsart editing picture ad well discover,multibully,,0,0,-100,-100,0,0.5105064,0.4894936,0,0.9076655,0.0923345,1,0.39036041,1,0.67911077,0.46560368
+2756.jpg,literally nobody: lord shardul thakur to english batsmen:,multibully,,1,0,-100,-100,1,0.71499336,0.71499336,1,0.7363929,0.7363929,0,0.9877142,1,0.97717905,0.43185604
+2758.jpg,If you got a chance to date any one of them who will you prefer Single girl Married women,multibully,,0,1,0,1,0,0.73248714,0.26751292,0,0.7895385,0.21046148,3,0.54170483,1,0.9786236,0.45089814
+2760.jpg,Resisting a seductive negihborhood Bhabhi Like her in next to impossible,multibully,,0,1,0,1,0,0.69105697,0.30894306,1,0.5656653,0.5656653,0,0.9502832,1,0.92632294,0.4354931
+2762.jpg,In a Relatiionship With Aliza Malik Today with Aliza malik Aliza Malik Post dlt kr randi k bachy,multibully,,0,1,2,1,1,0.5855631,0.5855631,1,0.611991,0.611991,0,0.9579342,1,0.93218356,0.4113836
+2765.jpg,believe me i'm a very bad porson..with and 12 others.,multibully,,0,1,-100,0,0,0.8004034,0.19959661,0,0.61694276,0.38305727,0,0.97681797,1,0.8105063,0.4394002
+2783.jpg,"yt mein saare GTA ke videos mein ""all we had to do was follow the damn train cj""comment kar deta hoon.funny lagega",multibully,,1,0,-100,-100,0,0.5338991,0.4661009,0,0.544312,0.455688,0,0.64348817,1,0.6479756,0.45574996
+2785.jpg,Jab Viva में आपको कुछ भी नहीं आ रहा हो. तब आप टीचर से..तुम लड़किया भी ना बड़ी चालाक  हो जानती सब हो लेकिन हमसे सुनना चाहती हो,multibully,,0,0,-100,-100,1,0.5265849,0.5265849,1,0.6419719,0.6419719,0,0.84611315,1,0.61838704,0.42670798
+2789.jpg,"hum haar-jeet,success-failure mein itna ulajh gaye hain ki zindagi jeena bhool gaye hain zindagi mein agar kucch sabse zyada important hai...toh woh hai khud zindagi",multibully,,0,0,-100,-100,0,0.7147694,0.28523055,0,0.8785109,0.121489145,3,0.49561876,1,0.77630603,0.44880772
+2800.jpg,Quarantine is fun you just need one girlfriend like her who video calls you daily,multibully,,0,0,-100,-100,0,0.80200696,0.197993,0,0.7212544,0.2787456,0,0.7611671,1,0.7324252,0.443272
+2816.jpg,"*She* Baby suck my B**bs *He*nahi baby,main sirf amul ka doodh pita hu",multibully,,1,1,0,1,1,0.5659321,0.5659321,1,0.8107287,0.8107287,0,0.8973658,1,0.63775533,0.40768194
+2821.jpg,"I have never been afraid of Ghists and horro movies, but this shit used to scare me like hell",multibully,,0,0,-100,-100,0,0.74217,0.25782996,0,0.58414584,0.41585413,0,0.8056504,1,0.7302424,0.44283947
+2825.jpg,Areee Mask lagakar bahar jaaye karo yaar…  Aapke chacha vidhyaka honge par yamraj nahi,multibully,,1,0,-100,-100,1,0.55695945,0.55695945,1,0.735407,0.735407,0,0.95883864,1,0.8529082,0.4278463
+2827.jpg,"Thukra ke mera pyaar, mera intekam nahi dekh payegi kyuki meri IAS banne ki aukat nahi hai",multibully,,1,1,2,1,0,0.58688354,0.41311646,1,0.5876354,0.5876354,0,0.75670826,1,0.86777514,0.4171675
+2830.jpg,Bc ye to ganja karde toh bhi chalega,multibully,,1,1,0,1,0,0.55248547,0.4475145,0,0.5991956,0.40080443,0,0.8636753,1,0.740867,0.4516234
+2841.jpg,NAGAD BEDI @sad_nibba Everything remonds me of her,multibully,,0,0,-100,-100,0,0.537051,0.46294898,1,0.5064092,0.5064092,0,0.9588772,0,0.5948017,0.42251796
+2851.jpg,"When you send her "" I love you"" and she reply with ""LY2"" You : Sala mereko itna chota diya?",multibully,,0,1,-100,0,0,0.5847896,0.4152104,0,0.5356796,0.46432042,0,0.9752417,1,0.67891777,0.4208665
+2856.jpg,Bobby Deol was a pro at Covid testing long before the virus even came into existence.,multibully,,1,1,0,1,0,0.73263973,0.26736027,0,0.74049795,0.25950205,0,0.6218916,1,0.77557385,0.4581973
+2873.jpg,Me in my Hostel Me at home,multibully,,1,0,-100,-100,0,0.5553452,0.4446548,0,0.92830974,0.07169024,0,0.34207222,1,0.71740294,0.46881068
+2877.jpg,If you got a chance to date any One of them who will you prefer Single girl Married women,multibully,,0,0,-100,-100,0,0.73248714,0.26751292,0,0.7895385,0.21046148,3,0.54170483,1,0.9786236,0.45089814
+2880.jpg,Importance of doing squart daily,multibully,,1,0,-100,-100,0,0.7587963,0.24120371,0,0.9618666,0.038133413,0,0.5866281,1,0.7975651,0.48144278
+2888.jpg,FB/RealBCBilli Thoda dhyan se BC koi mann chala gaand na maar jaaye,multibully,,1,1,0,1,0,0.5871904,0.41280958,1,0.65023947,0.65023947,3,0.49450496,1,0.66497904,0.42343757
+2904.jpg,dental clinic DR. SHALINI AGARWAL B.D.S.(MUM),multibully,,1,0,-100,-100,0,0.51112384,0.48887616,0,0.6734404,0.32655963,0,0.92622066,1,0.9488209,0.45722246
+2905.jpg,Ayeshy @champagne_lassi Okay we have a winner of this meme template meri dadi mujsay apni lambi umer ki dua kartay howay main jo unko school main 10 data maar chuka hun,multibully,,1,0,-100,-100,0,0.57837933,0.42162064,1,0.6642928,0.6642928,0,0.4907746,0,0.54120415,0.4256655
+2914.jpg,Pressing boobs reduces stress upto 70%,multibully,,0,1,0,1,0,0.70425725,0.29574272,0,0.8787338,0.12126624,0,0.63917655,1,0.7496934,0.4693347
+2918.jpg,Sonam kapOOr gives small msg to memers,multibully,,1,1,2,1,1,0.6013717,0.6013717,1,0.60420966,0.60420966,0,0.9874659,1,0.9515989,0.43522793
+2932.jpg,Drives on right side of the road Drives on left side of the road You guys have been driving on road?,multibully,,1,0,-100,-100,0,0.51832527,0.48167476,0,0.8600627,0.1399373,0,0.41658172,1,0.84529537,0.46696174
+2953.jpg,Ashish gupta @chatora_baniya South delhi ki ladki ke papa ka truck!! BAD NAZAR WALE YOUR FACE WILL BE BLACK,multibully,,0,1,2,1,1,0.70576847,0.70576847,1,0.8604448,0.8604448,2,0.61611384,1,0.9801697,0.40198636
+2959.jpg,Rahul @MemewalaCA After watching Horror Movie: Me: Ab ek cartoon movie dekh leta hu Bura sapna nai aayega ! Bura Sapna:,multibully,,0,1,-100,0,1,0.65122586,0.65122586,0,0.55854833,0.44145167,0,0.9228418,1,0.65328205,0.44579372
+2962.jpg,next match main Ye ayi toh hum nahi khelenge..,multibully,,1,0,-100,-100,0,0.54096097,0.459039,0,0.66475123,0.33524877,0,0.85723764,1,0.9355726,0.46101946
+2963.jpg,corona my career Me watching series,multibully,,0,0,-100,-100,0,0.50466436,0.49533564,0,0.9494783,0.050521698,0,0.4858321,1,0.74265647,0.47002667
+2990.jpg,when you're in train toilet and there is no kundi,multibully,,1,1,0,1,0,0.54955596,0.45044407,0,0.83130884,0.1686911,0,0.8464198,1,0.58949524,0.45887432
+2998.jpg,Mitron wo Rakhi ke liye bolegi...!Tum friendship band pe tikke rehna...!,multibully,,1,1,0,1,0,0.71032387,0.28967613,1,0.5188787,0.5188787,0,0.89257956,1,0.9688785,0.4361567
+3003.jpg,The most beautiful photograph you'll see all day.,multibully,,0,0,-100,-100,0,0.7922535,0.20774649,0,0.9570275,0.04297255,0,0.4452822,1,0.76163995,0.47987032
+3014.jpg,Ye banda meri jaan le ke rahega kyu didi foothpath pr soti ho kya,multibully,,1,1,0,1,1,0.5458294,0.5458294,1,0.61879444,0.61879444,0,0.9345672,1,0.8371374,0.42259288
+3017.jpg,This man gave up a whole kingdom for his girl and you wanna settle for a guy who flirts with other girls?,multibully,,0,0,-100,-100,0,0.7406631,0.25933692,0,0.52851665,0.47148335,0,0.675741,1,0.89511055,0.44153333
+3020.jpg,"we are blessed with our baby boy Bhai sambhal ke Karan Johar taaliyan bajate hue aata hi hoga,employement ki scheme lekar",multibully,,1,1,0,1,1,0.6779632,0.6779632,1,0.5681216,0.5681216,2,0.7065683,1,0.83268535,0.42417634
+3026.jpg,TAKI!!TAKI!!SAKI!!SSAKI!!RAKH ...TERE MAA KI!!,multibully,,0,1,0,1,1,0.63035935,0.63035935,1,0.7708314,0.7708314,0,0.7511472,1,0.88092,0.41409415
+3037.jpg,"Uttar pradesh JEE main topper pal aggarwla with 99.98 percentile to attempt the exam again,here's why with a score of 99.98 percentile,Pal aggarwal was the Uttar Pradesh state topper of the JEE main held in February 2021,and ranked fourth among the female candidates across the country.Ashish Belwal May God give strength to Her cousins",multibully,,1,0,-100,-100,1,0.5958229,0.5958229,1,0.5090941,0.5090941,0,0.9306953,1,0.9862294,0.4336735
+3052.jpg,"Me Tumse dugna lagaan lega Ghanta lega,Teri to hamare londe ne hi leli",multibully,,1,1,0,1,0,0.6281756,0.37182444,1,0.5026342,0.5026342,0,0.9410118,1,0.63799447,0.4270463
+3062.jpg,"_chutiyapa._Jahan soch,wahan shauchalaya",multibully,,1,1,-100,0,1,0.6086814,0.6086814,1,0.5908232,0.5908232,0,0.9875273,1,0.9041609,0.44107533
+3067.jpg,me everytime when i try to study.,multibully,,0,0,-100,-100,0,0.5753631,0.4246369,0,0.93986994,0.06013002,2,0.29109147,1,0.7472596,0.47544467
+3071.jpg,I secretly get jealous when someone is talking to my favourite person,multibully,,0,0,-100,-100,0,0.8657454,0.13425459,0,0.91300476,0.08699523,0,0.96263796,1,0.7754018,0.44329047
+3072.jpg,Iphone MI-phones Garibo ka iphone,multibully,,1,0,-100,-100,0,0.50052136,0.49947864,0,0.79136395,0.20863609,1,0.48024234,1,0.6961019,0.4633053
+3081.jpg,Animals also have emotions like humans They just can't express but they shows it,multibully,,0,0,-100,-100,0,0.71767527,0.28232473,0,0.902923,0.09707702,0,0.3353637,1,0.73463786,0.47516346
+3084.jpg,when a girl announces herself single on Facebook,multibully,,1,0,-100,-100,0,0.6647829,0.33521712,0,0.7203471,0.27965292,0,0.30758083,1,0.79581726,0.4508229
+3092.jpg,"When you're sititng next to a hot girl and your friends starts shouting ,""Bhabhi Bhabhi""",multibully,,1,1,0,1,0,0.6289806,0.37101948,1,0.68555605,0.68555605,0,0.8602236,1,0.7615113,0.4137113
+3098.jpg,Abay Sumit Sunna Haan bol I love you Bhag bsdki April fool banaya...He* *She,multibully,,1,1,0,1,1,0.57589066,0.57589066,1,0.7716277,0.7716277,0,0.99006677,1,0.98276573,0.41591582
+3119.jpg,"arey beta,kaha tak padhe ho?B.A.uffo,2 akshar padhe wo bhi ulte.Mujhe toh A-Z tak aata hai.",multibully,,0,0,-100,-100,1,0.543813,0.543813,1,0.71473235,0.71473235,0,0.9621377,1,0.62716323,0.4167696
+3122.jpg,Men will be Men!,multibully,,1,0,-100,-100,0,0.5950374,0.40496257,0,0.8934785,0.106521465,2,0.37880978,1,0.95043796,0.46554416
+3135.jpg,"when they say ""no pain no gain ""buit gained 15kg without any pain",multibully,,1,0,-100,-100,0,0.72739875,0.27260122,0,0.86460084,0.13539912,0,0.611862,1,0.66928476,0.4732817
+3141.jpg,tag ur future wife,multibully,,0,0,-100,-100,0,0.66477877,0.33522126,0,0.91487044,0.085129626,0,0.56469107,1,0.8412215,0.46861637
+3143.jpg,"""Tumhe jo maine dekha"" ""Tumhe jo maine jaana""",multibully,,0,0,-100,-100,0,0.7843093,0.21569064,0,0.86893946,0.13106057,0,0.9516028,1,0.7342744,0.44708574
+3144.jpg,Happiest person after Bangladesh reached Asia Cup final.,multibully,,1,0,-100,-100,0,0.63565063,0.36434937,0,0.6225004,0.3774996,0,0.54734904,1,0.95375377,0.45106256
+3157.jpg,*when i was little kid*my pant zip to my nunnu:Ye Fas gaya,multibully,,0,0,-100,-100,1,0.5747423,0.5747423,1,0.62861365,0.62861365,0,0.9084201,1,0.63669425,0.41776842
+3164.jpg,"Love Has No Age Limit…..करवाचौथ के दिन लहंगा पहने नज़र आयी मलाइका अरोड़ा, 12 साल छोटे अर्जुन कपूर को दे सकतकी है अपनी बिल्ली",multibully,,0,1,0,1,1,0.5311264,0.5311264,1,0.59889233,0.59889233,0,0.755694,1,0.8308159,0.41349304
+3177.jpg,O Yes Rasna 5 yr/o me:-party ho ri bhot bhaynkar,multibully,,0,0,-100,-100,1,0.6409195,0.6409195,0,0.60667545,0.39332452,0,0.9735336,1,0.8448496,0.4401897
+3183.jpg,good morning to whomever has been enjoying my coffee creamer all week..Surprise !!!you've been drinking my BREAST MILK hope you've enjoyed .cheers!-B P.S It's organic so no worries,multibully,,0,0,-100,-100,0,0.76549125,0.2345088,0,0.7090939,0.29090613,0,0.51298606,1,0.7643628,0.45317754
+3184.jpg,When Your Phone Have Two Sim Cards but No network,multibully,,1,0,-100,-100,0,0.5077298,0.49227014,0,0.8731383,0.12686169,1,0.39652145,1,0.73647153,0.46847352
+3186.jpg,THANKS CALVINKLEIN,multibully,,1,0,-100,-100,0,0.59171087,0.4082891,0,0.931793,0.06820706,0,0.642158,1,0.73967373,0.47259566
+3193.jpg,Real story of my bestie:On social media In home,multibully,,1,0,-100,-100,0,0.7846881,0.21531187,0,0.91358024,0.08641976,0,0.60475206,1,0.6373558,0.45921803
+3200.jpg,All mens are Dogs Par tum to Dog-Lover ho na..Boy-1 Girl-0,multibully,,1,1,2,1,0,0.5621781,0.43782192,1,0.5205743,0.5205743,2,0.43918088,1,0.9433889,0.44051456
+3211.jpg,saaley mera hi maal chura kar mujhe bech raha hai,multibully,,1,1,-100,0,0,0.5981353,0.40186468,0,0.552341,0.44765902,0,0.8557327,1,0.6237027,0.42581218
+3216.jpg,Modern days housewife knows how to wear sedictive saree,multibully,,0,1,0,1,0,0.6715378,0.3284622,0,0.6551038,0.34489626,0,0.43585506,1,0.8325766,0.44624895
+3238.jpg,पंडित guy enters the class… Girls: -,multibully,,1,0,-100,-100,1,0.5055996,0.5055996,0,0.661075,0.33892503,2,0.49180686,1,0.9072663,0.44284055
+3250.jpg,sara tendulkar when gill hits back to back sixes in arjun's over,multibully,,1,1,0,1,0,0.55675834,0.4432417,0,0.52789545,0.47210452,0,0.9961391,1,0.937098,0.4404944
+3251.jpg,Honny girlfriends are better than beautiful one,multibully,,0,0,-100,-100,0,0.69233,0.30767,0,0.72566843,0.2743316,2,0.55881435,1,0.9478888,0.44814122
+3252.jpg,shubman gill when facing arjun tendulkar in IPL abey saale,multibully,,1,1,0,1,1,0.69563407,0.69563407,1,0.7094732,0.7094732,0,0.9973598,1,0.98199975,0.42680818
+3265.jpg,Tik tok tiktok inc.contains ads In-app purchases Install I see this as an absolute win!,multibully,,1,0,-100,-100,0,0.60871637,0.3912837,0,0.92848104,0.07151895,1,0.43583488,1,0.64920616,0.46692798
+3276.jpg,kaafi failaa hua business hai,multibully,,1,0,-100,-100,0,0.53645355,0.4635464,0,0.6555078,0.3444922,0,0.41136613,1,0.59660053,0.44459766
+3288.jpg,zomaटो Delivery boys getting ready to deliver food,multibully,,1,0,-100,-100,0,0.6080093,0.3919907,0,0.88985896,0.110141,1,0.39262354,1,0.8121384,0.47243255
+3297.jpg,*get a condom for your heart*(I'm about to FUCK your feelilng)!,multibully,,1,1,-100,0,0,0.8193846,0.1806154,1,0.5031586,0.5031586,0,0.976132,1,0.6919372,0.43229693
+3303.jpg,Uptown funk you up,multibully,,0,0,-100,-100,0,0.66310275,0.3368972,0,0.9314216,0.06857849,0,0.46297213,1,0.81787884,0.47402495
+3322.jpg,jo 1st match harega series jeetega,multibully,,1,1,0,1,1,0.55071265,0.55071265,0,0.98131263,0.0186874,0,0.6569506,1,0.7864735,0.4773272
+3345.jpg,Found this K-Pop fan birds and they are kinda cute,multibully,,0,0,-100,-100,0,0.5701444,0.4298556,0,0.8567334,0.14326665,0,0.41095737,1,0.6001025,0.46618438
+3348.jpg,Most of the boys WEAKNESSES,multibully,,0,0,-100,-100,0,0.58426774,0.41573223,0,0.86710715,0.13289286,2,0.512397,1,0.901945,0.45762658
+3357.jpg,"heavy driver factspert In the e1970s,North Korea ordered 1,000 volvo 144s from sweden.To this day,the cars have not been paid for.Factspert in the 1970s,sweden began to see north korea as a lucrative market.swedish companies",multibully,,0,1,2,1,0,0.5208507,0.47914928,0,0.5391291,0.46087095,2,0.81271386,1,0.62980914,0.44712532
+3371.jpg,tag ur long distance partner Long distance love is cute good night,multibully,,1,0,-100,-100,0,0.73437315,0.26562685,0,0.9073883,0.09261172,0,0.89181244,1,0.702862,0.44394368
+3373.jpg,me after sets new ringtone in my phone me from my mom's phone:,multibully,,1,0,-100,-100,0,0.6680092,0.33199078,0,0.86825866,0.13174132,0,0.8038948,0,0.5441936,0.4556893
+3382.jpg,Happy Birthday Queen of seduction Sunny Leone,multibully,,0,1,0,1,0,0.6090318,0.39096823,0,0.50105125,0.49894875,0,0.91230875,1,0.9163387,0.4364142
+3384.jpg,Admit it we all had crush on Neighborhood Bhabhi one's in our lifetime NAUGHTIEST TROLLS,multibully,,0,1,3,1,0,0.8617642,0.13823585,1,0.60282433,0.60282433,0,0.7998886,1,0.7130941,0.4296443
+3418.jpg,Still I can't concentrate at Malavika's face DESI ADULT TROLLS,multibully,,1,1,0,1,0,0.77365184,0.22634818,1,0.54637825,0.54637825,0,0.961011,1,0.80188096,0.4434793
+3434.jpg,Main to tere ko Van Maanush smjhta tha...Tu toh Dev Maanush nikla re.,multibully,,1,1,0,1,1,0.58013207,0.58013207,1,0.6839937,0.6839937,0,0.9482667,1,0.9248092,0.4247082
+3441.jpg,स्कूल से बहाना बना गोवा जा रहे थे छठी क्लास के बच्चे…*Me to my friends…*kab khoon khaulega re tera,multibully,,0,0,-100,-100,1,0.6059861,0.6059861,1,0.64308345,0.64308345,0,0.6763621,1,0.6907443,0.4245548
+3453.jpg,Hindustani Bhau has beedn arrested for holdling a protest to cancel XII exams he used an ambulance to reach the destination as it won't be stopped by police.He allegedly misused vital medical facility.,multibully,,0,0,-100,-100,1,0.5943024,0.5943024,1,0.6780922,0.6780922,2,0.5498286,1,0.9298244,0.42691803
+3473.jpg,when someone upload their pictures on instagram like this:Ye kya behooda harkat hai,multibully,,1,0,-100,-100,0,0.65778524,0.34221476,1,0.60468084,0.60468084,2,0.6226028,1,0.7510509,0.417418
+3474.jpg,DESI ADULT TROLLS Ye bhi sahi hai..Shaadhi mein har kisi ka dhyaan esi par rahega,multibully,,0,1,0,1,0,0.6734949,0.32650512,1,0.81239027,0.81239027,3,0.51582974,1,0.9330132,0.41151392
+3476.jpg,Now i understood why she laugh Literally for no reason.,multibully,,1,0,-100,-100,0,0.7538461,0.24615385,0,0.6172659,0.38273412,0,0.97678,1,0.7997906,0.44720516
+3480.jpg,bharat ki australia mein ek etihasik jeet ka drashya,multibully,,1,0,-100,-100,1,0.5560289,0.5560289,0,0.60283333,0.39716667,2,0.52410674,1,0.80815357,0.4567157
+3488.jpg,Paisa hi paisa hoga,multibully,,1,0,-100,-100,0,0.50776374,0.49223632,0,0.8076795,0.19232057,1,0.45753616,1,0.56767994,0.46413988
+3492.jpg,Most famous couples of 2020,multibully,,1,0,-100,-100,0,0.6213882,0.3786118,0,0.912706,0.087294035,2,0.32944128,1,0.8949138,0.46856666
+3498.jpg,*Chips Packet*Hawa Chips,multibully,,1,0,-100,-100,1,0.5268918,0.5268918,0,0.86064655,0.13935345,1,0.40817735,1,0.66985404,0.47219786
+3504.jpg,Pujara on next tour of Australia,multibully,,1,0,-100,-100,0,0.5001705,0.49982944,0,0.7693421,0.23065792,0,0.50586003,1,0.87529296,0.4640184
+3510.jpg,Lock down extend karo na Modiji Kar dunga chhotu Na ipl hoga na hi hmm harenge,multibully,,1,1,0,1,1,0.6299006,0.6299006,1,0.6422701,0.6422701,0,0.79176474,1,0.52868855,0.43301553
+3516.jpg,"GYM MOTIVATION*Other countries-lets kill this workout session bro IN INDIA-saale itni se body nhi banegi,Pooja ko patana hai na?chal ek aur set maar",multibully,,1,1,2,1,0,0.5142268,0.4857732,1,0.70989996,0.70989996,2,0.7345773,1,0.8976851,0.43657368
+3518.jpg,"BILLU ab humare pass koi rasta nhi bacha hai,ab hume bhaag ke ni shadi karni hogi BC jab koi rasta hi nhi bacha to bhagenge kaha?",multibully,,1,1,3,1,1,0.55425006,0.55425006,1,0.5614261,0.5614261,0,0.38439777,1,0.7567347,0.43823665
+3522.jpg,Are you coming home?I can't...I AM on flight IG:@bcbilli My parents aren't home I'm coming..,multibully,,1,0,-100,-100,1,0.56725895,0.56725895,0,0.7712408,0.22875918,0,0.537357,1,0.85974187,0.4350761
+3532.jpg,IG:@bcbilli Kisi Fashion Designer ne isko Model Banane ka jhaansa dekar chutiya bana dia hai...!,multibully,,1,1,0,1,0,0.5753123,0.42468765,1,0.7397745,0.7397745,0,0.42672443,1,0.8766299,0.43866533
+3547.jpg,Muskaan ki chaamak DESI ADULT TROLLS,multibully,,0,0,-100,-100,1,0.60390824,0.60390824,1,0.6387744,0.6387744,0,0.74639094,1,0.7547964,0.41321254
+3554.jpg,Girlfriends be like Who texted us babe?,multibully,,1,1,2,1,0,0.64525867,0.35474128,0,0.57435673,0.42564327,0,0.39712515,1,0.7213057,0.43869358
+3560.jpg,This man deserves a salute!,multibully,,1,0,-100,-100,0,0.79489183,0.20510821,0,0.9413578,0.058642168,0,0.8419635,1,0.8744457,0.47151947
+3575.jpg,Jordan health minister resigns after oxygen outage kills six patients,multibully,,0,0,-100,-100,0,0.5563991,0.44360092,0,0.6071867,0.39281338,0,0.6312678,1,0.80852306,0.45838472
+3576.jpg,Lvis Fonsi in despacito looks so hot,multibully,,1,0,-100,-100,0,0.66862285,0.3313771,0,0.86200583,0.13799413,0,0.6434237,1,0.71048015,0.46590817
+3577.jpg,"*India has always been a second home for me* Brett Lee donates 1 Bitcoin( 4.2 million) to Crypto Relief, which will help wth oxygen supply for COVID patients in india. He was inspired by Past Cummins' gesture yesterday",multibully,,0,0,-100,-100,0,0.64131963,0.35868043,0,0.63665485,0.36334512,0,0.4951041,1,0.86786,0.45480323
+3593.jpg,Time pass? Nahi Saacha pyar aur shaddi karna hai to bolo,multibully,,0,0,-100,-100,1,0.51916647,0.51916647,0,0.627704,0.372296,0,0.4815948,1,0.8102395,0.4254002
+3598.jpg,BHAI ye tu hi hai jo bhabhiyon pe line marta hai mention your tharki friend,multibully,,0,1,0,1,1,0.5314717,0.5314717,1,0.7188657,0.7188657,0,0.44806018,1,0.9025233,0.40760672
+3601.jpg,After failing in exams!!! DADS GIFT,multibully,,1,0,-100,-100,1,0.5110846,0.5110846,0,0.9076417,0.09235832,2,0.39063254,1,0.85910416,0.4553795
+3602.jpg,Teacher:Raee ka pahar bnana ka matlab btao Student:TMKOC ke shuru se ab tk ke episode dekh lo,multibully,,1,1,0,1,1,0.6252706,0.6252706,0,0.55460256,0.44539747,1,0.42394283,1,0.6136672,0.44301367
+3604.jpg,"Someone:apki movies illogical,with no story line and full of vulgarity hoti h!Bhojpuri director:Humko Ghanta Farq Nahi Padta",multibully,,1,1,2,1,1,0.5782481,0.5782481,1,0.6434414,0.6434414,0,0.8209636,1,0.95127946,0.436529
+3614.jpg,Gender Equality,multibully,,1,0,-100,-100,0,0.57690334,0.42309666,0,0.8092483,0.19075166,2,0.45985538,1,0.73552436,0.46867794
+3616.jpg,Priyanka:Yahan dream destination m dholakpur nhi likhna.,multibully,,1,0,-100,-100,1,0.7577506,0.7577506,0,0.5762458,0.42375425,0,0.8296474,1,0.9698239,0.4409636
+3622.jpg,kabir got shiva sanju got kamli shweta got radhika you got?,multibully,,1,0,-100,-100,1,0.57166445,0.57166445,1,0.5392861,0.5392861,0,0.99485993,1,0.9469403,0.43903384
+3624.jpg,mia is sad name someone who can make her happy,multibully,,1,0,-100,-100,0,0.85570997,0.14429003,0,0.96538067,0.034619283,0,0.9598842,1,0.80539435,0.45483655
+3627.jpg,"""Only legends remember this place""",multibully,,0,0,-100,-100,0,0.6642664,0.3357336,0,0.94074255,0.05925739,2,0.2987917,1,0.72907716,0.4799437
+3634.jpg,a scene from indian tv show,multibully,,1,0,-100,-100,1,0.5567694,0.5567694,0,0.5811703,0.4188297,0,0.6624217,1,0.8615154,0.45063052
+3681.jpg,"""Me being sad about my stomach"" Then 5 minutes later:",multibully,,0,0,-100,-100,0,0.6611823,0.33881772,0,0.84410423,0.15589583,0,0.9595248,0,0.5543961,0.4585486
+3682.jpg,Aalu se shona kaise banaoge?Matlab Aisa bilkul immediate nahi soche hain but sochenge..,multibully,,1,1,0,1,0,0.6138728,0.38612714,1,0.5993895,0.5993895,0,0.7341672,1,0.7912119,0.42700064
+3689.jpg,Tag the most important person in your life,multibully,,0,0,-100,-100,0,0.71604025,0.28395972,0,0.9620804,0.037919544,0,0.547398,1,0.78591925,0.47626036
+3691.jpg,"CRUSH - Meri Shaadi Me Aaoge Na…? ME- Ha.Kyu Nahi, Zaroor Aaunga… INNER ME- Meri Nahi.Humari Bol Pagli",multibully,,0,1,-100,0,1,0.6037508,0.6037508,1,0.74556524,0.74556524,0,0.9367171,1,0.7675682,0.41596445
+3696.jpg,same feeling?,multibully,,0,0,-100,-100,0,0.6097047,0.3902954,0,0.9235868,0.07641324,0,0.53833246,1,0.7087616,0.47431475
+3703.jpg,Virat Kohli Becomes First Player To Score 6000 Runs In IPL History He Also Completed 40th half -Century. Virat 'King' Kohli!,multibully,,0,0,-100,-100,0,0.54967517,0.45032486,0,0.6329162,0.3670838,0,0.96469593,1,0.973704,0.45772004
+3711.jpg,BIKE RIDE WITH LOVED ONE STILL DREAM FOR MANY,multibully,,0,0,-100,-100,0,0.7378114,0.2621886,0,0.97760564,0.022394337,0,0.3794116,1,0.89852184,0.480537
+3729.jpg,"Kon Kehta hai, dosti barbaad karti hai. Nibhane wale miljaye toh duniya yaad karti hain",multibully,,0,0,-100,-100,0,0.71459836,0.2854016,0,0.7547443,0.24525568,0,0.40323147,1,0.8693311,0.44748908
+3732.jpg,"*Before match* Ravi Shastri on Prithvi:There's a bit of Sachin,a bit of Viru,and when he walks,there's a bit of Lara as well *After match* Ravi Shastri:Seems like there's a bit of Prithvi in every player",multibully,,1,1,2,1,1,0.6263514,0.6263514,1,0.5698692,0.5698692,0,0.9805767,1,0.94414604,0.44221067
+3742.jpg,"Looks like the climax from every Priyadarshan movie-Hera-Pheri,Malamaal Weekly,Hungama,De dana dan,Hulchul,Bhagam Bhag",multibully,,1,0,-100,-100,1,0.6614836,0.6614836,0,0.51198673,0.48801327,0,0.9805972,1,0.9047161,0.43589407
+3756.jpg,"Visit the Inditradition store Inditradition Pure&Original Holy Cow Dung Cake for Hawan,Pujan &Religious Purpose(Round ,5 inches)(Pack 24)Ridiculous taste!!It tasted very bad whrn i ate it.It was grass-like and muddy in taste.I got loose motions after that.Please be a little more hygienic while manufacturing.Also,pay attention to the taste and crunchiness of this product.",multibully,,1,0,-100,-100,0,0.6287225,0.37127754,0,0.71839976,0.28160027,2,0.5081412,1,0.69372135,0.46446562
+3772.jpg,"Rice को हम बिहारी कहते है ""भात"" और लड़की ऐसी पटाओ जो बोले - …s*x karoge hamare sath?",multibully,,0,1,2,1,1,0.51567733,0.51567733,1,0.81841356,0.81841356,2,0.49030572,1,0.86367744,0.40993482
+3773.jpg,Camping with no internet no phone's just friend's & peacefull feelings.,multibully,,0,0,-100,-100,0,0.64524513,0.35475487,0,0.9445721,0.05542791,1,0.30731362,1,0.6873078,0.46904546
+3775.jpg,"कृपया मास्क लगाकर ही खाना लेने आये ..... आप Hostel 18  भोजनालय में है , नेताजी की रैली में नहीं..",multibully,,0,0,-100,-100,1,0.6895538,0.6895538,1,0.65028465,0.65028465,0,0.601343,1,0.7745191,0.43498737
+3785.jpg,This man proves life can be easy af,multibully,,0,0,-100,-100,0,0.75321555,0.2467845,0,0.9499494,0.050050616,0,0.70181686,1,0.79162407,0.47347522
+3787.jpg,"Main bhi ruk Gaya, Tum bhi Ruk Gaye…! Basically we need girlfriend Bro..",multibully,,1,0,-100,-100,0,0.57287186,0.42712814,1,0.5562176,0.5562176,0,0.9121346,1,0.89989096,0.42972845
+3797.jpg,गर्भवती पतनी की देखभाल करने आयी साली को प्रेम जाल में फसा किया प्रेगनेंट..मायके वालो ने रंगीन मिजाज़ जीजा को दौरा दौरा कर पीटा...*मायकेवाले,multibully,,0,1,0,1,1,0.7427445,0.7427445,1,0.78761405,0.78761405,0,0.8832217,1,0.88549167,0.42361343
+3800.jpg,GIRLS*Single In relationship After breakup,multibully,,1,1,2,1,0,0.5516471,0.44835284,0,0.77352685,0.22647311,2,0.49734035,1,0.9165512,0.45323056
+3822.jpg,pata hai hum match kaha haare?,multibully,,1,0,-100,-100,1,0.59529173,0.59529173,0,0.73088884,0.26911116,1,0.6140066,1,0.8922684,0.45909113
+3858.jpg,This is the reason why Indian youth is not coming to politics In India In other country,multibully,,1,0,-100,-100,1,0.61829007,0.61829007,1,0.6022773,0.6022773,2,0.8353562,1,0.77813256,0.4391603
+3862.jpg,"BREAKING NEWS...मेमेस से परेशान तैमूर, कहने लगे पापा से करूँगा शिकायत . जनता बोली ""कोनसे पापा से करोगे"" तैमूर CRIES IN A CORNOR",multibully,,1,1,0,1,1,0.5106938,0.5106938,1,0.73788285,0.73788285,0,0.894055,1,0.7764766,0.42407137
+3866.jpg,Thand main Divorce...!Kuch bhi kaho..Ladka hai bada himmatwala..!,multibully,,0,0,-100,-100,1,0.5159271,0.5159271,1,0.6800028,0.6800028,0,0.6856777,1,0.9707827,0.41683003
+3876.jpg,papa main Google ka CEO ban gaya Toh?toh kya?Toh govt. job kaun dhundega tera baap?,multibully,,1,1,0,1,1,0.5634114,0.5634114,1,0.501204,0.501204,1,0.4654465,1,0.74237835,0.4567576
+3879.jpg,#Khelakya ? Playerzpot pe khela kya?ye lo paani peelo thak gaye hoge khel khel kar,multibully,,0,0,-100,-100,1,0.512002,0.512002,0,0.75715524,0.24284476,0,0.705647,1,0.70168656,0.4667012
+3880.jpg,when you flirted with him because you were bored and now he's sending you good morning texts Main isme phasti jaa rahi hoon...,multibully,,0,0,-100,-100,0,0.6372929,0.3627071,1,0.6607056,0.6607056,0,0.9655208,1,0.60028875,0.40831596
+3887.jpg,arey doodh se abhishek karo inka 2 over mein 38 runs diye hai inhone,multibully,,0,1,0,1,1,0.5362903,0.5362903,1,0.6149375,0.6149375,0,0.981512,1,0.9426793,0.444306
+3910.jpg,when sulmon bhoi says Teri bggi mera ghoda jo na nache wo...Aarey bsdk ab to bhag bi nahi sakte,multibully,,1,1,0,1,0,0.5506001,0.4493999,1,0.6985291,0.6985291,0,0.99156255,1,0.9337895,0.41719183
+3915.jpg,ye kya hai bey Dobby deol,multibully,,1,1,0,1,0,0.6083216,0.39167833,1,0.5019584,0.5019584,0,0.96590203,1,0.97288424,0.4340019
+3924.jpg,"When you see ""कमल का बटन दबा कर भाजपा को विजयी बनाये "" banner in ypur own rally! ...#ayegatohmodihi",multibully,,1,0,-100,-100,1,0.7995465,0.7995465,1,0.80853975,0.80853975,0,0.7562431,1,0.9621871,0.41912884
+3926.jpg,Itna single ho gya hum main ki ab ye bhi hot lagne lagi hai mujhe,multibully,,0,1,0,1,0,0.66401416,0.3359858,0,0.6333742,0.36662576,0,0.57946956,1,0.7837179,0.42729887
+3940.jpg,chacha garam dharam bhai sunny doal we should've seen this coming,multibully,,0,0,-100,-100,1,0.59366775,0.59366775,1,0.63319427,0.63319427,0,0.99087536,1,0.95889586,0.42605504
+3943.jpg,Some girls look like this and still says i am ugly DESI ADULT TROLLS,multibully,,0,0,-100,-100,0,0.68547785,0.31452215,1,0.7028849,0.7028849,0,0.65929556,1,0.8421954,0.40918833
+3946.jpg,kuch mehenga nahi mila toh saste ko he mehenga banane kharid liya,multibully,,1,0,-100,-100,1,0.5592971,0.5592971,1,0.5318425,0.5318425,1,0.57883704,0,0.5956736,0.4490802
+3949.jpg,Bhai sunn!Hum dono 11:45 par apni apni class se bahar niklene aur washroom mein answers discuss karlenge,multibully,,0,0,-100,-100,1,0.5115073,0.5115073,0,0.5853804,0.41461962,0,0.34368572,1,0.63326573,0.44840032
+3955.jpg,moms sharing selfie with their newborn baby,multibully,,0,0,-100,-100,0,0.5947378,0.40526214,0,0.8357051,0.16429488,2,0.5627898,1,0.7996942,0.4613187
+3956.jpg,arre lale yha sab ke sab sleep deprived hai!,multibully,,0,0,-100,-100,0,0.5104566,0.48954338,1,0.68193984,0.68193984,2,0.63611174,1,0.8225382,0.41629905
+3960.jpg,meri chaddi ka galat istemaal kiya gya maa,multibully,,0,1,0,1,0,0.5999814,0.40001854,1,0.6488412,0.6488412,0,0.8385834,1,0.57739973,0.42499146
+3962.jpg,kylie jenner when she can't decide what sause to put on her burger,multibully,,1,0,-100,-100,0,0.7347636,0.26523644,0,0.55123895,0.44876108,0,0.94307554,1,0.92913395,0.4440171
+3969.jpg,Get upto 70% off on beardo products Meamwhile all men:Hum first hum first(Link in bio),multibully,,0,0,-100,-100,0,0.58939946,0.41060057,0,0.86097854,0.13902143,1,0.5202445,1,0.77832806,0.46923634
+3970.jpg,Name naahi hai kuchhu humara Baaki jaane kaahe sab Chhapri Chhapri bulawat hai,multibully,,0,0,-100,-100,1,0.5362836,0.5362836,1,0.5730458,0.5730458,0,0.8366091,1,0.7863151,0.4169762
+3975.jpg,you are my first and last wish,multibully,,0,0,-100,-100,0,0.94899744,0.051002547,0,0.99476767,0.005232375,0,0.91326046,1,0.8976446,0.46252438
+3977.jpg,uske aise hi dekhne se mai barbad hua tha.!!!,multibully,,1,0,-100,-100,0,0.6599415,0.3400585,1,0.5256147,0.5256147,0,0.97094554,1,0.839897,0.42599782
+3978.jpg,"Bhai, helmet na toh na sahi, condom jaroor pehenna.",multibully,,1,1,0,1,0,0.5610685,0.43893152,1,0.52205575,0.52205575,0,0.84117824,1,0.70529,0.44767803
+3984.jpg,Pant: Bhaiya ball upar lagi hai Virat : still takes the review India: loses the review Virat looking at Pant :,multibully,,0,0,-100,-100,1,0.7463776,0.7463776,1,0.7087849,0.7087849,0,0.8528908,1,0.9089034,0.416708
+3988.jpg,when you realise corona can't cancel exams lauda ka global pandemic hai,multibully,,1,1,-100,0,1,0.53407365,0.53407365,0,0.78376466,0.21623532,1,0.4413703,1,0.6276852,0.45049334
+4012.jpg,*Virat Kohli comes out to bat* *Virat Kohli out on 5*,multibully,,0,0,-100,-100,1,0.6993642,0.6993642,1,0.55258304,0.55258304,0,0.9902462,1,0.9300511,0.45763916
+4036.jpg,one says he didn't kill the blackbuck though everyone knows he did. other says he killed the black buck though everyone knows he didn't,multibully,,0,0,-100,-100,0,0.72972554,0.27027443,0,0.5543934,0.4456066,0,0.9466209,1,0.9001409,0.45382345
+4044.jpg,tonny kakkar after singing shankar mahadevan's breathless song for 40 seconds,multibully,,1,0,-100,-100,1,0.56714225,0.56714225,0,0.50473887,0.4952611,0,0.996923,1,0.97635615,0.43448934
+4046.jpg,pluto the solar system,multibully,,1,0,-100,-100,0,0.54903775,0.45096225,0,0.95197374,0.048026275,0,0.3769298,1,0.68127036,0.48181626
+4058.jpg,TMKOC episodes old episodes new episodes,multibully,,0,0,-100,-100,1,0.5190216,0.5190216,0,0.9494056,0.050594423,1,0.5090687,1,0.59014434,0.47021693
+4063.jpg,"Weird oklahoma laws weird oklahoma laws one may not promote a ""horse tripping event""people who make ugly faces at dogs may be fined and/or jailed.It is illegal for the owner of a bar to allow anyone inside to pretend to have sex with a buffalo Females are forbidden from doing their own hair without being licensed by the state What the hell happened here?",multibully,,0,0,-100,-100,0,0.604278,0.39572197,1,0.6431706,0.6431706,2,0.6144455,1,0.87676907,0.45107874
+4090.jpg,After seeing aishwarya rai test positive for corona virus Selmon bhoi*,multibully,,0,1,0,1,1,0.56278557,0.56278557,1,0.6643626,0.6643626,0,0.9870139,1,0.9849023,0.43585047
+4092.jpg,"me, giving relationships advices my dating life",multibully,,0,0,-100,-100,0,0.6262783,0.37372175,0,0.9474401,0.052559894,0,0.4493475,1,0.8391483,0.46232662
+4115.jpg,the short i want to use The obstacle,multibully,,0,0,-100,-100,0,0.52275795,0.47724205,0,0.9576386,0.042361345,0,0.5247176,1,0.7609321,0.472663
+4118.jpg,Arey mujhe chakkar aane laga hai,multibully,,1,1,0,1,1,0.5431064,0.5431064,0,0.5361555,0.4638445,0,0.95226973,1,0.935735,0.4229808
+4119.jpg,"Me on social media ""Ask Me a Question""Me during Viva",multibully,,1,0,-100,-100,0,0.6537867,0.34621328,0,0.9101059,0.089894064,0,0.371991,1,0.7059311,0.467072
+4124.jpg,I think 2020 ganja fukk ke aaya hai,multibully,,0,0,-100,-100,1,0.5474696,0.5474696,1,0.55343246,0.55343246,0,0.6243402,1,0.9272195,0.4419003
+4126.jpg,"When you support BHARAT BANDH and someone says ,""Calm down,You're UNEMPLOYED"".You:",multibully,,0,0,-100,-100,1,0.61373144,0.61373144,1,0.57068753,0.57068753,0,0.6427276,1,0.9070485,0.41556138
+4127.jpg,"Aur becho kamino,350 Rs ka popcorn aur 150 rs ki coffee..Sab kuch isi janam mei bhugatna hai",multibully,,1,0,-100,-100,0,0.6012277,0.3987723,0,0.65838116,0.3416189,1,0.40179253,1,0.6212142,0.46168324
+4153.jpg,"broccoli is said to be good for joints,so here goes.",multibully,,0,0,-100,-100,0,0.741277,0.25872302,0,0.9127388,0.08726121,0,0.3651784,1,0.7455684,0.47936377
+4156.jpg,First accident with bf Mubarak ho BC...Wish you more accidents in future.,multibully,,1,1,0,1,0,0.5517554,0.44824454,1,0.52740276,0.52740276,0,0.9474351,1,0.6589813,0.42285687
+4173.jpg,random dude got roasted for posting his new haircut on the internet for no reason,multibully,,0,0,-100,-100,0,0.7054251,0.29457492,0,0.5086961,0.49130392,0,0.49803105,1,0.78216654,0.45809793
+4195.jpg,black is a symbol of class,multibully,,0,0,-100,-100,0,0.684537,0.31546298,0,0.85965806,0.1403419,2,0.44166523,1,0.6994264,0.46662873
+4205.jpg,*Me planning to celebrate my birthday in April*Meanwhile lockdown: I AM BACK,multibully,,1,0,-100,-100,1,0.52864534,0.52864534,0,0.89956933,0.100430734,0,0.8328686,1,0.6851928,0.44921285
+4206.jpg,Pehredaar piya ki aired its first episode on Monday.It tells the story of an adult girl falling in love and getting married to a 9 years old kid.Kids after watching this show,multibully,,0,1,0,1,0,0.5371972,0.46280286,0,0.51820004,0.48179996,0,0.8561951,1,0.8706315,0.41679353
+4210.jpg,baby bomb lag rahi ho awww kam kha warna fatt jayegi,multibully,,0,1,0,1,1,0.64237875,0.64237875,1,0.6675758,0.6675758,0,0.74619263,1,0.5253721,0.41682976
+4217.jpg,me turn on T.V. *T.V *Me *Mobile,multibully,,1,0,-100,-100,0,0.5582282,0.44177178,0,0.8678436,0.13215637,0,0.8232538,1,0.91411036,0.46309918
+4250.jpg,Abhilekh Pandey Ms dhoni part 2,multibully,,1,0,-100,-100,1,0.6149604,0.6149604,0,0.5546394,0.4453606,0,0.9925052,1,0.94539076,0.43650207
+4256.jpg,Muhabbat hai isliye janay dia Zid hoti to gari kay nechay hoti,multibully,,1,1,0,1,0,0.6456149,0.3543851,1,0.5582745,0.5582745,0,0.7940535,1,0.80152655,0.41309595
+4261.jpg,me looking at pets me looking at kids,multibully,,0,0,-100,-100,0,0.50676864,0.49323136,0,0.920686,0.079313956,0,0.40164566,1,0.74319625,0.459084
+4263.jpg,the only place my friends use maths:,multibully,,1,0,-100,-100,0,0.5404184,0.45958158,0,0.93587387,0.064126156,1,0.3305349,1,0.70206463,0.472694
+4264.jpg,DESI KUDDDI,multibully,,0,0,-100,-100,0,0.5877218,0.4122782,0,0.9313536,0.068646386,0,0.7636417,1,0.61648494,0.4694186
+4268.jpg,THEN NOW,multibully,,0,0,-100,-100,0,0.5941355,0.4058645,0,0.95884806,0.04115195,0,0.88373566,1,0.70017785,0.46766227
+4270.jpg,Admit it women look more sexy When they are angry,multibully,,0,1,0,1,0,0.7375542,0.26244584,0,0.53297347,0.46702656,2,0.5242201,1,0.98619705,0.42534325
+4282.jpg,a woman once wear 70 items of clothing in a chinese airport to avoid paying the airline's extra baggage charge.,multibully,,0,0,-100,-100,0,0.59729046,0.40270954,0,0.67345387,0.32654616,2,0.5743339,1,0.83529466,0.45870125
+4291.jpg,Name:Diana Age:88 Advice for the younger generation:Never follow a man!,multibully,,0,0,-100,-100,0,0.5624284,0.4375716,0,0.8454523,0.15454775,0,0.7288941,1,0.96054727,0.45554405
+4295.jpg,when you get arrested and the police doesn't let you put a filter on your pic,multibully,,1,0,-100,-100,0,0.55797863,0.44202137,0,0.6480716,0.3519284,0,0.33800837,1,0.79352593,0.4576637
+4302.jpg,last benchers after having a bite from theire tiffins during the class,multibully,,1,0,-100,-100,0,0.5749355,0.42506453,0,0.7877399,0.21226013,0,0.36731035,1,0.69638735,0.46426678
+4304.jpg,indian david warner,multibully,,1,0,-100,-100,0,0.50690526,0.49309474,0,0.5306799,0.46932012,0,0.9258916,1,0.95545614,0.4454221
+4314.jpg,kisne touch kiya usko madarxhod maine toh rehne de phir,multibully,,1,1,0,1,0,0.6424916,0.3575084,0,0.63753766,0.3624624,0,0.9152698,1,0.728626,0.44254273
+4336.jpg,raju seeing seeing the rank of fargan and rancho,multibully,,1,1,0,1,1,0.73214024,0.73214024,0,0.68921584,0.31078416,0,0.9891032,1,0.97165686,0.44315648
+4338.jpg,amitabh ji right now:,multibully,,1,0,-100,-100,1,0.62846875,0.62846875,0,0.8419255,0.1580745,0,0.95788926,1,0.8472122,0.4492669
+4345.jpg,Tag Abhishek ABHISHEK KI DULHAN,multibully,,0,0,-100,-100,1,0.7238985,0.7238985,1,0.58642834,0.58642834,0,0.9653525,1,0.9298509,0.41901287
+4350.jpg,Yeh bol rha hai thode se Democrats khareed ke Trump ki sarkar banwa dete hai.,multibully,,0,1,0,1,0,0.5988863,0.40111372,1,0.80459887,0.80459887,0,0.59116393,1,0.82916,0.45460123
+4373.jpg,waise toh bada sakht launda hoon par yaha main pighal gaya,multibully,,0,1,-100,0,1,0.51435566,0.51435566,1,0.64301264,0.64301264,0,0.99245715,1,0.667936,0.42652702
+4383.jpg,geographical meme,multibully,,0,0,-100,-100,0,0.56051844,0.4394816,0,0.88242674,0.11757325,1,0.33119085,1,0.69714963,0.4687862
+4384.jpg,Ye ek janam k hain?,multibully,,1,0,-100,-100,0,0.5040355,0.49596456,0,0.7708937,0.2291063,0,0.9018904,1,0.8694533,0.43861854
+4391.jpg,a foolish man shares his problems. a wise man shares his memes,multibully,,1,0,-100,-100,0,0.8561113,0.14388877,0,0.62338895,0.37661102,3,0.4456723,1,0.77728206,0.4405467
+4404.jpg,"hello,main kavita bol rahi hu Haan bolo main taali baja raha hu",multibully,,1,0,-100,-100,1,0.5096425,0.5096425,1,0.69621897,0.69621897,0,0.9424782,0,0.5024052,0.41685605
+4407.jpg,with you without you life goes on with you or without you!,multibully,,0,0,-100,-100,0,0.7812483,0.21875177,0,0.98009884,0.019901209,0,0.59068525,1,0.80182606,0.47171792
+4408.jpg,censor board ki wajah se hum kabhi kohli ki BIOPIC nahi dekh paayenge BC,multibully,,1,1,0,1,0,0.5663951,0.43360493,1,0.5750284,0.5750284,1,0.30745786,1,0.8644825,0.45572278
+4428.jpg,Me:babe send nudes na!! She:@bhand_babaji,multibully,,0,1,0,1,1,0.5559507,0.5559507,1,0.6487141,0.6487141,0,0.88403004,1,0.82134736,0.4287262
+4459.jpg,i was 17 when dhoni finished of in style its still feels like yesterday,multibully,,0,0,-100,-100,0,0.68379176,0.31620827,0,0.72143966,0.27856037,0,0.9960478,1,0.92076397,0.44842562
+4462.jpg,Pressing Clothes* Kids Iron Legends MI Phone,multibully,,1,0,-100,-100,0,0.5124619,0.4875381,0,0.8635219,0.1364781,1,0.35586485,1,0.69525963,0.46660924
+4464.jpg,Beta soja vrna gabbar aa jayega 100rs do vrna papa ko btaunga.. Mere sone ke baad gabbar aata hai,multibully,,0,1,0,1,1,0.53370225,0.53370225,1,0.6502428,0.6502428,0,0.8906455,0,0.5340133,0.42717278
+4466.jpg,"""Even if I Roam Nude Nobody has the right to rape me""",multibully,,0,1,-100,0,0,0.73357135,0.26642862,1,0.6564086,0.6564086,0,0.7657556,1,0.9074574,0.43389082
+4475.jpg,simple hack on saving petrol,multibully,,1,0,-100,-100,0,0.6097124,0.3902876,0,0.9020945,0.09790551,0,0.45767415,1,0.762681,0.47426766
+4481.jpg,always choose the girl who is with you when you have nothing.,multibully,,0,0,-100,-100,0,0.8366905,0.16330947,0,0.9706336,0.02936631,0,0.6888488,1,0.83233446,0.46684512
+4499.jpg,"crush* kaisi lag rahi hu mai? *me gala khali lag rha hai "" mangalsutra"" phena du kya?",multibully,,0,0,-100,-100,1,0.59135246,0.59135246,1,0.63866556,0.63866556,0,0.98402286,1,0.87808245,0.43603882
+4518.jpg,provook sarcasticgandu ye mera 1st and last time hai age se tum sab ball dhund ke lekar ana main dhoni hoon ravi shastri nahin,multibully,,1,1,0,1,1,0.5063766,0.5063766,1,0.7289805,0.7289805,0,0.91778195,1,0.69374114,0.42137146
+4548.jpg,rozgar_CA Memeswalaladka when your best friend kills your pakki goti in ludo saala saanp ko paal raha tha,multibully,,0,1,0,1,1,0.56664515,0.56664515,1,0.7132339,0.7132339,0,0.9032315,1,0.5308595,0.40188405
+4551.jpg,people ask what you do for living so they can calculate the level of respect to give you,multibully,,0,0,-100,-100,0,0.7584508,0.2415492,0,0.9253851,0.074614815,0,0.5051538,1,0.8918426,0.46545595
+4554.jpg,"Pakistan:patient recovers from coronavirus,throws party to 100 people,tested positive again. Gaand fate toh fate par nawabi na ghate",multibully,,0,1,2,1,1,0.66675717,0.66675717,1,0.77426374,0.77426374,0,0.6494897,1,0.5790053,0.4093851
+4563.jpg,the greatest invention pf 21st century is here biscuit holder,multibully,,1,0,-100,-100,0,0.646385,0.35361502,0,0.85036683,0.14963312,2,0.38742188,1,0.6686215,0.46483564
+4570.jpg,sumit abay sumit sunna haan bol i love you bhag bsdki april fool banaya.. He* *she,multibully,,0,1,0,1,1,0.61521375,0.61521375,1,0.7873629,0.7873629,0,0.99008745,1,0.9870003,0.41528893
+4575.jpg,what could be more romantic than this? me sitting on your face!,multibully,,1,1,-100,0,0,0.84491634,0.15508372,0,0.90983796,0.09016201,0,0.9755721,1,0.7937013,0.45510647
+4602.jpg,Jofra archer when she tells you go and lock the door jatin logicalbakwaas ffs kohli the skin doctor theskindoctor anushka sharma after seeing jofra's tweet:,multibully,,1,1,0,1,1,0.64254177,0.64254177,1,0.73905736,0.73905736,0,0.99548244,1,0.9471813,0.41795206
+4647.jpg,some random people at ATM entering their pin me looking away to win their trust,multibully,,0,0,-100,-100,0,0.5872131,0.4127869,0,0.9040605,0.095939554,0,0.4179415,1,0.64865613,0.46554565
+4659.jpg,HAI SEENEY MAI DIL BHI KAHA THI MUJHE YE KHABAR... Preeti* SURGEON HAI YE BKL,multibully,,1,1,0,1,1,0.5171583,0.5171583,0,0.50541955,0.49458042,0,0.9699957,1,0.9770907,0.43581557
+4670.jpg,If you got a chance to date any one of them who will you prefer single girl married women,multibully,,1,0,-100,-100,0,0.73248714,0.26751292,0,0.7895385,0.21046148,3,0.54170483,1,0.9786236,0.45089814
+4678.jpg,girls on 5th april @9pm...sirf candles dekho haramkhoro...,multibully,,1,1,0,1,0,0.5980637,0.40193623,1,0.634701,0.634701,3,0.52713645,1,0.9395873,0.44274125
+4679.jpg,"unseenRAHUL @WohiRahulHuu Don't do everything for him, it's just a Frienship The Friendship:",multibully,,0,0,-100,-100,0,0.7493574,0.25064257,0,0.62350494,0.3764951,0,0.62804407,1,0.49740925,0.4436661
+4681.jpg,"""Covid will be over in 21 days"" Time Traveller:",multibully,,1,0,-100,-100,0,0.55326885,0.44673115,0,0.94047517,0.05952485,0,0.7209609,1,0.77164054,0.46035394
+4683.jpg,"Student life is all about books,coffee and casual/cozy clothes Student life me mehengi coffee aur cozy kapde kaalpanik hai,inka vaastavikta se koi sambadh nahi",multibully,,1,0,-100,-100,0,0.52362067,0.47637933,0,0.61148936,0.38851064,2,0.314516,1,0.5792522,0.44648027
+4686.jpg,this side pic can drain ltrs of cum,multibully,,0,1,0,1,0,0.6088347,0.39116538,1,0.61816794,0.61816794,0,0.80843806,1,0.890151,0.4380872
+4705.jpg,Today is my birthday Bro party I watched a movie bro Bro party I have a cancer Bro Party I am dead Bro party Name those friends,multibully,,0,0,-100,-100,0,0.73934627,0.2606537,0,0.9189088,0.081091225,0,0.8993462,1,0.6459086,0.4485826
+4710.jpg,quarantine is fun you just need one girlfriend like her who video calls you daily,multibully,,0,1,0,1,0,0.80200696,0.197993,0,0.7212544,0.2787456,0,0.7611671,1,0.7324252,0.443272
+4729.jpg,"Middle class life Not getting the girl we like Not getting the job we want But still there is hope,one day everything will be alright",multibully,,0,0,-100,-100,0,0.7783139,0.22168611,0,0.9287504,0.0712496,2,0.34441292,1,0.85485,0.4694996
+4738.jpg,today pakistan & china lnaugurated R.A.N.D.I building in karachi now you can officially call them R.A.N.D.I,multibully,,1,1,2,2,0,0.62681466,0.37318537,1,0.60348874,0.60348874,2,0.91217536,2,0.9348132,0.43825436
+4756.jpg,Ee scarlettwa bi bawal ba bawal DESI ADULT TROLLS,multibully,,0,1,0,1,1,0.56971025,0.56971025,1,0.7469709,0.7469709,2,0.45996758,0,0.5039096,0.40991837
+4787.jpg,it's time to go Was I a goodgame No. I am told you were the best SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.70009255,0.29990742,0,0.92989355,0.07010642,1,0.44851676,1,0.5617311,0.47247934
+4797.jpg,first year attendence final year attendence SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.5739279,0.42607212,0,0.94657624,0.053423714,1,0.71953535,1,0.58522314,0.48028547
+4799.jpg,PUBG Call of duty : Mobile SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.6270452,0.37295482,0,0.9433527,0.05664728,1,0.8542807,1,0.5164556,0.47123533
+4812.jpg,HOD Sir Bsdk..syllabus kab complete hoga?HOD Sir you deleted this message Main Maut ko chhuke takk se waapas aa skta hai.,multibully,,1,1,0,1,1,0.54931736,0.54931736,0,0.5169289,0.48307106,0,0.85525703,0,0.6794734,0.44710812
+4838.jpg,police are beating girls also during lockdown. Boys-ab maaza aa rha bhidu.,multibully,,1,1,2,1,1,0.6062156,0.6062156,1,0.7806066,0.7806066,2,0.8578951,1,0.8051432,0.42220268
+4855.jpg,SCOOPWHOOP.com Aaj apple event hai Apne paas kaun se paise hain,multibully,,1,0,-100,-100,1,0.5125258,0.5125258,0,0.7232319,0.2767681,1,0.8542977,1,0.57784075,0.46473098
+4865.jpg,the colleague they hate the colleague i hate me HR SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.6435359,0.35646412,0,0.8881574,0.1118425,1,0.4339951,1,0.72162986,0.4702372
+4866.jpg,after seeing aishwarya rai test positive for corona virus selmon bhoi*,multibully,,1,0,-100,-100,1,0.56278557,0.56278557,1,0.6643626,0.6643626,0,0.9870139,1,0.9849023,0.43585047
+4876.jpg,"rhea played journalist in a film and in that,she said arnab goawami is he idol in real life,arnab goswami ne iska beda gark kar diya hai! I AM SORRY BABU",multibully,,1,1,0,1,1,0.6461637,0.6461637,1,0.743188,0.743188,0,0.989783,1,0.98866814,0.41603076
+4932.jpg,paisa hi paisa hoga,multibully,,1,0,-100,-100,0,0.50776374,0.49223632,0,0.8076795,0.19232057,1,0.45753616,1,0.56767994,0.46413988
+4935.jpg,Jethalal in quarantine SCOOPWHOOP.com,multibully,,0,0,-100,-100,0,0.70189685,0.29810315,0,0.9213512,0.07864883,1,0.7556556,0,0.5785113,0.46809506
+4951.jpg,kaise inhe itne saal chutiya banaya,multibully,,0,1,-100,0,0,0.51111406,0.48888594,1,0.6292681,0.6292681,0,0.8111023,1,0.6286026,0.41578755
+4956.jpg,pujara on next tour of australia,multibully,,1,0,-100,-100,0,0.5001705,0.49982944,0,0.7693421,0.23065792,0,0.50586003,1,0.87529296,0.4640184
+4972.jpg,"बॉडी तो बना ली, अब नहीं बन पा रहे पिता…..WARN YOUR GYM-ADDICT FRIENDS ! …tera_bhi_katungi dola bada krne ke chakker me loda na chota krlena tum .",multibully,,0,1,2,1,0,0.5984505,0.40154952,1,0.74316365,0.74316365,0,0.793302,1,0.7913599,0.4287282
+4980.jpg,tell me soemthing i don't know subham dey replying to hoorrulainn sentence kea pehla letter capital mein hota hai didi,multibully,,1,1,0,1,1,0.61015373,0.61015373,1,0.6768298,0.6768298,0,0.90759754,1,0.6087353,0.4064176
+5008.jpg,minister of health belgium she eats all the unhealthy food of her country huge respect for her,multibully,,1,1,0,1,0,0.73280644,0.2671936,0,0.55885047,0.4411495,2,0.5557596,1,0.82902557,0.45923346
+5029.jpg,*respecting children's privacy* indian parents:we don't do that here,multibully,,0,0,-100,-100,0,0.504742,0.4952579,0,0.54061157,0.4593884,2,0.87855273,1,0.813732,0.44736505
+5034.jpg,Amount donated by youtubers 10lakh 5 lakh 3 lakh amount donated by tiktokers atul shaw chakke dua dete hai paise nhi,multibully,,0,1,0,1,0,0.54909205,0.45090798,1,0.68735415,0.68735415,0,0.4776176,1,0.84797275,0.43074667
+5039.jpg,actual picture of Lil Pump writing the lyrics to Gucci Gang,multibully,,0,0,-100,-100,0,0.65532506,0.34467492,0,0.71062404,0.2893759,0,0.8462849,1,0.8846309,0.46236128
+5066.jpg,muhabbat hai isliye janay dia zid hoti to gari kay nechay hoti,multibully,,0,1,0,1,0,0.6456149,0.3543851,1,0.5582745,0.5582745,0,0.7940535,1,0.80152655,0.41309595
+5070.jpg,happy birthday queen of seduction sunny leone,multibully,,0,0,-100,-100,0,0.6090318,0.39096823,0,0.50105125,0.49894875,0,0.91230875,1,0.9163387,0.4364142
+5095.jpg,Dhokha Toh Bachpan Se Milta Aarha hai..,multibully,,0,0,-100,-100,0,0.5751505,0.42484954,0,0.5281131,0.47188684,0,0.8156048,1,0.815054,0.4243028
+5102.jpg,bawaal iambawaal australia in early 2019. australia in early 2020.,multibully,,0,0,-100,-100,1,0.6515925,0.6515925,0,0.91606563,0.08393433,0,0.46340555,1,0.90669894,0.4589988
+5107.jpg,"I Don't care about lockdown, I am going for a ride 10 min later:…..",multibully,,0,0,-100,-100,1,0.53953415,0.53953415,0,0.780865,0.21913496,0,0.84536165,1,0.958782,0.448384
+5109.jpg,Tumhare Mom Dad kya karte hain? Meri bezzati,multibully,,0,0,-100,-100,0,0.54991186,0.45008814,0,0.5690679,0.43093216,2,0.8274485,1,0.9149732,0.42440832
+5114.jpg,yeh bol rha hai thode se democrats khareed ke trump ki sarkar banwa dete hai.,multibully,,0,1,0,1,0,0.5988863,0.40111372,1,0.80459887,0.80459887,0,0.59116393,1,0.82916,0.45460123
+5145.jpg,"Arts lo,arts ke maaze lo commerce lo,commerce ke Maaze lo Science lo,science tumhare maaze legi",multibully,,0,0,-100,-100,1,0.570264,0.570264,0,0.7313717,0.26862836,1,0.52556705,1,0.6774274,0.46911907
+5147.jpg,dukhi log bahut dukhi log JCB pr memes na samajhne wale log,multibully,,0,0,-100,-100,0,0.65146923,0.3485308,1,0.6172122,0.6172122,3,0.5718657,1,0.709074,0.43451548
+5151.jpg,"I prefer the real infinity I said, the real infinity Perfection",multibully,,0,0,-100,-100,0,0.7862091,0.2137909,0,0.9862671,0.013732875,0,0.7957694,1,0.8136969,0.4800559
+5162.jpg,quarantine day 11* me every morning these days Dad Mom malik malkin ye aapki chai,multibully,,0,0,-100,-100,1,0.5398804,0.5398804,0,0.6889715,0.31102845,0,0.7073114,1,0.8924627,0.4332387
+5181.jpg,When She Marries You But As A Friend,multibully,,0,0,-100,-100,0,0.8321399,0.1678601,0,0.84524065,0.15475935,0,0.8639439,1,0.925185,0.4474784
+5186.jpg,when your phone have two sim cards but no network,multibully,,1,0,-100,-100,0,0.5077298,0.49227014,0,0.8731383,0.12686169,1,0.39652145,1,0.73647153,0.46847352
+5188.jpg,most of the boys weaknesses,multibully,,0,0,-100,-100,0,0.5855168,0.41448322,0,0.8662964,0.13370362,2,0.5126795,1,0.90208304,0.45756698
+5196.jpg,"guys,never demand CBI inquiry as a bluff worst mistake of my life'",multibully,,0,0,-100,-100,0,0.69706756,0.3029324,0,0.637533,0.362467,0,0.71530753,1,0.8301737,0.43640038
+5199.jpg,Kangana : all Starkids are getting work and fame because of their parents is in industry. Nepotism. Meanwhile,multibully,,1,0,-100,-100,0,0.5064396,0.49356037,1,0.5653786,0.5653786,2,0.6868218,1,0.8864425,0.44155234
+5201.jpg,Nepotism Tum kab aye ? Casteism sabse pahle mai hi to aya tha sir,multibully,,0,1,3,1,0,0.523661,0.47633898,1,0.5226534,0.5226534,0,0.83051693,1,0.7773973,0.4362952
+5202.jpg,marlboro?'auto corrected to 'maal bro?'deepika padukone tells narcotics bureau the fauxy NCB Chutiyaa likha hai kya idhar,multibully,,0,0,-100,-100,1,0.6504798,0.6504798,1,0.84468013,0.84468013,0,0.9436928,1,0.9917808,0.4253622
+5222.jpg,amit shah:joe bhai jeeti gaya modiji:oh no ! Anyway,multibully,,1,0,-100,-100,1,0.7898396,0.7898396,1,0.7467961,0.7467961,0,0.98807293,1,0.9926596,0.42149806
+5234.jpg,"teacher:this is the worst class, i have ever seen . I am leaving the class.",multibully,,0,0,-100,-100,0,0.6235766,0.37642342,0,0.8203743,0.17962565,0,0.49647763,1,0.84557605,0.45656627
+5235.jpg,Saloon mirror House mirror,multibully,,0,0,-100,-100,0,0.5247572,0.4752428,0,0.9346305,0.06536945,0,0.6021416,1,0.7148891,0.4693564
+5276.jpg,kya tum corona virus ho?Wtf nahi kyu?kyuki tum ek insaan se dusrer insaan se paas bohat jaldi chali jati ho,multibully,,0,0,-100,-100,1,0.57810324,0.57810324,1,0.6402869,0.6402869,0,0.9029546,1,0.49874058,0.43858775
+5290.jpg,rahul choudhary rahul93988285 crush:i love diamonds .BTW what's your name Me:heera thakur,multibully,,1,0,-100,-100,1,0.58262336,0.58262336,1,0.6529914,0.6529914,0,0.984932,1,0.9693049,0.4237624
+5292.jpg,vigilante vigil_nte all this but still couldn't press the brake pedal that night filmfare filmfare what #salmankhan's workout sessions look like...,multibully,,0,0,-100,-100,0,0.59450155,0.4054985,0,0.6103496,0.38965037,0,0.96957064,1,0.84710234,0.45628738
+5295.jpg,carry minati`s roasting video got deleted due to heavy amount of reports memers to tiktokers* Galat Panga le liya Tumne,multibully,,0,0,-100,-100,1,0.5774071,0.5774071,0,0.7068017,0.2931983,1,0.6016269,1,0.56241995,0.44708332
+5300.jpg,aalu se shona kaise banaoge?matlab aisa bilkul immediate nahi soche hain but sochenge..,multibully,,0,0,-100,-100,0,0.6138728,0.38612714,1,0.5993895,0.5993895,0,0.7341672,1,0.7912119,0.42700064
+5323.jpg,AFTER PLAYING FAU-G MY RIGHT THUMB,multibully,,0,0,-100,-100,0,0.5894504,0.4105496,0,0.72576714,0.27423283,0,0.9687321,1,0.6323285,0.45344013
+5334.jpg,bobby deol was a pro at covid testing long before the virus even came into existence.,multibully,,0,0,-100,-100,0,0.73263973,0.26736027,0,0.74049795,0.25950205,0,0.6218916,1,0.77557385,0.4581973
+5348.jpg,When the whole night you waited for your crush reply,multibully,,0,0,-100,-100,0,0.8800432,0.11995683,0,0.938323,0.06167695,0,0.9686137,1,0.69733405,0.4616465
+5383.jpg,Marlboro Government Warnig Smoking skills  THEFAUXY.COM  'Marlboro?' autocorrected to 'Maal Bro?' Deepika Padukone tells Narcotics Bureau | the fauxy  NCB Chutiya likha hai kya idhar,multibully,,0,1,0,1,1,0.5652634,0.5652634,1,0.81543934,0.81543934,0,0.57108057,1,0.9607444,0.42243713
+5397.jpg,rohitsharma45 16.2 follwers 95 following Suggest  virat No users found. Virat.kohli 82 follwers 196 following Suggested rohi rohitsharma45 Follow meanwhile Virat* Saala jalta hai mujhse,multibully,,0,1,0,1,0,0.61209387,0.3879061,0,0.54628724,0.45371276,0,0.715337,1,0.8669991,0.44699034
+5407.jpg,MERE BHAI JAISA KOI HARDICH NAHI HAI,multibully,,0,0,-100,-100,0,0.5260679,0.47393212,1,0.5861423,0.5861423,0,0.5800614,1,0.96137714,0.41195965
+5411.jpg,f(x) 2006 f''(x)2015,multibully,,0,0,-100,-100,1,0.552478,0.552478,0,0.9891679,0.010832071,0,0.7004425,1,0.8363269,0.46951517
+5421.jpg,"jab khoon pasina ek sath kagaz par chapta hai na,table bed ban jati hai aur office ghar,bhookh pyas bhul jati hai,bal bache rul jaate hain.. Tab jaake saali company banti hai..",multibully,,0,0,-100,-100,1,0.5687096,0.5687096,0,0.5749306,0.42506933,3,0.29742438,1,0.60919535,0.4570973
+5428.jpg,"LINK KIDHAR HAI? ""LINK BIO MEIN HAI""",multibully,,0,0,-100,-100,1,0.5100761,0.5100761,0,0.7412808,0.25871918,1,0.4655057,1,0.7283936,0.4578694
+5429.jpg,when i go to my bestfriend's house and find him studying lgta h..kisi dusre k kholi m aa gaya,multibully,,0,0,-100,-100,1,0.62797546,0.62797546,1,0.7135604,0.7135604,0,0.8604181,1,0.73189443,0.41114348
+5445.jpg,when you accidentlly right swipe an ugly girl and she matches,multibully,,0,0,-100,-100,0,0.73281264,0.2671874,1,0.5217422,0.5217422,0,0.92648417,1,0.71129584,0.42446288
+5451.jpg,HR:we will let you know.Me:matlab?HR:matlab aisa bilkul immediate nahi soche hain but..sochenge,multibully,,0,0,-100,-100,1,0.6663717,0.6663717,0,0.6841352,0.31586477,0,0.61987054,1,0.84779215,0.4538355
+5455.jpg,lockdown mein wine shop khul sakti hai tto 2nd october ko kyu nahi??-Mahatma Gandhi,multibully,,0,1,0,1,1,0.5559724,0.5559724,1,0.51179683,0.51179683,0,0.47640094,1,0.9064581,0.4495502
+5456.jpg,ME AFTER REACHING MY CLASS THAT'S ON 2ND FLOOR IG -GHANTAA,multibully,,0,0,-100,-100,1,0.5394196,0.5394196,0,0.73892725,0.26107278,0,0.5405953,1,0.53259104,0.43633795
+5467.jpg,woosh!you now have lost 2 seconds of your life woosh!you now have lost 4 seconds of your life,multibully,,0,0,-100,-100,0,0.8283049,0.17169517,0,0.9672579,0.032742146,0,0.87378263,1,0.80648714,0.47258586
+5475.jpg,"SHALINI SHANKAR AUTHOR,""DESI LAND""",multibully,,0,0,-100,-100,0,0.5125993,0.48740074,0,0.79323107,0.20676894,0,0.97928953,1,0.9582218,0.4441437
+5495.jpg,me:mummy aaj school nahi jaunga mummy:aaj chla ja beta kl ki chutti kar liyo *10 year old me:ye bhi theek hai,multibully,,0,0,-100,-100,0,0.5265541,0.47344586,1,0.64864916,0.64864916,2,0.4894514,1,0.8912216,0.4228178
+5501.jpg,"hero and heroine's father convo in old movies:aap apni blank check rakh lijiye,mai aapki beti rakh leta hu",multibully,,1,0,-100,-100,0,0.5545416,0.44545847,1,0.51568216,0.51568216,0,0.84619236,1,0.9364264,0.43393287
+5518.jpg,Broken things can still be beautiful,multibully,,0,0,-100,-100,0,0.7580855,0.24191448,0,0.973639,0.026360957,0,0.41990793,1,0.80593985,0.47713503
+5521.jpg,हमारी अधूरी कहानी…..True love is possible yes/no,multibully,,1,0,-100,-100,0,0.7552431,0.24475689,0,0.71939516,0.2806048,0,0.93968135,1,0.8777223,0.4305188
+5523.jpg,500$new note,multibully,,0,0,-100,-100,0,0.63747656,0.36252344,0,0.9634008,0.036599196,0,0.52810735,1,0.7217238,0.48173913
+5525.jpg,baby universe baby universe,multibully,,1,0,-100,-100,0,0.6568325,0.34316745,0,0.883015,0.11698503,0,0.43081728,1,0.7426304,0.46336553
+5558.jpg,"Profile pic me fida, Milne ke baad alvida..",multibully,,1,0,-100,-100,1,0.56230855,0.56230855,1,0.5204906,0.5204906,0,0.49427262,1,0.7894358,0.4231255
+5563.jpg,"Wow,this is literally me",multibully,,0,0,-100,-100,0,0.77555805,0.22444198,0,0.7974268,0.20257322,0,0.92026263,1,0.660265,0.4531897
+5581.jpg,sarcasmic Boi BoiSarcasmic Crush-mera ek kaam hai..kar doge? Me on my inner head-(Tujh jaisi meenakumari ke liye toh mai seene pe goli khaunga seene pe dhanno),multibully,,1,0,-100,-100,0,0.5900588,0.4099412,1,0.66199696,0.66199696,0,0.9786574,1,0.9272827,0.42263123
+5584.jpg,The right person will never leave you,multibully,,0,0,-100,-100,0,0.77407205,0.22592792,0,0.95852226,0.04147771,0,0.5959636,1,0.91240025,0.47047874
+5586.jpg,We live in a society... Just unfair things,multibully,,0,0,-100,-100,0,0.7538862,0.2461138,0,0.842612,0.15738796,3,0.38292524,1,0.70607513,0.47277713
+5598.jpg,I'd prefer this over anything,multibully,,0,0,-100,-100,0,0.73832583,0.26167417,0,0.9775064,0.022493552,0,0.8696631,1,0.7959134,0.4731884
+5600.jpg,Yakeen nahi ho raha ki aese hi thand me 7 bje uth kar Naha Dho Kar Hum School Chale Jaate The,multibully,,1,0,-100,-100,1,0.5856853,0.5856853,1,0.5708299,0.5708299,0,0.6430821,1,0.64018404,0.43051767
+5610.jpg,What a way to start your International cricket career COURTSEY :ICC,multibully,,0,0,-100,-100,0,0.6331957,0.36680433,0,0.92960465,0.07039542,0,0.46569604,1,0.83170086,0.4703166
+5619.jpg,I KNOW EVERYTHING HAPPENS FOR A REASON BUT WHAT FU K FedEx,multibully,,1,1,1,1,0,0.6871225,0.3128775,0,0.8651509,0.13484912,0,0.8388897,1,0.6871366,0.4563237
+5620.jpg,Be Loyal with your Partner,multibully,,0,0,-100,-100,0,0.67875713,0.3212429,0,0.93061817,0.06938185,0,0.70486474,1,0.8228,0.4709167
+5623.jpg,1 2 3 4 5 Next> 10 11 12  Next> 3412 3413 3414 3696 Next>,multibully,,1,0,-100,-100,1,0.513046,0.513046,0,0.9231363,0.07686369,1,0.35667172,1,0.7737516,0.47462648
+5629.jpg,"Every elser sibling in this world Yes, you were adopted! Mom Told me.",multibully,,1,1,-100,0,0,0.7741134,0.22588658,0,0.8203573,0.17964274,0,0.46660006,1,0.8630026,0.4398064
+5654.jpg,""" Mere Jaise Lakho Mile Honge Tujko Piya ,  Mujhe To Mila Tu hi"" These lines Hits me Hard",multibully,,0,0,-100,-100,0,0.7896075,0.21039245,0,0.7846759,0.2153241,0,0.868006,1,0.80342555,0.451202
+5664.jpg,"Behind every successful man There is woman called""Mom""",multibully,,0,0,-100,-100,0,0.7480802,0.25191984,0,0.90909207,0.090907946,0,0.5954429,1,0.9163896,0.46112117
+5678.jpg,"PLz stop making fun of my bro, He is great too",multibully,,1,0,-100,-100,0,0.72658294,0.27341706,0,0.7085995,0.2914005,0,0.87589514,1,0.7225986,0.4484567
+5683.jpg,Me looking at the F my kid received on the math homework I helped him finish,multibully,,1,1,-100,0,0,0.61755013,0.3824499,0,0.86012316,0.13987686,0,0.64608425,1,0.73776054,0.46903712
+5688.jpg,You need guts to hold a movie for a year! Respect to the man,multibully,,0,0,-100,-100,0,0.72282463,0.27717537,0,0.932666,0.06733401,0,0.83436066,1,0.83696425,0.46627352
+5692.jpg,Daft punk going down as one of the greatest duos in the history of electronic music,multibully,,0,0,-100,-100,0,0.70493436,0.29506564,0,0.8476515,0.15234853,0,0.3514426,1,0.76668465,0.4766822
+5697.jpg,When your GirlFriend getting Ready To Hangout With Her Male Best Friend Instead Of Hanging Put with upi *Boyfriend: shishe k saamen sajti thi who uss bhikari ke liye,multibully,,1,1,0,1,0,0.5677332,0.43226683,1,0.76334953,0.76334953,0,0.8809197,1,0.9062328,0.41601273
+5701.jpg,memes bnate ho ladkiya bhaav toh deti hogi me :,multibully,,1,0,-100,-100,1,0.57233113,0.57233113,1,0.84372175,0.84372175,2,0.5591044,1,0.9391055,0.41559815
+5714.jpg,This is Happiness,multibully,,0,0,-100,-100,0,0.7032759,0.29672402,0,0.9823767,0.017623268,0,0.40736634,1,0.817897,0.47849172
+5721.jpg,"First, Tata trusts had pledged 500 cr & Now Tata Sons to donate additional 1000 cr to fight againsts coronavirus TATA &SONS - 1000 CRORES TATA TRUSTS -500 CRORES MASSIVE RESPECT TO RATAN TATA _/\_",multibully,,0,0,-100,-100,0,0.5951208,0.40487927,0,0.8104876,0.18951233,0,0.4173128,1,0.8110309,0.46123666
+5725.jpg,Kya tum corona virus ho? Wtf Nahi kyu? Kyu ki tum ek Insaan se dusre Insaan se paas bohot jaldi Chali jati ho,multibully,,1,1,0,1,1,0.5041761,0.5041761,1,0.62977433,0.62977433,0,0.86100703,1,0.6225201,0.4400277
+5729.jpg,Aditya saxena @AdityaS40896243 Quarantine day 11* Me every morning these days Mom Dad Malik Malkin ye aapki chai,multibully,,1,0,-100,-100,1,0.5619516,0.5619516,0,0.570452,0.42954805,0,0.9349597,1,0.8387656,0.4296887
+5761.jpg,Mano ya na mano Pure desh ka DIL to ye jit gye apni acting se,multibully,,0,0,-100,-100,0,0.56585354,0.4341464,1,0.5940022,0.5940022,0,0.98346806,1,0.9286794,0.43430614
+5796.jpg,There is The Only Relation Where There Is No Breakup The Relation Between Mother and Her Child The Most Pure Relation In World.,multibully,,0,0,-100,-100,0,0.7595838,0.24041618,0,0.8893912,0.11060875,2,0.3814358,1,0.8274855,0.46370006
+5809.jpg,*after fixing a simple problem in my mom's phone mom-kaise kiya? Me: I not study IIT but IIT study me,multibully,,1,0,-100,-100,1,0.55687094,0.55687094,0,0.60777336,0.39222667,0,0.6971347,1,0.6504913,0.43371862
+5817.jpg,What girls think guys want to slap What guys actually want to slap,multibully,,1,0,-100,-100,0,0.5934422,0.4065578,0,0.62220675,0.37779325,2,0.5407415,1,0.95202076,0.44354042
+5821.jpg,Kya Karte ho? Logo ko khush karta hu ! Ek Raat ka kitna? Abe memer hu BDSk !,multibully,,1,1,0,1,0,0.6852582,0.31474182,1,0.52207744,0.52207744,0,0.79580265,1,0.8723675,0.430886
+5829.jpg,"जमीन में शराब के ड्रम गाड़कर उस पर फिट किया हैंडपंप, हथा चलाते ही निकली दारू",multibully,,1,0,-100,-100,1,0.66907054,0.66907054,1,0.8494685,0.8494685,0,0.83079207,1,0.82305604,0.4045483
+5831.jpg,Pulkit Sharma @memeria…  When you are using your phone and keep Blushing and Smiling…. Meanwhile Family Members*,multibully,,1,0,-100,-100,0,0.51601684,0.4839832,1,0.54498625,0.54498625,0,0.8597295,1,0.60321367,0.43120742
+5833.jpg,"When your parents tell you not ot join bad gangs but deep down inside you know, you're already the leader of a bad gang",multibully,,1,0,-100,-100,0,0.7039528,0.2960472,0,0.71935266,0.2806473,2,0.4659559,1,0.82378507,0.4582747
+5851.jpg,18 years old Nepali girl danced for nonstop 126 hours and she craeted a new Guiness book world record Me Meri ex ne mjhe 1 saal tak nachaya mjhe kia mila Just now Like Reply,multibully,,1,0,-100,-100,0,0.6085413,0.39145872,1,0.6762767,0.6762767,0,0.9603427,1,0.9199403,0.41753727
+5880.jpg,This is happiness,multibully,,0,0,-100,-100,0,0.7032759,0.29672402,0,0.9823767,0.017623268,0,0.40736634,1,0.817897,0.47849172
+5893.jpg,9GAG.COM Anti-Lockdown Protest Leader Tested Positive For COVID-19 You get what you fucking deserve!,multibully,,0,1,0,1,0,0.690467,0.30953297,1,0.7138461,0.7138461,2,0.35558987,1,0.9441119,0.44085345
+5916.jpg,First Girl From Your Taglist,multibully,,1,0,-100,-100,0,0.6829711,0.31702885,0,0.8814229,0.1185771,0,0.6357757,1,0.8411699,0.46599612
+5923.jpg,ritesh bahuguria @riteshismm Papa: tum mujhe apna papa nhi dost samho M: yar teri bandi ko itni problem kya mere phone use karne sai Papa: Bsdk itna friendly hone nahi bola tha,multibully,,1,1,0,1,1,0.6115429,0.6115429,1,0.6896288,0.6896288,0,0.84263706,1,0.68416524,0.42638898
+5926.jpg,She : Aaj main bhut sad hu pucho Kyun ? He : Kyu? She : Aese hee Delete contact Cancel,multibully,,1,0,-100,-100,1,0.6042661,0.6042661,1,0.6564062,0.6564062,0,0.98323846,1,0.7514582,0.42395908
+5953.jpg,When you're at the barbershop and the worst baber is free and y'all make eye contact,multibully,,1,0,-100,-100,0,0.7832581,0.21674189,0,0.55805415,0.44194585,0,0.84936315,1,0.75693065,0.43899965
+5957.jpg,DESI ADULTS TROLLS This is how single take selfies,multibully,,1,1,3,1,0,0.5507521,0.44924787,1,0.79452014,0.79452014,2,0.79646164,1,0.9376082,0.4205663
+5972.jpg,"Punctuations are important,but spaces are even more important Mother slap,Public school",multibully,,1,0,-100,-100,0,0.60453886,0.39546117,0,0.96114945,0.038850535,2,0.33160543,1,0.7668303,0.4722316
+5973.jpg,The Art The Real Artist,multibully,,0,0,-100,-100,0,0.669502,0.33049798,0,0.9461304,0.053869598,0,0.4978268,1,0.7172888,0.47698778
+5974.jpg,The wrong girl distract you The right girl will motivate you,multibully,,0,0,-100,-100,0,0.73759615,0.26240385,0,0.8625318,0.13746817,0,0.8386942,1,0.92132753,0.45907438
+5992.jpg,"If You Have This , You're My Crush Xavier I also have this but on different place",multibully,,1,0,-100,-100,0,0.8122057,0.18779437,0,0.71954834,0.28045163,0,0.97865766,1,0.6342254,0.43603057
+6001.jpg,Corona Vaccine Ki Testing Bezubaan janwar Par Kyun..? Rapist Kab Kaam Ayenge..? Kab Tak Unhe. Muft ka Khana Khilayenge..?,multibully,,0,1,3,2,1,0.76915044,0.76915044,1,0.6557746,0.6557746,1,0.77023596,1,0.84468925,0.44565734
+6003.jpg,Girls after reading desi adult trolls memes,multibully,,1,1,2,1,0,0.57820857,0.4217914,1,0.70073766,0.70073766,2,0.5137868,1,0.808015,0.43025
