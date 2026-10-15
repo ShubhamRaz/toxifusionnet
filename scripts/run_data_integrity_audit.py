@@ -21,8 +21,15 @@ import hashlib
 import json
 import logging
 from pathlib import Path
+import sys
 import time
 from typing import Any, Dict, List
+
+# Ensure repository src/ is prioritized over stale installed packages in virtualenv
+_repo_root = Path(__file__).resolve().parent.parent
+_src_dir = _repo_root / "src"
+if _src_dir.exists() and str(_src_dir) not in sys.path:
+    sys.path.insert(0, str(_src_dir))
 
 import numpy as np
 import pandas as pd
@@ -275,6 +282,9 @@ def run_data_integrity_audit(
     out_dir: str | Path = "results/v3_journal_final/data_integrity_audit",
 ) -> Dict[str, Any]:
     root = Path(repo_root).resolve()
+    src_dir = root / "src"
+    if src_dir.exists() and str(src_dir) not in sys.path:
+        sys.path.insert(0, str(src_dir))
     out_p = root / out_dir
     out_p.mkdir(parents=True, exist_ok=True)
 
