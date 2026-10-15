@@ -170,6 +170,14 @@ def make_grouped_cv_splits(
         "stratum": list(final_strata.values())
     })
 
+    min_groups_needed = n_splits * 2
+    if len(group_df) < min_groups_needed:
+        raise ValueError(
+            f"Cannot construct valid {n_splits}-fold splits with inner validation: "
+            f"dataset contains only {len(group_df)} unique groups, but at least "
+            f"{min_groups_needed} groups are required to populate train, val, and test partitions in every fold."
+        )
+
     # Stratified K-Fold on the unique groups
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
     group_df["outer_fold"] = -1
@@ -186,12 +194,21 @@ def make_grouped_cv_splits(
         rest_idx = f_group_df[~test_mask].index
 
         # Stratified split of remaining groups into inner train and inner val
+        strat_series = f_group_df.loc[rest_idx, "stratum"]
+        strat_counts = strat_series.value_counts()
+        can_stratify = (strat_counts >= 2).all() and len(strat_counts) > 1
+
         tr_groups, val_groups = train_test_split(
             rest_idx,
             test_size=val_frac,
             random_state=seed + f,
-            stratify=f_group_df.loc[rest_idx, "stratum"]
+            stratify=strat_series if can_stratify else None
         )
+        if len(tr_groups) == 0 or len(val_groups) == 0:
+            raise ValueError(
+                f"Fold {f}: inner split resulted in an empty partition (train={len(tr_groups)}, val={len(val_groups)}). "
+                f"Dataset with {len(group_df)} groups is too small for val_frac={val_frac}."
+            )
 
         f_group_df["split"] = "train"
         f_group_df.loc[val_groups, "split"] = "val"
@@ -234,6 +251,8 @@ def audit_fold_integrity(fold_dfs: List[pd.DataFrame], original_len: int) -> Dic
 
         for part in ["train", "val", "test"]:
             sub = d[d["split"] == part]
+            if len(sub) == 0:
+                checks["passed"] = False
             high_sev = int((sub["severity"] == "high").sum()) if "severity" in sub else 0
             soc = int((sub["target"] == "society").sum()) if "target" in sub else 0
             org = int((sub["target"] == "organization").sum()) if "target" in sub else 0

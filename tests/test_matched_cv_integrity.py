@@ -194,3 +194,73 @@ def test_normalized_text_group_leakage_prevention():
         # Look at the three meme variants (ids 1, 2, 3)
         subset_splits = d[d["id"].isin(["1", "2", "3"])]["split"].unique()
         assert len(subset_splits) == 1, f"Fold {f}: OCR variants were split across multiple partitions: {subset_splits}"
+
+
+def test_impossible_synthetic_dataset_fails_clearly():
+    """Verify that small synthetic datasets fail clearly with a ValueError when a valid split is impossible."""
+    # Only 4 groups for 5-fold CV
+    samples = [
+        {"id": f"s_{i}", "text": f"text {i}", "hate": "none", "sarcasm": "not_sarcastic"}
+        for i in range(4)
+    ]
+    df = pd.DataFrame(samples)
+    with pytest.raises(ValueError, match="Cannot construct valid 5-fold splits"):
+        make_grouped_cv_splits(df, n_splits=5, seed=42)
+
+
+def test_standalone_fold_generator_synthetic(tmp_path: Path):
+    """Verify that generate_combined_folds runs standalone on synthetic data without model training."""
+    from scripts.generate_combined_folds import generate_combined_folds
+
+    # Create synthetic dataset CSV with 60 groups and 2 sources
+    records = []
+    for i in range(60):
+        src = "multibully" if i < 40 else "hot"
+        records.append({
+            "id": f"synth_{i}",
+            "text": f"synthetic text group {i}",
+            "hate": "hate" if i % 2 == 0 else "none",
+            "sarcasm": "sarcastic" if i % 3 == 0 else "not_sarcastic",
+            "target": "society" if i < 15 else "individual",
+            "severity": "high" if i < 15 else "low",
+            "source_dataset": src,
+        })
+    synth_df = pd.DataFrame(records)
+    synth_csv = tmp_path / "synthetic_dataset.csv"
+    synth_df.to_csv(synth_csv, index=False)
+
+    out_csv = tmp_path / "synthetic_cv_folds.csv"
+    cached = generate_combined_folds(synth_csv, out_csv, folds=5, seed=42)
+
+    assert out_csv.exists()
+    assert len(cached) == 60 * 5
+    assert set(cached["fold"].unique()) == {0, 1, 2, 3, 4}
+    assert set(cached["split"].unique()) == {"train", "val", "test"}
+
+    # Test overwrite protection without force
+    cached_cached = generate_combined_folds(synth_csv, out_csv, folds=5, seed=42, force=False)
+    assert len(cached_cached) == 60 * 5
+
+
+def test_source_aware_composite_id_handling():
+    """Verify composite (source_dataset, id) key support when IDs collide across sources."""
+    # Source A has id_0..id_9, Source B has id_0..id_9 (colliding IDs)
+    records = []
+    for f in range(5):
+        for i in range(10):
+            # Source A
+            split_a = "test" if i % 5 == f else "train"
+            records.append({"source_dataset": "source_a", "id": f"id_{i}", "split": split_a, "fold": f})
+            # Source B
+            split_b = "test" if (i + 1) % 5 == f else "train"
+            records.append({"source_dataset": "source_b", "id": f"id_{i}", "split": split_b, "fold": f})
+
+    fold_cache = pd.DataFrame(records)
+    # validate_fold_cache with id_col=['source_dataset', 'id']
+    test_dict = validate_fold_cache(fold_cache, folds=5, id_col=["source_dataset", "id"])
+    assert len(test_dict) == 5
+    # Total unique test instances across folds should be 20
+    all_tests = []
+    for f in range(5):
+        all_tests.extend(test_dict[f])
+    assert len(all_tests) == 20

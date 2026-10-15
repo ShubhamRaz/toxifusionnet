@@ -74,7 +74,12 @@ def validate_fold_cache_checksum(cache_path: str | Path, expected_sha: str = CAN
     return sha
 
 
-def validate_fold_cache(fold_assign: pd.DataFrame, expected_ids: set | None = None, folds: int = 5) -> dict[int, list]:
+def validate_fold_cache(
+    fold_assign: pd.DataFrame,
+    expected_ids: set | None = None,
+    folds: int = 5,
+    id_col: str | list[str] | None = None,
+) -> dict[int, list]:
     """Strict pre-training validation of fold cache integrity and test partition coverage."""
     required_cols = {"id", "split", "fold"}
     if not required_cols.issubset(fold_assign.columns):
@@ -84,31 +89,45 @@ def validate_fold_cache(fold_assign: pd.DataFrame, expected_ids: set | None = No
     if actual_folds != set(range(folds)):
         raise ValueError(f"Fold cache must contain folds 0..{folds-1}, got {actual_folds}")
 
+    # Determine unique identifier: if id alone has collisions and source_dataset exists, use composite
+    use_composite = False
+    if "source_dataset" in fold_assign.columns:
+        if id_col == ["source_dataset", "id"] or fold_assign.groupby("fold")["id"].apply(lambda s: s.duplicated().any()).any():
+            use_composite = True
+
+    def _get_key_series(df_part: pd.DataFrame) -> pd.Series:
+        if use_composite:
+            return df_part["source_dataset"].astype(str) + "::" + df_part["id"].astype(str)
+        return df_part["id"].astype(str)
+
     test_ids_by_fold = {}
-    all_test_ids = []
-    expected_set = set(expected_ids) if expected_ids is not None else None
+    all_test_keys = []
+    expected_set = {str(k) for k in expected_ids} if expected_ids is not None else None
 
     for f in range(folds):
         f_df = fold_assign[fold_assign["fold"] == f]
-        if f_df["id"].duplicated().any():
-            dups = f_df[f_df["id"].duplicated()]["id"].tolist()[:5]
+        f_keys = _get_key_series(f_df)
+
+        if f_keys.duplicated().any():
+            dups = f_keys[f_keys.duplicated()].tolist()[:5]
             raise ValueError(f"Fold cache integrity violation in fold {f}: duplicate IDs within fold! Examples: {dups}")
 
         invalid_splits = set(f_df["split"].unique()) - {"train", "val", "test"}
         if invalid_splits:
             raise ValueError(f"Fold {f} contains invalid split values: {invalid_splits}")
 
-        tr = set(f_df[f_df["split"] == "train"]["id"])
-        va = set(f_df[f_df["split"] == "val"]["id"])
-        te = set(f_df[f_df["split"] == "test"]["id"])
+        tr = set(_get_key_series(f_df[f_df["split"] == "train"]))
+        va = set(_get_key_series(f_df[f_df["split"] == "val"]))
+        te = set(_get_key_series(f_df[f_df["split"] == "test"]))
+
         if len(tr.intersection(va)) > 0 or len(tr.intersection(te)) > 0 or len(va.intersection(te)) > 0:
             raise ValueError(f"Fold cache integrity violation in fold {f}: train/val/test splits overlap!")
 
         if expected_set is not None:
-            f_ids = set(f_df["id"])
-            if f_ids != expected_set:
-                missing_f = expected_set - f_ids
-                unexpected_f = f_ids - expected_set
+            f_key_set = set(f_keys)
+            if f_key_set != expected_set:
+                missing_f = expected_set - f_key_set
+                unexpected_f = f_key_set - expected_set
                 err_parts = []
                 if missing_f:
                     err_parts.append(f"missing {len(missing_f)} IDs (e.g. {list(missing_f)[:5]})")
@@ -116,21 +135,21 @@ def validate_fold_cache(fold_assign: pd.DataFrame, expected_ids: set | None = No
                     err_parts.append(f"unexpected {len(unexpected_f)} IDs (e.g. {list(unexpected_f)[:5]})")
                 raise ValueError(f"Fold {f} ID mismatch: {', '.join(err_parts)}")
 
-        test_ids_by_fold[f] = sorted(list(te))
-        all_test_ids.extend(te)
+        test_ids_by_fold[f] = sorted(list(f_df[f_df["split"] == "test"]["id"]))
+        all_test_keys.extend(te)
 
     # Verify exactly one outer-test assignment per sample
-    if len(all_test_ids) != len(set(all_test_ids)):
+    if len(all_test_keys) != len(set(all_test_keys)):
         from collections import Counter
-        counts = Counter(all_test_ids)
+        counts = Counter(all_test_keys)
         dups = [item for item, c in counts.items() if c > 1][:5]
         raise ValueError(f"Duplicate test IDs detected across folds in fold cache! Examples: {dups}")
 
     if expected_set is not None:
-        missing = expected_set - set(all_test_ids)
+        missing = expected_set - set(all_test_keys)
         if missing:
             raise ValueError(f"Fold cache missing {len(missing)} dataset IDs! (examples: {list(missing)[:5]})")
-        unexpected = set(all_test_ids) - expected_set
+        unexpected = set(all_test_keys) - expected_set
         if unexpected:
             raise ValueError(f"Fold cache contains {len(unexpected)} unexpected IDs not in dataset! (examples: {list(unexpected)[:5]})")
 
@@ -223,15 +242,25 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             elif cache_p.name == "combined_multibully_hot_cv_folds.csv":
                 validate_fold_cache_checksum(cache_p, CANONICAL_COMBINED_FOLD_CACHE_SHA256)
             fold_assign = pd.read_csv(cache_p)
-            validate_fold_cache(fold_assign, expected_ids=set(df["id"]), folds=folds)
-            # Reconstruct fold_dfs from cached assignment while strictly preserving group_id
+            expected_keys = (
+                set(df["source_dataset"].astype(str) + "::" + df["id"].astype(str))
+                if not df["id"].is_unique and "source_dataset" in df.columns
+                else set(df["id"].astype(str))
+            )
+            validate_fold_cache(fold_assign, expected_ids=expected_keys, folds=folds)
+            # Reconstruct fold_dfs from cached assignment while strictly preserving group_id and all metadata
             fold_dfs = []
             merge_cols = ["id", "split"]
             if "group_id" in fold_assign.columns:
                 merge_cols.append("group_id")
+            on_cols = ["source_dataset", "id"] if ("source_dataset" in df.columns and "source_dataset" in fold_assign.columns) else ["id"]
+            if "source_dataset" in on_cols and "source_dataset" not in merge_cols:
+                merge_cols.append("source_dataset")
+
             for f in range(folds):
+                f_assign = fold_assign[fold_assign["fold"] == f]
                 d = df.drop(columns=["split", "group_id"], errors="ignore").merge(
-                    fold_assign[fold_assign["fold"] == f][merge_cols], on="id"
+                    f_assign[[c for c in merge_cols if c in f_assign.columns]], on=on_cols
                 )
                 if "group_id" not in d.columns:
                     d = assign_group_ids(d)

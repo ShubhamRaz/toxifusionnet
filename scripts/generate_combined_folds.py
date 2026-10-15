@@ -30,6 +30,7 @@ def generate_combined_folds(
     folds: int = 5,
     seed: int = 42,
     val_frac: float = 0.15,
+    force: bool = False,
 ) -> pd.DataFrame:
     data_p = Path(data_path)
     if not data_p.exists():
@@ -47,6 +48,20 @@ def generate_combined_folds(
         if df.duplicated(subset=["source_dataset", "id"]).any():
             raise ValueError("(source_dataset, id) composite keys must be strictly unique.")
         log.info("Source breakdown: %s", df["source_dataset"].value_counts().to_dict())
+
+    out_p = Path(out_path)
+    if out_p.exists() and not force:
+        log.info("Existing fold cache found at %s. Validating existing cache...", out_p)
+        cached = pd.read_csv(out_p)
+        expected_keys = (
+            set(df["source_dataset"].astype(str) + "::" + df["id"].astype(str))
+            if not df["id"].is_unique and "source_dataset" in df.columns
+            else set(df["id"].astype(str))
+        )
+        validate_fold_cache(cached, expected_ids=expected_keys, folds=folds)
+        sha = compute_normalized_fold_cache_sha256(out_p)
+        log.info("Existing fold cache is VALID (SHA-256 [CRLF-normalized]: %s). Use --force to regenerate.", sha)
+        return cached
 
     # Build group-aware splits with rare-stratum aggregation
     log.info("Generating %d group-aware stratified folds (seed=%d, val_frac=%.2f)...", folds, seed, val_frac)
@@ -73,9 +88,8 @@ def generate_combined_folds(
 
     # Validate the generated cache table
     log.info("Validating generated fold cache table against expected IDs...")
-    validate_fold_cache(cached, expected_ids=set(df["id"]), folds=folds)
+    validate_fold_cache(cached, expected_ids=set(df["id"].astype(str)), folds=folds)
 
-    out_p = Path(out_path)
     out_p.parent.mkdir(parents=True, exist_ok=True)
     cached.to_csv(out_p, index=False)
     log.info("Saved canonical fold assignments to %s (%d rows)", out_p, len(cached))
@@ -84,7 +98,7 @@ def generate_combined_folds(
     log.info("Canonical fold cache SHA-256 (CRLF-normalized): %s", sha)
 
     # Print summary statistics per fold
-    for f in range(folds):
+    for f, f_df in enumerate(fold_dfs):
         f_sub = cached[cached["fold"] == f]
         split_counts = f_sub["split"].value_counts().to_dict()
         if "source_dataset" in f_sub.columns:
@@ -92,6 +106,14 @@ def generate_combined_folds(
             log.info("Fold %d: splits=%s, by_source=%s", f, split_counts, src_split)
         else:
             log.info("Fold %d: splits=%s", f, split_counts)
+
+        # Label distribution report
+        for sname in ["train", "val", "test"]:
+            s_part = f_df[f_df["split"] == sname]
+            h_cnt = int((s_part["hate"] == "hate").sum()) if "hate" in s_part else 0
+            sarc_cnt = int((s_part["sarcasm"] == "sarcastic").sum()) if "sarcasm" in s_part else 0
+            sev_cnt = int((s_part["severity"] == "high").sum()) if "severity" in s_part else 0
+            log.info("  Fold %d [%s, N=%d]: hate=%d, sarcasm=%d, high_sev=%d", f, sname, len(s_part), h_cnt, sarc_cnt, sev_cnt)
 
     return cached
 
@@ -103,9 +125,10 @@ def main():
     p.add_argument("--folds", type=int, default=5, help="Number of outer cross-validation folds")
     p.add_argument("--seed", type=int, default=42, help="Random seed for splitting")
     p.add_argument("--val-frac", type=float, default=0.15, help="Fraction of training groups for inner validation")
+    p.add_argument("--force", action="store_true", help="Force overwrite existing cache file")
     args = p.parse_args()
 
-    generate_combined_folds(args.data, args.out, folds=args.folds, seed=args.seed, val_frac=args.val_frac)
+    generate_combined_folds(args.data, args.out, folds=args.folds, seed=args.seed, val_frac=args.val_frac, force=args.force)
 
 
 if __name__ == "__main__":
