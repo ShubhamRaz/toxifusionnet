@@ -471,6 +471,15 @@ def _get_high_severity_metrics(sev_dict: dict) -> dict:
     return {}
 
 
+def _format_p_value(p: float | None) -> str:
+    """Format p-value for scientific publication: use '<0.0001' for tiny values instead of '0.0000'."""
+    if p is None:
+        return "—"
+    if p < 0.0001:
+        return "<0.0001"
+    return f"{p:.4f}"
+
+
 def _format_publication_markdown_report(full_res: dict) -> str:
     meta = full_res["metadata"]
     c_d = full_res["contrast_e1c_vs_e1d"]
@@ -483,11 +492,14 @@ def _format_publication_markdown_report(full_res: dict) -> str:
         f"**Protocol:** Grouped 5-Fold Cross-Validation on MultiBully ($N = {meta['eval_instances']:,}$ held-out test predictions).  ",
         f"**Inferential Tests:** Paired cluster permutation test ($B = {meta['n_permutations']:,}$ permutations, two-sided, plus-one corrected).  ",
         f"**Confidence Intervals:** Paired cluster bootstrap ($B = {meta['n_bootstrap']:,}$ resamples, 95% percentile interval).  ",
-        f"**Multiple Comparison Control:** Holm-Bonferroni step-down correction across all 8 task hypothesis tests.  ",
+        f"**Multiple Comparison Control:** Holm-Bonferroni step-down correction across the 8 primary task hypothesis tests (4 tasks $\\times$ 2 contrasts).  ",
         "",
         "---",
         "",
         "## 1. Primary Benchmark: Multi-Task Macro-F1 Comparisons",
+        "",
+        "> [!NOTE]",
+        "> The 8 task-level hypotheses constitute the primary confirmatory testing family controlled via the Holm-Bonferroni step-down procedure ($\\alpha = 0.05$). Overall multi-task mean Macro-F1 comparisons are reported separately as aggregate secondary analyses; their empirical permutation $p$-values are unadjusted and not part of the primary 8-test family.",
         "",
         "### Contrast 1: E1c (Unweighted Control) vs. E1d (Square-Root Balanced)",
         "",
@@ -500,23 +512,25 @@ def _format_publication_markdown_report(full_res: dict) -> str:
         ci_str = f"[{tc['delta_ci95'][0]:.4f}, {tc['delta_ci95'][1]:.4f}]"
         sig_str = "**Yes**" if tc["p_significant_05"] else "No"
         sig_marker = "**" if tc["p_significant_05"] else ""
+        raw_p_str = _format_p_value(tc["raw_p_value"])
+        holm_p_str = _format_p_value(tc["holm_p_value"])
         lines.append(
             f"| **{t.capitalize()}** | {tc['evaluated_support']:,} | "
             f"{tc['E1c_unweighted_macro_f1']:.4f} | {tc['E1d_weighted_macro_f1']:.4f} | "
             f"{sig_marker}{tc['delta_macro_f1']:+.4f}{sig_marker} | {ci_str} | "
-            f"{tc['raw_p_value']:.4f} | {tc['holm_p_value']:.4f} | {sig_str} | "
+            f"{raw_p_str} | {holm_p_str} | {sig_str} | "
             f"{tc['bootstrap_prob_superiority'] * 100.0:.1f}% |"
         )
 
-    # Multitask mean for Contrast 1
+    # Multitask mean for Contrast 1 (Aggregate Secondary Analysis)
     mt1 = c_d.get("multitask_mean", {})
     if mt1:
         ci_mt1 = f"[{mt1['delta_ci95'][0]:.4f}, {mt1['delta_ci95'][1]:.4f}]"
         lines.append(
-            f"| **Overall Mean** | {meta['eval_instances']:,} | "
+            f"| **Overall Mean (Secondary)** | {meta['eval_instances']:,} | "
             f"{mt1['E1c_unweighted_mean_macro_f1']:.4f} | {mt1['E1d_weighted_mean_macro_f1']:.4f} | "
             f"**{mt1['delta_mean_macro_f1']:+.4f}** | {ci_mt1} | "
-            f"{mt1['p_value_permutation']:.4f} | — | — | {mt1['bootstrap_prob_superiority'] * 100.0:.1f}% |"
+            f"{_format_p_value(mt1['p_value_permutation'])} (unadj.) | - | - | {mt1['bootstrap_prob_superiority'] * 100.0:.1f}% |"
         )
 
     lines.extend([
@@ -532,11 +546,13 @@ def _format_publication_markdown_report(full_res: dict) -> str:
         ci_str = f"[{tc['delta_ci95'][0]:.4f}, {tc['delta_ci95'][1]:.4f}]"
         sig_str = "**Yes**" if tc["p_significant_05"] else "No"
         sig_marker = "**" if tc["p_significant_05"] else ""
+        raw_p_str = _format_p_value(tc["raw_p_value"])
+        holm_p_str = _format_p_value(tc["holm_p_value"])
         lines.append(
             f"| **{t.capitalize()}** | {tc['evaluated_support']:,} | "
             f"{tc['E1d_weighted_macro_f1']:.4f} | {tc['E6b_combined_gold_macro_f1']:.4f} | "
             f"{sig_marker}{tc['delta_macro_f1']:+.4f}{sig_marker} | {ci_str} | "
-            f"{tc['raw_p_value']:.4f} | {tc['holm_p_value']:.4f} | {sig_str} | "
+            f"{raw_p_str} | {holm_p_str} | {sig_str} | "
             f"{tc['bootstrap_prob_superiority'] * 100.0:.1f}% |"
         )
 
@@ -544,10 +560,10 @@ def _format_publication_markdown_report(full_res: dict) -> str:
     if mt2:
         ci_mt2 = f"[{mt2['delta_ci95'][0]:.4f}, {mt2['delta_ci95'][1]:.4f}]"
         lines.append(
-            f"| **Overall Mean** | {meta['eval_instances']:,} | "
+            f"| **Overall Mean (Secondary)** | {meta['eval_instances']:,} | "
             f"{mt2['E1d_weighted_mean_macro_f1']:.4f} | {mt2['E6b_combined_gold_mean_macro_f1']:.4f} | "
             f"**{mt2['delta_mean_macro_f1']:+.4f}** | {ci_mt2} | "
-            f"{mt2['p_value_permutation']:.4f} | — | — | {mt2['bootstrap_prob_superiority'] * 100.0:.1f}% |"
+            f"{_format_p_value(mt2['p_value_permutation'])} (unadj.) | - | - | {mt2['bootstrap_prob_superiority'] * 100.0:.1f}% |"
         )
 
     lines.extend([
@@ -598,8 +614,8 @@ def _format_publication_markdown_report(full_res: dict) -> str:
         fv2 = d_6b["task_comparisons"][t]["fold_variability"]
         deltas1 = [round(b - a, 4) for a, b in zip(fv1["folds_E1c_unweighted"], fv1["folds_E1d_weighted"])]
         deltas2 = [round(b - a, 4) for a, b in zip(fv2["folds_E1d_weighted"], fv2["folds_E6b_combined_gold"])]
-        str1 = f"{fv1['mean_E1c_unweighted']:.4f}±{fv1['std_E1c_unweighted']:.4f} vs {fv1['mean_E1d_weighted']:.4f}±{fv1['std_E1d_weighted']:.4f} (Deltas: {deltas1})"
-        str2 = f"{fv2['mean_E1d_weighted']:.4f}±{fv2['std_E1d_weighted']:.4f} vs {fv2['mean_E6b_combined_gold']:.4f}±{fv2['std_E6b_combined_gold']:.4f} (Deltas: {deltas2})"
+        str1 = f"{fv1['mean_E1c_unweighted']:.4f} +/- {fv1['std_E1c_unweighted']:.4f} vs {fv1['mean_E1d_weighted']:.4f} +/- {fv1['std_E1d_weighted']:.4f} (Deltas: {deltas1})"
+        str2 = f"{fv2['mean_E1d_weighted']:.4f} +/- {fv2['std_E1d_weighted']:.4f} vs {fv2['mean_E6b_combined_gold']:.4f} +/- {fv2['std_E6b_combined_gold']:.4f} (Deltas: {deltas2})"
         lines.append(f"| **{t.capitalize()}** | {str1} | {str2} |")
 
     lines.extend([
@@ -616,10 +632,12 @@ def _format_publication_markdown_report(full_res: dict) -> str:
         for t in ("hate", "sarcasm"):
             mc = comp["task_comparisons"][t]["mcnemar"]
             sig_str = "**Yes**" if mc["p_significant_05"] else "No"
+            raw_p_str = _format_p_value(mc.get("raw_p_value", mc.get("p_value")))
+            holm_p_str = _format_p_value(mc.get("holm_p_value", mc.get("p_value")))
             lines.append(
                 f"| {contrast} | **{t.capitalize()}** | {mc['discordant_pairs']} | "
                 f"{mc['odds_ratio']:.3f} | {mc['test_variant']} | "
-                f"{mc['raw_p_value']:.4f} | {mc['holm_p_value']:.4f} | {sig_str} |"
+                f"{raw_p_str} | {holm_p_str} | {sig_str} |"
             )
 
     # Scientific Cautious Interpretation
@@ -638,20 +656,22 @@ def _format_publication_markdown_report(full_res: dict) -> str:
 
     if sig_e1d_tasks:
         lines.append(
-            f"- **Statistically Supported Gains:** Following Holm-Bonferroni family-wise error rate control across the 8 hypothesis tests, per-task square-root class weighting demonstrates statistically significant Macro-F1 improvements on: **{', '.join(sig_e1d_tasks)}** (Holm $p < 0.05$)."
+            f"- **Statistically Supported Gains:** Following Holm-Bonferroni family-wise error rate control across the 8 primary hypothesis tests, per-task square-root class weighting demonstrates statistically significant Macro-F1 improvements on: **{', '.join(sig_e1d_tasks)}** (Holm $p < 0.05$)."
         )
     else:
         lines.append(
             "- **Statistical Invariance Across Heads:** After rigorous Holm-Bonferroni correction across the 8 simultaneous tests, the Macro-F1 differences between E1c and E1d do not cross the conservative family-wise significance threshold ($\\alpha = 0.05$). Observed sample improvements must be interpreted cautiously as suggestive trends rather than definitive rejections of the null hypothesis."
         )
 
-    # Hate detection invariance
-    hate_p = c_d["task_comparisons"]["hate"]["holm_p_value"]
+    # Hate detection cautious statement
+    hate_delta = c_d["task_comparisons"]["hate"]["delta_macro_f1"]
+    hate_raw_p = _format_p_value(c_d["task_comparisons"]["hate"]["raw_p_value"])
+    hate_holm_p = _format_p_value(c_d["task_comparisons"]["hate"]["holm_p_value"])
     lines.append(
-        f"- **Preserved Primary Hate Detection:** Hate classification remained statistically unchanged ($\\Delta = {c_d['task_comparisons']['hate']['delta_macro_f1']:+.4f}$, Holm $p = {hate_p:.4f}$), confirming that balancing minority classes in secondary heads did not compromise primary binary hate discrimination."
+        f"- **Hate Detection Invariance:** No statistically significant difference in hate Macro-F1 was detected in this comparison ($\\Delta = {hate_delta:+.4f}$, raw $p = {hate_raw_p}$, Holm $p = {hate_holm_p}$). This lack of statistical significance does not establish equivalence between the models or rule out meaningful differences in other performance measures (such as subgroup error rates or classification thresholds)."
     )
 
-    # Analyze severity trade-off
+    # Analyze severity trade-off and rare class
     sev_d = c_d["task_comparisons"]["severity"]["class_metrics_b"]
     sev_c = c_d["task_comparisons"]["severity"]["class_metrics_a"]
     high_c = _get_high_severity_metrics(sev_c)
@@ -660,7 +680,7 @@ def _format_publication_markdown_report(full_res: dict) -> str:
     d_rec = high_d.get("recall", 0.0)
     high_rec_diff = d_rec - c_rec
     lines.append(
-        f"- **Severity Minority-Class Recovery vs. Majority Trade-off:** High severity ($N = 30$) recall increased by {high_rec_diff:+.2f} ({c_rec:.2f} -> {d_rec:.2f}), rescuing a previously zero-recall class. Crucially, the majority Moderate Severity class ($N = 1,409$) maintained stable performance (0.904 precision, 0.914 F1), avoiding catastrophic majority-class degradation."
+        f"- **Rare High-Severity Class Support & Uncertainty ($N = 30$):** Recall on the high-severity class increased by {high_rec_diff:+.2f} ({c_rec:.2f} $\\to$ {d_rec:.2f}, F1: {high_c.get('f1', 0.0):.3f} $\\to$ {high_d.get('f1', 0.0):.3f}), moving from complete omission in E1c to non-zero detection in E1d. While this recall improvement is encouraging, the estimate carries substantial uncertainty due to the small test support of only 30 high-severity instances across all 5 folds (an increase of approximately 5 correctly classified examples). This result should be seen as an encouraging indicator of minority sensitivity rather than a precise or broadly generalizable performance estimate. Concurrently, the majority Moderate Severity class ($N = 1,409$) maintained stable performance (0.904 precision, 0.914 F1 vs. 0.892 precision, 0.939 F1 in E1c), showing that minority-class weighting did not induce severe majority-class precision degradation."
     )
 
     lines.extend([
@@ -673,20 +693,27 @@ def _format_publication_markdown_report(full_res: dict) -> str:
             f"- **Statistically Supported Hate Gain:** Adding auxiliary gold hate supervision produced a statistically significant shift in hate discrimination (Holm $p < 0.05$)."
         )
     else:
+        hate_d_6b_delta = d_6b["task_comparisons"]["hate"]["delta_macro_f1"]
+        hate_d_6b_raw_p = _format_p_value(d_6b["task_comparisons"]["hate"]["raw_p_value"])
+        hate_d_6b_holm_p = _format_p_value(d_6b["task_comparisons"]["hate"]["holm_p_value"])
         lines.append(
-            f"- **Inconclusive Primary Transfer:** Holding the optimizer-update budget strictly constant (488 steps) and matching class weights, adding auxiliary gold text hate data yielded negligible and statistically non-significant change in hate classification ($\\Delta = {d_6b['task_comparisons']['hate']['delta_macro_f1']:+.4f}$, raw $p = {d_6b['task_comparisons']['hate']['raw_p_value']:.4f}$, Holm $p = {d_6b['task_comparisons']['hate']['holm_p_value']:.4f}$)."
+            f"- **Inconclusive Primary Hate Transfer:** Holding the optimizer-update budget strictly constant (488 steps) and matching class weights, adding auxiliary gold text hate data yielded negligible and statistically non-significant change in hate classification ($\\Delta = {hate_d_6b_delta:+.4f}$, raw $p = {hate_d_6b_raw_p}$, Holm $p = {hate_d_6b_holm_p}$)."
         )
 
     # Conditional heads dilution under fixed budget
     if "severity" in sig_e6b_tasks or d_6b["task_comparisons"]["severity"]["delta_macro_f1"] < 0:
         sev_delta = d_6b["task_comparisons"]["severity"]["delta_macro_f1"]
-        sev_holm = d_6b["task_comparisons"]["severity"]["holm_p_value"]
+        sev_raw_p = _format_p_value(d_6b["task_comparisons"]["severity"]["raw_p_value"])
+        sev_holm = _format_p_value(d_6b["task_comparisons"]["severity"]["holm_p_value"])
         lines.append(
-            f"- **Conditional Supervision Dilution Under Fixed Budget:** Severity Macro-F1 experienced a statistically significant degradation ($\\Delta = {sev_delta:+.4f}$, Holm $p = {sev_holm:.4f}$). Because auxiliary HOT rows mask target and severity labels, mixing them into a fixed 488-update training budget reduced the effective gradient updates allocated to conditional heads, weakening fragile decision boundaries for low-frequency severity classes."
+            f"- **Severity Decline Under Combined Training:** Severity Macro-F1 experienced a statistically significant decline in E6b compared to E1d ($\\Delta = {sev_delta:+.4f}$, raw $p = {sev_raw_p}$, Holm $p = {sev_holm}$). A plausible interpretation is that incorporating auxiliary HOT rows (where target and severity labels are masked) under a matched 488-update budget diluted the supervision frequency for conditional heads. However, this is a plausible interpretation rather than a proven mechanism: because E6b uses a different overall data mix under the same fixed update budget, the current experiment cannot isolate reduced MultiBully exposure from other concurrent dataset-mix effects, such as domain discrepancy or loss-landscape gradient interference."
         )
 
+    target_delta = d_6b["task_comparisons"]["target"]["delta_macro_f1"]
+    target_raw_p = _format_p_value(d_6b["task_comparisons"]["target"]["raw_p_value"])
+    target_holm_p = _format_p_value(d_6b["task_comparisons"]["target"]["holm_p_value"])
     lines.extend([
-        f"- **Target Head Invariance:** Target classification showed a non-significant difference ($\\Delta = {d_6b['task_comparisons']['target']['delta_macro_f1']:+.4f}$, Holm $p = {d_6b['task_comparisons']['target']['holm_p_value']:.4f}$), indicating resilience to auxiliary row mixing.",
+        f"- **Target Head Invariance:** Target classification showed no statistically significant difference ($\\Delta = {target_delta:+.4f}$, raw $p = {target_raw_p}$, Holm $p = {target_holm_p}$).",
         "",
         "---",
         "*Report generated automatically by `toxifusionnet.experiments.compare.run_publication_analysis` with reproducible cluster permutations and family-wise error control.*"

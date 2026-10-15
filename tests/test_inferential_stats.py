@@ -352,10 +352,55 @@ def test_run_publication_analysis_pipeline(tmp_path):
     assert "bootstrap_prob_superiority" in summary_df.columns
 
     # 4. Check Markdown report contents
-    md_content = (out_dir / "publication_statistical_report.md").read_text()
+    md_content = (out_dir / "publication_statistical_report.md").read_text(encoding="utf-8")
     assert "Primary Benchmark: Multi-Task Macro-F1 Comparisons" in md_content
     assert "Class-Level Precision, Recall, and F1 Breakdown" in md_content
     assert "Fold-Level Performance & Stability Across Folds" in md_content
     assert "Methodological & Scientific Interpretation" in md_content
+    assert "Overall Mean (Secondary)" in md_content
+
+
+def test_publication_report_formatting_and_scientific_nuance():
+    """Verify that p-values are properly formatted (<0.0001, no 0.0000), secondary analyses are labelled,
+    and cautious scientific conclusions are maintained."""
+    from pathlib import Path
+    from toxifusionnet.experiments.compare import _format_p_value
+
+    # 1. Test p-value formatting helper
+    assert _format_p_value(0.0) == "<0.0001"
+    assert _format_p_value(1e-6) == "<0.0001"
+    assert _format_p_value(0.00009) == "<0.0001"
+    assert _format_p_value(0.0001) == "0.0001"
+    assert _format_p_value(0.05) == "0.0500"
+    assert _format_p_value(None) == "—"
+
+    # 2. Test actual publication report generated from the saved experiment results
+    report_path = Path("results/v3_journal_final/publication_analysis/publication_statistical_report.md")
+    if not report_path.exists():
+        pytest.skip("Publication report not yet generated")
+
+    content = report_path.read_text(encoding="utf-8")
+
+    # A. Check no "0.0000" in p-value columns and <0.0001 is present
+    assert " 0.0000 " not in content
+    assert "<0.0001" in content
+
+    # B. Overall mean labelled as secondary aggregate
+    assert "Overall Mean (Secondary)" in content
+    assert "(unadj.)" in content
+    assert "aggregate secondary analyses" in content
+
+    # C. Cautious hate detection statement (does not establish equivalence)
+    assert "does not establish equivalence" in content
+    assert "No statistically significant difference in hate Macro-F1 was detected" in content
+
+    # D. Rare severity class uncertainty (N = 30)
+    assert "Rare High-Severity Class Support & Uncertainty ($N = 30$)" in content
+    assert "uncertainty due to the small test support of only 30" in content
+
+    # E. Plausible interpretation for severity decline (not proven mechanism, cannot isolate exposure)
+    assert "plausible interpretation rather than a proven mechanism" in content
+    assert "cannot isolate reduced MultiBully exposure from other concurrent dataset-mix effects" in content
+
 
 
