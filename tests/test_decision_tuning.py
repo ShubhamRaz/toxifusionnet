@@ -23,7 +23,11 @@ from toxifusionnet.analysis.decision_tuning import (
     evaluate_multiclass_decision_guardrail,
     tune_binary_threshold,
 )
-from toxifusionnet.analysis.diagnostic import compute_task_diagnostic
+from toxifusionnet.analysis.diagnostic import (
+    _format_diagnostic_markdown_report,
+    compute_binary_threshold_fractions,
+    compute_task_diagnostic,
+)
 from toxifusionnet.labels import IGNORE_INDEX
 
 
@@ -293,3 +297,119 @@ def test_cv_decision_tuning_val_support_distinct_from_test_support(tmp_path):
         assert fr["val_support"] == n_val
         assert fr["test_support"] == n_test
         assert fr["val_support"] != fr["test_support"]
+
+
+def test_compute_binary_threshold_fractions_synthetic():
+    """Verify compute_binary_threshold_fractions calculation logic and edge cases."""
+    # 1. Edge case: empty input
+    res_empty = compute_binary_threshold_fractions([])
+    assert res_empty["pos_total"] == 0
+    assert res_empty["below_default"]["numerator"] == 0
+    assert res_empty["below_default"]["denominator"] == 0
+    assert res_empty["below_default"]["fraction"] == 0.0
+    assert res_empty["below_default"]["percentage"] == 0.0
+    assert res_empty["in_interval"]["numerator"] == 0
+    assert res_empty["in_interval"]["denominator"] == 0
+    assert res_empty["in_interval"]["fraction"] == 0.0
+    assert res_empty["in_interval"]["percentage"] == 0.0
+
+    # 2. Known distribution:
+    # 10 values: [0.10, 0.20, 0.35, 0.36, 0.40, 0.45, 0.49, 0.50, 0.60, 0.80]
+    # Total = 10
+    # p < 0.50: 7 values -> 7/10 = 0.70 (70.0%)
+    # 0.36 <= p < 0.50: 4 values [0.36, 0.40, 0.45, 0.49] -> 4/10 = 0.40 (40.0%)
+    scores = [0.10, 0.20, 0.35, 0.36, 0.40, 0.45, 0.49, 0.50, 0.60, 0.80]
+    res = compute_binary_threshold_fractions(scores, lower_threshold=0.36, default_threshold=0.50)
+    assert res["pos_total"] == 10
+    assert res["below_default"]["numerator"] == 7
+    assert res["below_default"]["denominator"] == 10
+    assert res["below_default"]["fraction"] == 0.7
+    assert res["below_default"]["percentage"] == 70.0
+
+    assert res["in_interval"]["numerator"] == 4
+    assert res["in_interval"]["denominator"] == 10
+    assert res["in_interval"]["fraction"] == 0.4
+    assert res["in_interval"]["percentage"] == 40.0
+
+
+def test_sarcasm_threshold_fractions_exact_calculation():
+    """Verify exact calculation of true sarcastic predictions below 0.50 and in [0.36, 0.50)."""
+    e1d_csv = "results/v3_journal_final/e1d_text_weighted/pooled_model.csv"
+    df = pd.read_csv(e1d_csv)
+    diag = compute_task_diagnostic(df, "sarcasm", class_names=["non-sarcastic", "sarcastic"])
+
+    assert "score_distribution" in diag
+    sd = diag["score_distribution"]
+    assert "threshold_fractions" in sd
+    tf = sd["threshold_fractions"]
+
+    # True positive support is 2,129
+    assert tf["pos_total"] == 2129
+
+    b50 = tf["below_default"]
+    assert b50["numerator"] == 1306
+    assert b50["denominator"] == 2129
+    assert b50["fraction"] == pytest.approx(1306 / 2129, abs=1e-4)
+    assert b50["percentage"] == pytest.approx(61.34, abs=0.01)
+    # Confirm that > 50% have p < 0.50
+    assert b50["fraction"] > 0.50
+
+    inter = tf["in_interval"]
+    assert inter["numerator"] == 765
+    assert inter["denominator"] == 2129
+    assert inter["fraction"] == pytest.approx(765 / 2129, abs=1e-4)
+    assert inter["percentage"] == pytest.approx(35.93, abs=0.01)
+    # Confirm that [0.36, 0.50) is < 50% (35.93%), disproving the old claim that > 50% were in [0.36, 0.50)
+    assert inter["fraction"] < 0.50
+
+
+def test_regenerated_diagnostic_report_markdown_and_dynamic_prose():
+    """Verify that regenerated markdown report removes unsupported claim and dynamically includes exact fractions."""
+    report_md_path = "results/v3_journal_final/diagnostic_analysis/diagnostic_report.md"
+    with open(report_md_path, "r", encoding="utf-8") as f:
+        md_text = f.read()
+
+    # 1. Unsupported claim must NOT be present
+    assert "more than half of true sarcastic posts receive predicted probabilities in the range `[0.36, 0.50)`" not in md_text
+    assert "more than half of true sarcastic posts receive predicted probabilities in the range `[0.36, 0.50)" not in md_text
+
+    # 2. Correct dynamic numbers and percentages must be present
+    assert "1,306 of 2,129 true sarcastic examples (61.34%, fraction = 0.6134) have $p_{\\text{sarcasm}} < 0.50$" in md_text
+    assert "765 of 2,129 true sarcastic examples (35.93%, fraction = 0.3593)" in md_text
+
+    # 3. Dynamic formatting check with mock report data
+    mock_report = {
+        "experiments": {
+            "E1c_unweighted": {"tasks": {"hate": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "sarcasm": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "target": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "severity": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}}, "overall_mean_macro_f1": 0.5, "rare_class_diagnostics": {}, "end_to_end_conditional": {}},
+            "E1d_weighted": {
+                "tasks": {
+                    "hate": {"n_eval": 10, "macro_f1": 0.6, "accuracy": 0.6, "balanced_accuracy": 0.6, "score_distribution": {"overall_mean": 0.5, "overall_std": 0.1, "pos_quantiles": {"p25": 0.4, "p50": 0.6, "p75": 0.8}, "neg_quantiles": {"p25": 0.2, "p50": 0.3, "p75": 0.4}, "mean_separation": 0.3, "auroc": 0.8, "brier_score": 0.1}},
+                    "sarcasm": {
+                        "n_eval": 100, "macro_f1": 0.55, "accuracy": 0.55, "balanced_accuracy": 0.55,
+                        "score_distribution": {
+                            "overall_mean": 0.45, "overall_std": 0.1,
+                            "pos_quantiles": {"p25": 0.38, "p50": 0.48, "p75": 0.58},
+                            "neg_quantiles": {"p25": 0.28, "p50": 0.38, "p75": 0.48},
+                            "mean_separation": 0.1, "auroc": 0.65, "brier_score": 0.2,
+                            "threshold_fractions": {
+                                "pos_total": 50,
+                                "below_default": {"numerator": 31, "denominator": 50, "fraction": 0.62, "percentage": 62.0},
+                                "in_interval": {"lower_threshold": 0.36, "upper_threshold": 0.50, "numerator": 18, "denominator": 50, "fraction": 0.36, "percentage": 36.0},
+                            }
+                        }
+                    },
+                    "target": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5},
+                    "severity": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5},
+                },
+                "overall_mean_macro_f1": 0.55,
+                "rare_class_diagnostics": {},
+                "end_to_end_conditional": {},
+            },
+            "E6b_combined_gold": {"tasks": {"hate": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "sarcasm": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "target": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "severity": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}}, "overall_mean_macro_f1": 0.5, "rare_class_diagnostics": {}, "end_to_end_conditional": {}},
+            "TFIDF_LogReg": {"tasks": {"hate": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "sarcasm": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "target": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}, "severity": {"n_eval": 10, "macro_f1": 0.5, "accuracy": 0.5, "balanced_accuracy": 0.5}}, "overall_mean_macro_f1": 0.5},
+        }
+    }
+    formatted = _format_diagnostic_markdown_report(mock_report)
+    assert "31 of 50 true sarcastic examples (62.00%, fraction = 0.6200) have $p_{\\text{sarcasm}} < 0.50$" in formatted
+    assert "18 of 50 true sarcastic examples (36.00%, fraction = 0.3600)" in formatted
+

@@ -39,6 +39,68 @@ from ..training.metrics import end_to_end_metrics, evaluate_predictions
 log = logging.getLogger("toxifusionnet.analysis.diagnostic")
 
 
+def compute_binary_threshold_fractions(
+    pos_probs: np.ndarray | list[float],
+    lower_threshold: float = 0.36,
+    default_threshold: float = 0.50,
+) -> dict[str, Any]:
+    """Compute exact counts, fractions, and percentages of true positive predictions below thresholds.
+
+    Calculates:
+    - Fraction of true positive examples with p < default_threshold (e.g., 0.50)
+    - Fraction of true positive examples with lower_threshold <= p < default_threshold (e.g., [0.36, 0.50))
+    - Numerators, denominators, fractions, and percentages for each interval.
+    """
+    arr = np.asarray(pos_probs, dtype=float)
+    n_pos = int(len(arr))
+    if n_pos == 0:
+        return {
+            "pos_total": 0,
+            "below_default": {
+                "threshold": default_threshold,
+                "numerator": 0,
+                "denominator": 0,
+                "fraction": 0.0,
+                "percentage": 0.0,
+            },
+            "in_interval": {
+                "lower_threshold": lower_threshold,
+                "upper_threshold": default_threshold,
+                "numerator": 0,
+                "denominator": 0,
+                "fraction": 0.0,
+                "percentage": 0.0,
+            },
+        }
+
+    n_below = int(np.sum(arr < default_threshold))
+    frac_below = float(n_below / n_pos)
+    pct_below = round(frac_below * 100.0, 2)
+
+    n_interval = int(np.sum((arr >= lower_threshold) & (arr < default_threshold)))
+    frac_interval = float(n_interval / n_pos)
+    pct_interval = round(frac_interval * 100.0, 2)
+
+    return {
+        "pos_total": n_pos,
+        "below_default": {
+            "threshold": default_threshold,
+            "numerator": n_below,
+            "denominator": n_pos,
+            "fraction": round(frac_below, 4),
+            "percentage": pct_below,
+        },
+        "in_interval": {
+            "lower_threshold": lower_threshold,
+            "upper_threshold": default_threshold,
+            "numerator": n_interval,
+            "denominator": n_pos,
+            "fraction": round(frac_interval, 4),
+            "percentage": pct_interval,
+        },
+    }
+
+
 def compute_task_diagnostic(
     df: pd.DataFrame,
     task: str,
@@ -174,6 +236,9 @@ def compute_task_diagnostic(
                 "empirical_prob": emp_acc,
             })
 
+        # Threshold and interval fraction analysis for positive class
+        thresh_stats = compute_binary_threshold_fractions(pos_p, lower_threshold=0.36, default_threshold=0.50)
+
         diag["score_distribution"] = {
             "overall_mean": round(float(np.mean(probs)), 4),
             "overall_std": round(float(np.std(probs)), 4),
@@ -183,6 +248,7 @@ def compute_task_diagnostic(
             "mean_separation": round(mean_sep, 4) if not np.isnan(mean_sep) else None,
             "pos_quantiles": pos_q,
             "neg_quantiles": neg_q,
+            "threshold_fractions": thresh_stats,
             "auroc": round(auroc, 4) if not np.isnan(auroc) else None,
             "brier_score": round(brier, 4),
             "binned_calibration": binned_stats,
@@ -542,10 +608,41 @@ def _format_diagnostic_markdown_report(report: dict[str, Any]) -> str:
     hate_neg_med = sd_hate.get("neg_quantiles", {}).get("p50", 0.219)
     hate_sep = sd_hate.get("mean_separation", 0.273)
 
+    sarc_tf = sd_sarc.get("threshold_fractions", {})
+    sarc_b050 = sarc_tf.get("below_default", {})
+    sarc_b050_num = sarc_b050.get("numerator", 0)
+    sarc_b050_den = sarc_b050.get("denominator", 0)
+    sarc_b050_pct = sarc_b050.get("percentage", 0.0)
+    sarc_b050_frac = sarc_b050.get("fraction", 0.0)
+
+    sarc_int = sarc_tf.get("in_interval", {})
+    sarc_int_num = sarc_int.get("numerator", 0)
+    sarc_int_den = sarc_int.get("denominator", 0)
+    sarc_int_pct = sarc_int.get("percentage", 0.0)
+    sarc_int_frac = sarc_int.get("fraction", 0.0)
+    sarc_int_low = sarc_int.get("lower_threshold", 0.36)
+    sarc_int_high = sarc_int.get("upper_threshold", 0.50)
+
+    if sarc_b050_den > 0:
+        sarc_prose = (
+            f"- **Sarcasm Score Distribution Shift:** For sarcasm in E1d, the positive class median score is "
+            f"**{sarc_pos_med:.3f}**, with 25% of positives scoring below {sarc_pos_p25:.3f}. "
+            f"Because the default decision threshold is 0.50, {sarc_b050_num:,} of {sarc_b050_den:,} true sarcastic examples "
+            f"({sarc_b050_pct:.2f}%, fraction = {sarc_b050_frac:.4f}) have $p_{{\\text{{sarcasm}}}} < 0.50$ and are misclassified "
+            f"as non-sarcastic by the default 0.50 decision boundary. In the borderline range "
+            f"`[{sarc_int_low:.2f}, {sarc_int_high:.2f})`, the model assigns probabilities to {sarc_int_num:,} of {sarc_int_den:,} "
+            f"true sarcastic examples ({sarc_int_pct:.2f}%, fraction = {sarc_int_frac:.4f})."
+        )
+    else:
+        sarc_prose = (
+            f"- **Sarcasm Score Distribution Shift:** For sarcasm in E1d, the positive class median score is "
+            f"**{sarc_pos_med:.3f}**, with 25% of positives scoring below {sarc_pos_p25:.3f}."
+        )
+
     lines.extend([
         "",
         "**Key Distribution Findings:**",
-        f"- **Sarcasm Score Distribution Shift:** For sarcasm in E1d, the positive class median score is **{sarc_pos_med:.3f}**, with 25% of positives scoring below {sarc_pos_p25:.3f}. Because the default cutoff is 0.50, more than half of true sarcastic posts receive predicted probabilities in the range `[{sarc_pos_p25:.2f}, 0.50)` and are misclassified as non-sarcastic by the default 0.5 decision boundary.",
+        sarc_prose,
         f"- **Hate Score Calibration:** For hate in E1d, positive class median is **{hate_pos_med:.3f}** and negative class median is **{hate_neg_med:.3f}**, giving healthy separation ($\\Delta \\mu = {hate_sep:+.3f}$).",
         "",
         "---",

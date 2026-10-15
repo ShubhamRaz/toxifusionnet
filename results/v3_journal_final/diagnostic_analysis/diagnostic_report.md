@@ -39,7 +39,7 @@ Balanced accuracy corresponds to unweighted macro-averaged recall across classes
 | **Sarcasm** | 0.417 +/- 0.148 | 0.461 [0.358, 0.550] | 0.398 [0.287, 0.507] | +0.056 | 0.6071 | 0.2316 |
 
 **Key Distribution Findings:**
-- **Sarcasm Score Distribution Shift:** For sarcasm in E1d, the positive class median score is **0.461**, with 25% of positives scoring below 0.358. Because the default cutoff is 0.50, more than half of true sarcastic posts receive predicted probabilities in the range `[0.36, 0.50)` and are misclassified as non-sarcastic by the default 0.5 decision boundary.
+- **Sarcasm Score Distribution Shift:** For sarcasm in E1d, the positive class median score is **0.461**, with 25% of positives scoring below 0.358. Because the default decision threshold is 0.50, 1,306 of 2,129 true sarcastic examples (61.34%, fraction = 0.6134) have $p_{\text{sarcasm}} < 0.50$ and are misclassified as non-sarcastic by the default 0.50 decision boundary. In the borderline range `[0.36, 0.50)`, the model assigns probabilities to 765 of 2,129 true sarcastic examples (35.93%, fraction = 0.3593).
 - **Hate Score Calibration:** For hate in E1d, positive class median is **0.615** and negative class median is **0.219**, giving healthy separation ($\Delta \mu = +0.273$).
 
 ---
