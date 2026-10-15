@@ -1,5 +1,5 @@
 {
-  "audit_timestamp": "2026-10-15 05:08:02 UTC",
+  "audit_timestamp": "2026-10-15 05:33:52 UTC",
   "provenance_audit": {
     "raw_multibully": {
       "file_path": "data\\raw\\multibully.csv",
@@ -521,6 +521,37 @@
     },
     "text_vs_meme_divergence_count": 1725,
     "text_vs_meme_divergence_pct": 29.41,
+    "raw_text_vs_meme_divergence_count": 1725,
+    "raw_text_vs_meme_divergence_pct_total": 29.41,
+    "raw_text_vs_meme_divergence_pct_labeled": 29.47,
+    "raw_reverse_divergence_count": 111,
+    "processed_text_vs_meme_divergence_count": 1670,
+    "processed_text_vs_meme_divergence_pct": 29.21,
+    "processed_reverse_divergence_count": 111,
+    "processed_reverse_divergence_pct": 1.94,
+    "net_marginal_difference_processed": 1559,
+    "divergence_reconciliation": {
+      "processed": {
+        "total_rows": 5718,
+        "text_nonhate_meme_hate": 1670,
+        "text_hate_meme_nonhate": 111,
+        "meme_hate_total": 3139,
+        "text_hate_total": 1580,
+        "net_marginal_difference": 1559,
+        "formula": "3139 (meme hate) - 1580 (text hate) = 1559"
+      },
+      "raw": {
+        "total_rows": 5865,
+        "labeled_rows": 5854,
+        "unlabeled_rows": 11,
+        "text_nonbully_meme_bully": 1725,
+        "text_bully_meme_nonbully": 111,
+        "meme_bully_total": 3222,
+        "text_bully_total": 1608,
+        "net_marginal_difference": 1614
+      },
+      "reconciliation_explanation": "The figure 1,559 is the net marginal difference (3,139 - 1,580 = 1,559) between processed meme hate and text hate. The true count of visual-only bullying examples is 1,670 (29.21% of 5,718) in processed MultiBully, and 1,725 (29.41% of 5,865) in raw MultiBully."
+    },
     "multibully_gold_severity_dist": {
       "NaN": 4138,
       "moderate": 1409,

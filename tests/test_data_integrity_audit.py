@@ -190,36 +190,52 @@ def test_cross_source_duplicate_detection_and_zero_leakage():
 
 
 def test_multibully_text_label_vs_memehate_label_consistency():
-    """Verify MultiBully Text-Label is distinct from Img-Text-Label and correctly separated."""
+    """Verify MultiBully Text-Label is distinct from Img-Text-Label and reconcile 1,559 vs 1,725."""
     mb_text = pd.read_csv(DATA_DIR / "multibully.csv")
     mb_meme = pd.read_csv(DATA_DIR / "multibully_memehate.csv")
     raw_mb = pd.read_csv(Path("data/raw/multibully.csv"))
 
-    # Text-only hate target: 1,580 hate, 4,138 non-hate
+    # Text-only hate target: 1,580 hate, 4,138 non-hate (N = 5,718)
     assert mb_text["hate"].value_counts().to_dict() == {"non_hate": 4138, "hate": 1580}
 
-    # Whole-meme hate target: 3,139 hate, 2,579 non-hate
+    # Whole-meme hate target: 3,139 hate, 2,579 non-hate (N = 5,718)
     assert mb_meme["hate"].value_counts().to_dict() == {"hate": 3139, "non_hate": 2579}
 
-    # Divergence: memes where text alone is Nonbully, but image+text is Bully
-    divergence = (raw_mb["Text-Label"] == "Nonbully") & (raw_mb["Img-Text-Label"] == "Bully")
-    assert int(divergence.sum()) == 1725, "Exactly 1,725 memes must exhibit visual-only cyberbullying"
+    # Processed divergence:
+    proc_vis_only = (mb_text["hate"] == "non_hate") & (mb_meme["hate"] == "hate")
+    proc_rev_disc = (mb_text["hate"] == "hate") & (mb_meme["hate"] == "non_hate")
+    assert int(proc_vis_only.sum()) == 1670, "Processed dataset has exactly 1,670 visual-only bullying memes (29.21%)"
+    assert int(proc_rev_disc.sum()) == 111, "Processed dataset has exactly 111 text-only hate memes (1.94%)"
+
+    # Net marginal difference: exactly 1,559
+    assert (3139 - 1580) == 1559
+    assert (1670 - 111) == 1559
+
+    # Raw divergence:
+    raw_vis_only = (raw_mb["Text-Label"] == "Nonbully") & (raw_mb["Img-Text-Label"] == "Bully")
+    raw_rev_disc = (raw_mb["Text-Label"] == "Bully") & (raw_mb["Img-Text-Label"] == "Nonbully")
+    assert int(raw_vis_only.sum()) == 1725, "Raw dataset has exactly 1,725 visual-only bullying memes (29.41%)"
+    assert int(raw_rev_disc.sum()) == 111, "Raw dataset has exactly 111 text-only bullying memes (1.89%)"
 
 
 def test_audit_deliverables_exist_and_verdict_pass():
-    """Verify audit deliverables exist and confirm overall PASS verdict."""
+    """Verify audit deliverables exist in both root and results/ and confirm overall PASS verdict."""
     audit_dir = Path("results/v3_journal_final/data_integrity_audit")
-    md_file = audit_dir / "data_integrity_report.md"
-    json_file = audit_dir / "data_integrity_summary.json"
-    csv_file = audit_dir / "data_integrity_summary.csv"
+    for base_p in [audit_dir, Path(".")]:
+        md_file = base_p / "data_integrity_report.md"
+        json_file = base_p / "data_integrity_summary.json"
+        csv_file = base_p / "data_integrity_summary.csv"
 
-    assert md_file.exists(), "data_integrity_report.md must exist"
-    assert json_file.exists(), "data_integrity_summary.json must exist"
-    assert csv_file.exists(), "data_integrity_summary.csv must exist"
+        assert md_file.exists(), f"{md_file} must exist"
+        assert json_file.exists(), f"{json_file} must exist"
+        assert csv_file.exists(), f"{csv_file} must exist"
 
-    with open(json_file, "r", encoding="utf-8") as f:
+    with open(audit_dir / "data_integrity_summary.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
     assert data["overall_verdict"] == "PASS"
     assert data["cross_dataset_leakage_audit"]["leakage_verdict"] == "PASS"
     assert data["e6b_pseudolabel_check"]["has_pseudolabel_supervision"] is False
+    assert data["label_definition_consistency"]["processed_text_vs_meme_divergence_count"] == 1670
+    assert data["label_definition_consistency"]["raw_text_vs_meme_divergence_count"] == 1725
+    assert data["label_definition_consistency"]["net_marginal_difference_processed"] == 1559

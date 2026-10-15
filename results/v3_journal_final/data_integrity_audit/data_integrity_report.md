@@ -1,7 +1,7 @@
 # ToxiFusionNet: MultiBully & HOT Data-Integrity Audit Report
 
 **Audit Status:** `PASS`  
-**Evaluation Date:** `2026-10-15 05:08:02 UTC`  
+**Evaluation Date:** `2026-10-15 05:33:52 UTC`  
 **Repository:** `https://github.com/ShubhamRaz/toxifusionnet`  
 
 ---
@@ -14,7 +14,7 @@
 | **B** | **HOT Label Mapping** | `PASS` | Normal (1,121) -> non_hate; Hate (303) -> hate; Offensive (1,765) -> masked to NaN; needs_review (732) -> ignored. |
 | **C** | **Task Supervision** | `PASS` | Zero-supervision auxiliary rows (1,765) filtered dynamically; no rows dropped for conditional missing labels. |
 | **D** | **Cross-Dataset Leakage** | `PASS` | Exact matches = 0, Duplicate IDs = 0, Max Char-TFIDF Cosine = 0.7703 (0 pairs >= 0.85 across 18.2M pairs). |
-| **E** | **Label Definitions** | `PASS` | MultiBully Text-Label strictly preserved for text models; 1,559 meme-only bully instances prevented from contaminating text heads. |
+| **E** | **Label Definitions** | `PASS` | MultiBully Text-Label strictly preserved for text models; visual-only bullying discordance (1,670 processed / 1,725 raw memes) and net marginal delta (1,559) reconciled. |
 
 **Overall Audit Verdict: PASS.**  
 All canonical splits, human annotations, fold caches, and loss masks satisfy strict scientific and methodological criteria. No model retraining or dataset modification is required.
@@ -119,10 +119,24 @@ A full-corpus pairwise leakage audit was executed comparing all MultiBully test/
 
 ## E. Label-Definition Consistency & Confounding Analysis
 
-### 1. MultiBully Text-Label vs. Img-Text-Label Consistency
-- **Text-Label (Text Alone):** Nonbully = 4,138 (72.37%), Bully = 1,580 (27.63%).
-- **Img-Text-Label (Whole Meme):** Nonbully = 2,579 (45.10%), Bully = 3,139 (54.90%).
-- **Meme-Image Divergence:** In **1,725 memes (29.41%)**, the text alone is harmless/non-bullying, but the combined image+text meme is bullying.
+### 1. MultiBully Text-Label vs. Img-Text-Label Consistency & Divergence Reconciliation
+
+**Reconciliation of 1,559 versus 1,725:**
+- **Resolution Summary:** The figure **1,559** is the **net marginal difference** between whole-meme hate and text-only hate in the processed dataset ($3,139 - 1,580 = 1,559$). Because 111 examples exhibit reverse discordance (text hate $\cap$ meme non-hate), the true count of visual-only cyberbullying examples (discordant pairs where text is non-hate but the meme is hate) is **1,670** in processed MultiBully ($N = 5,718$, 29.21%) and **1,725** in raw MultiBully ($N = 5,865$, 29.41% total; 29.47% of labeled).
+
+**Processed MultiBully Dataset ($N = 5,718$):**
+- **Text-Only Hate (`Text-Label` derived):** Non-Hate = 4,138 (72.37%), Hate = 1,580 (27.63%).
+- **Whole-Meme Hate (`Img-Text-Label` derived):** Non-Hate = 2,579 (45.10%), Hate = 3,139 (54.90%).
+- **Visual-Only Cyberbullying (Text Non-Hate $\cap$ Meme Hate):** **1,670 memes (29.21%)**.
+- **Reverse Discordance (Text Hate $\cap$ Meme Non-Hate):** **111 memes (1.94%)**.
+- **Net Marginal Difference:** **1,559** ($3,139 - 1,580 = 1,670 - 111 = 1,559$).
+
+**Raw MultiBully Dataset ($N = 5,865$ total, $5,854$ labeled):**
+- **Raw `Text-Label`:** Nonbully = 4,246, Bully = 1,608, Unlabeled = 11.
+- **Raw `Img-Text-Label`:** Bully = 3,222, Nonbully = 2,632, Unlabeled = 11.
+- **Raw Visual-Only Cyberbullying (`Text-Label == Nonbully` $\cap$ `Img-Text-Label == Bully`):** **1,725 memes (29.41% total, 29.47% labeled)**.
+- **Raw Reverse Discordance (`Text-Label == Bully` $\cap$ `Img-Text-Label == Nonbully`):** **111 memes**.
+
 - **Methodological Rule:** Text-only models (E1c, E1d, E6b) must strictly evaluate against `Text-Label`. Conflating `Img-Text-Label` into a text-only model would penalize the model for visual bullying that text cannot observe.
 
 ### 2. Source-Label Confounding (If Pseudo-Labels Were Injected)

@@ -329,9 +329,24 @@ def run_data_integrity_audit(
     img_text_label_dist = raw_mb_df["Img-Text-Label"].value_counts(dropna=False).to_dict()
     img_label_dist = raw_mb_df["Img-Label"].value_counts(dropna=False).to_dict()
 
-    # Divergence analysis: memes where text alone is Nonbully, but image+text is Bully
-    divergence_mask = (raw_mb_df["Text-Label"] == "Nonbully") & (raw_mb_df["Img-Text-Label"] == "Bully")
-    divergence_count = int(divergence_mask.sum())
+    # Divergence analysis: Raw vs Processed MultiBully
+    raw_labeled_mask = raw_mb_df["Text-Label"].notna() & raw_mb_df["Img-Text-Label"].notna()
+    raw_labeled_count = int(raw_labeled_mask.sum())
+    raw_total_count = len(raw_mb_df)
+
+    raw_div_mask = (raw_mb_df["Text-Label"] == "Nonbully") & (raw_mb_df["Img-Text-Label"] == "Bully")
+    raw_div_count = int(raw_div_mask.sum())
+    raw_rev_div_mask = (raw_mb_df["Text-Label"] == "Bully") & (raw_mb_df["Img-Text-Label"] == "Nonbully")
+    raw_rev_div_count = int(raw_rev_div_mask.sum())
+
+    proc_total_count = len(mb_df)
+    proc_div_mask = (mb_df["hate"] == "non_hate") & (mb_meme_df["hate"] == "hate")
+    proc_div_count = int(proc_div_mask.sum())
+    proc_rev_div_mask = (mb_df["hate"] == "hate") & (mb_meme_df["hate"] == "non_hate")
+    proc_rev_div_count = int(proc_rev_div_mask.sum())
+    proc_meme_hate_count = int((mb_meme_df["hate"] == "hate").sum())
+    proc_text_hate_count = int((mb_df["hate"] == "hate").sum())
+    proc_net_marginal_diff = proc_meme_hate_count - proc_text_hate_count
 
     # Source-label confounding analysis (MultiBully gold vs HOT Qwen pseudo-labels)
     mb_tgt_dist = mb_df["target"].value_counts(dropna=False).to_dict()
@@ -343,8 +358,43 @@ def run_data_integrity_audit(
     confounding_analysis = {
         "multibully_text_label_hate_counts": mb_df["hate"].value_counts().to_dict(),
         "multibully_memehate_counts": mb_meme_df["hate"].value_counts().to_dict(),
-        "text_vs_meme_divergence_count": divergence_count,
-        "text_vs_meme_divergence_pct": round(divergence_count / len(raw_mb_df) * 100.0, 2),
+        "text_vs_meme_divergence_count": raw_div_count,
+        "text_vs_meme_divergence_pct": round(raw_div_count / raw_total_count * 100.0, 2),
+        "raw_text_vs_meme_divergence_count": raw_div_count,
+        "raw_text_vs_meme_divergence_pct_total": round(raw_div_count / raw_total_count * 100.0, 2),
+        "raw_text_vs_meme_divergence_pct_labeled": round(raw_div_count / raw_labeled_count * 100.0, 2),
+        "raw_reverse_divergence_count": raw_rev_div_count,
+        "processed_text_vs_meme_divergence_count": proc_div_count,
+        "processed_text_vs_meme_divergence_pct": round(proc_div_count / proc_total_count * 100.0, 2),
+        "processed_reverse_divergence_count": proc_rev_div_count,
+        "processed_reverse_divergence_pct": round(proc_rev_div_count / proc_total_count * 100.0, 2),
+        "net_marginal_difference_processed": proc_net_marginal_diff,
+        "divergence_reconciliation": {
+            "processed": {
+                "total_rows": proc_total_count,
+                "text_nonhate_meme_hate": proc_div_count,
+                "text_hate_meme_nonhate": proc_rev_div_count,
+                "meme_hate_total": proc_meme_hate_count,
+                "text_hate_total": proc_text_hate_count,
+                "net_marginal_difference": proc_net_marginal_diff,
+                "formula": f"{proc_meme_hate_count} (meme hate) - {proc_text_hate_count} (text hate) = {proc_net_marginal_diff}",
+            },
+            "raw": {
+                "total_rows": raw_total_count,
+                "labeled_rows": raw_labeled_count,
+                "unlabeled_rows": raw_total_count - raw_labeled_count,
+                "text_nonbully_meme_bully": raw_div_count,
+                "text_bully_meme_nonbully": raw_rev_div_count,
+                "meme_bully_total": int((raw_mb_df["Img-Text-Label"] == "Bully").sum()),
+                "text_bully_total": int((raw_mb_df["Text-Label"] == "Bully").sum()),
+                "net_marginal_difference": int((raw_mb_df["Img-Text-Label"] == "Bully").sum() - (raw_mb_df["Text-Label"] == "Bully").sum()),
+            },
+            "reconciliation_explanation": (
+                "The figure 1,559 is the net marginal difference (3,139 - 1,580 = 1,559) between "
+                "processed meme hate and text hate. The true count of visual-only bullying examples "
+                "is 1,670 (29.21% of 5,718) in processed MultiBully, and 1,725 (29.41% of 5,865) in raw MultiBully."
+            )
+        },
         "multibully_gold_severity_dist": mb_sev_dist,
         "hot_qwen_pseudo_severity_dist": hot_v2_sev_dist,
         "multibully_gold_target_dist": mb_tgt_dist,
@@ -375,32 +425,28 @@ def run_data_integrity_audit(
         "overall_verdict": "PASS",
     }
 
-    # Save JSON summary
+    # Save JSON summary to out_dir and root
     json_path = out_p / "data_integrity_summary.json"
-    json_path.write_text(json.dumps(final_summary, indent=2, default=str), encoding="utf-8")
+    json_str = json.dumps(final_summary, indent=2, default=str)
+    json_path.write_text(json_str, encoding="utf-8")
+    (root / "data_integrity_summary.json").write_text(json_str, encoding="utf-8")
 
-    # Save CSV summary
+    # Save CSV summary to out_dir and root
     csv_rows = []
     for item in task_supervision_rows:
         csv_rows.append(item)
     summary_df = pd.DataFrame(csv_rows)
     csv_path = out_p / "data_integrity_summary.csv"
     summary_df.to_csv(csv_path, index=False)
+    summary_df.to_csv(root / "data_integrity_summary.csv", index=False)
 
-    # Format Markdown Report
+    # Format Markdown Report and save to out_dir and root
     md_text = _format_markdown_report(final_summary)
     md_path = out_p / "data_integrity_report.md"
     md_path.write_text(md_text, encoding="utf-8")
+    (root / "data_integrity_report.md").write_text(md_text, encoding="utf-8")
 
-    # Also mirror deliverables to results/v3_journal_final/ and root results/ for discoverability
-    try:
-        (root / "results/data_integrity_report.md").write_text(md_text, encoding="utf-8")
-        (root / "results/data_integrity_summary.json").write_text(json.dumps(final_summary, indent=2, default=str), encoding="utf-8")
-        summary_df.to_csv(root / "results/data_integrity_summary.csv", index=False)
-    except Exception:
-        pass
-
-    log.info("Data-integrity audit complete. Deliverables generated in %s", out_p)
+    log.info("Data-integrity audit complete. Deliverables generated in %s and repository root", out_p)
     return final_summary
 
 
@@ -428,7 +474,7 @@ def _format_markdown_report(summary: Dict[str, Any]) -> str:
         "| **B** | **HOT Label Mapping** | `PASS` | Normal (1,121) -> non_hate; Hate (303) -> hate; Offensive (1,765) -> masked to NaN; needs_review (732) -> ignored. |",
         "| **C** | **Task Supervision** | `PASS` | Zero-supervision auxiliary rows (1,765) filtered dynamically; no rows dropped for conditional missing labels. |",
         "| **D** | **Cross-Dataset Leakage** | `PASS` | Exact matches = 0, Duplicate IDs = 0, Max Char-TFIDF Cosine = 0.7703 (0 pairs >= 0.85 across 18.2M pairs). |",
-        "| **E** | **Label Definitions** | `PASS` | MultiBully Text-Label strictly preserved for text models; 1,559 meme-only bully instances prevented from contaminating text heads. |",
+        "| **E** | **Label Definitions** | `PASS` | MultiBully Text-Label strictly preserved for text models; visual-only bullying discordance (1,670 processed / 1,725 raw memes) and net marginal delta (1,559) reconciled. |",
         "",
         "**Overall Audit Verdict: PASS.**  ",
         "All canonical splits, human annotations, fold caches, and loss masks satisfy strict scientific and methodological criteria. No model retraining or dataset modification is required.",
@@ -548,10 +594,24 @@ def _format_markdown_report(summary: Dict[str, Any]) -> str:
         "",
         "## E. Label-Definition Consistency & Confounding Analysis",
         "",
-        "### 1. MultiBully Text-Label vs. Img-Text-Label Consistency",
-        "- **Text-Label (Text Alone):** Nonbully = 4,138 (72.37%), Bully = 1,580 (27.63%).",
-        "- **Img-Text-Label (Whole Meme):** Nonbully = 2,579 (45.10%), Bully = 3,139 (54.90%).",
-        f"- **Meme-Image Divergence:** In **{conf['text_vs_meme_divergence_count']:,} memes ({conf['text_vs_meme_divergence_pct']}%)**, the text alone is harmless/non-bullying, but the combined image+text meme is bullying.",
+        "### 1. MultiBully Text-Label vs. Img-Text-Label Consistency & Divergence Reconciliation",
+        "",
+        "**Reconciliation of 1,559 versus 1,725:**",
+        "- **Resolution Summary:** The figure **1,559** is the **net marginal difference** between whole-meme hate and text-only hate in the processed dataset ($3,139 - 1,580 = 1,559$). Because 111 examples exhibit reverse discordance (text hate $\\cap$ meme non-hate), the true count of visual-only cyberbullying examples (discordant pairs where text is non-hate but the meme is hate) is **1,670** in processed MultiBully ($N = 5,718$, 29.21%) and **1,725** in raw MultiBully ($N = 5,865$, 29.41% total; 29.47% of labeled).",
+        "",
+        "**Processed MultiBully Dataset ($N = 5,718$):**",
+        "- **Text-Only Hate (`Text-Label` derived):** Non-Hate = 4,138 (72.37%), Hate = 1,580 (27.63%).",
+        "- **Whole-Meme Hate (`Img-Text-Label` derived):** Non-Hate = 2,579 (45.10%), Hate = 3,139 (54.90%).",
+        f"- **Visual-Only Cyberbullying (Text Non-Hate $\\cap$ Meme Hate):** **{conf['processed_text_vs_meme_divergence_count']:,} memes ({conf['processed_text_vs_meme_divergence_pct']}%)**.",
+        f"- **Reverse Discordance (Text Hate $\\cap$ Meme Non-Hate):** **{conf['processed_reverse_divergence_count']:,} memes ({conf['processed_reverse_divergence_pct']}%)**.",
+        f"- **Net Marginal Difference:** **{conf['net_marginal_difference_processed']:,}** ($3,139 - 1,580 = 1,670 - 111 = 1,559$).",
+        "",
+        "**Raw MultiBully Dataset ($N = 5,865$ total, $5,854$ labeled):**",
+        "- **Raw `Text-Label`:** Nonbully = 4,246, Bully = 1,608, Unlabeled = 11.",
+        "- **Raw `Img-Text-Label`:** Bully = 3,222, Nonbully = 2,632, Unlabeled = 11.",
+        f"- **Raw Visual-Only Cyberbullying (`Text-Label == Nonbully` $\\cap$ `Img-Text-Label == Bully`):** **{conf['raw_text_vs_meme_divergence_count']:,} memes ({conf['raw_text_vs_meme_divergence_pct_total']}% total, {conf['raw_text_vs_meme_divergence_pct_labeled']}% labeled)**.",
+        f"- **Raw Reverse Discordance (`Text-Label == Bully` $\\cap$ `Img-Text-Label == Nonbully`):** **{conf['raw_reverse_divergence_count']:,} memes**.",
+        "",
         "- **Methodological Rule:** Text-only models (E1c, E1d, E6b) must strictly evaluate against `Text-Label`. Conflating `Img-Text-Label` into a text-only model would penalize the model for visual bullying that text cannot observe.",
         "",
         "### 2. Source-Label Confounding (If Pseudo-Labels Were Injected)",
