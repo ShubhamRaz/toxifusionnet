@@ -89,7 +89,9 @@ def validate_fold_cache(
     if actual_folds != set(range(folds)):
         raise ValueError(f"Fold cache must contain folds 0..{folds-1}, got {actual_folds}")
 
-    # Determine unique identifier: if id alone has collisions and source_dataset exists, use composite
+    # Determine unique identifier: use composite (source_dataset, id) only when explicitly
+    # requested via id_col or when the cache itself shows within-fold id collisions.
+    # NOTE: Do NOT sniff expected_ids content — that is nondeterministic for large sets.
     use_composite = False
     if "source_dataset" in fold_assign.columns:
         if id_col == ["source_dataset", "id"] or fold_assign.groupby("fold")["id"].apply(lambda s: s.duplicated().any()).any():
@@ -135,7 +137,7 @@ def validate_fold_cache(
                     err_parts.append(f"unexpected {len(unexpected_f)} IDs (e.g. {list(unexpected_f)[:5]})")
                 raise ValueError(f"Fold {f} ID mismatch: {', '.join(err_parts)}")
 
-        test_ids_by_fold[f] = sorted(list(f_df[f_df["split"] == "test"]["id"]))
+        test_ids_by_fold[f] = sorted(list(_get_key_series(f_df[f_df["split"] == "test"])))
         all_test_keys.extend(te)
 
     # Verify exactly one outer-test assignment per sample
@@ -242,26 +244,36 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             elif cache_p.name == "combined_multibully_hot_cv_folds.csv":
                 validate_fold_cache_checksum(cache_p, CANONICAL_COMBINED_FOLD_CACHE_SHA256)
             fold_assign = pd.read_csv(cache_p)
+            use_comp = not df["id"].is_unique and "source_dataset" in df.columns
             expected_keys = (
                 set(df["source_dataset"].astype(str) + "::" + df["id"].astype(str))
-                if not df["id"].is_unique and "source_dataset" in df.columns
+                if use_comp
                 else set(df["id"].astype(str))
             )
-            validate_fold_cache(fold_assign, expected_ids=expected_keys, folds=folds)
+            id_col = ["source_dataset", "id"] if use_comp else "id"
+            validate_fold_cache(fold_assign, expected_ids=expected_keys, folds=folds, id_col=id_col)
             # Reconstruct fold_dfs from cached assignment while strictly preserving group_id and all metadata
             fold_dfs = []
-            merge_cols = ["id", "split"]
-            if "group_id" in fold_assign.columns:
+            if use_comp:
+                on_cols = ["source_dataset", "id"]
+                merge_cols = ["source_dataset", "id", "split"]
+            else:
+                on_cols = ["id"]
+                merge_cols = ["id", "split"]
+
+            if "group_id" in fold_assign.columns and "group_id" not in merge_cols:
                 merge_cols.append("group_id")
-            on_cols = ["source_dataset", "id"] if ("source_dataset" in df.columns and "source_dataset" in fold_assign.columns) else ["id"]
-            if "source_dataset" in on_cols and "source_dataset" not in merge_cols:
-                merge_cols.append("source_dataset")
+
+            # Avoid suffix collisions by dropping cached assignment columns (except join keys) from df prior to merge
+            cols_to_drop_from_df = [c for c in ["split", "group_id"] if c in df.columns and c not in on_cols]
 
             for f in range(folds):
-                f_assign = fold_assign[fold_assign["fold"] == f]
-                d = df.drop(columns=["split", "group_id"], errors="ignore").merge(
-                    f_assign[[c for c in merge_cols if c in f_assign.columns]], on=on_cols
-                )
+                f_assign = fold_assign[fold_assign["fold"] == f][merge_cols]
+                base_df = df.drop(columns=cols_to_drop_from_df, errors="ignore")
+                # validate="one_to_one" raises MergeError immediately if either side has
+                # duplicate keys on on_cols, preventing silent row multiplication.
+                d = base_df.merge(f_assign, on=on_cols, how="inner", validate="one_to_one")
+
                 if "group_id" not in d.columns:
                     d = assign_group_ids(d)
                 d["fold"] = f
@@ -295,7 +307,9 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
 
     # Pre-training integrity audit: stop execution if validation fails
     if grouped:
-        audit = audit_fold_integrity(fold_dfs, len(df))
+        use_comp = not df["id"].is_unique and "source_dataset" in df.columns
+        id_col = ["source_dataset", "id"] if use_comp else "id"
+        audit = audit_fold_integrity(fold_dfs, len(df), id_col=id_col)
         if not audit["passed"]:
             raise ValueError(f"Pre-training fold integrity audit failed! Fold details: {audit}")
         log.info("Pre-training fold integrity audit passed across all %d folds.", folds)

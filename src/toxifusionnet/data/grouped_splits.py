@@ -221,10 +221,26 @@ def make_grouped_cv_splits(
     return group_df, fold_dfs
 
 
-def audit_fold_integrity(fold_dfs: List[pd.DataFrame], original_len: int) -> Dict[str, Any]:
+def audit_fold_integrity(
+    fold_dfs: List[pd.DataFrame],
+    original_len: int,
+    id_col: str | list[str] | None = None,
+) -> Dict[str, Any]:
     """Audit fold datasets for zero leakage, full coverage, and rare class presence."""
     checks: Dict[str, Any] = {"passed": True, "folds": []}
-    all_test_ids: List[Any] = []
+    all_test_keys: List[Any] = []
+
+    # Determine unique identifier: if id alone has collisions and source_dataset exists, use composite
+    first_df = fold_dfs[0] if fold_dfs else None
+    use_composite = False
+    if first_df is not None and "source_dataset" in first_df.columns:
+        if id_col == ["source_dataset", "id"] or first_df["id"].duplicated().any():
+            use_composite = True
+
+    def _get_key_series(df_part: pd.DataFrame) -> pd.Series:
+        if use_composite:
+            return df_part["source_dataset"].astype(str) + "::" + df_part["id"].astype(str)
+        return df_part["id"].astype(str)
 
     for f, d in enumerate(fold_dfs):
         tr_g = set(d[d["split"] == "train"]["group_id"])
@@ -238,8 +254,8 @@ def audit_fold_integrity(fold_dfs: List[pd.DataFrame], original_len: int) -> Dic
         if leakage_tr_te > 0 or leakage_va_te > 0 or leakage_tr_va > 0:
             checks["passed"] = False
 
-        test_ids = list(d[d["split"] == "test"]["id"])
-        all_test_ids.extend(test_ids)
+        test_keys = list(_get_key_series(d[d["split"] == "test"]))
+        all_test_keys.extend(test_keys)
 
         fold_stat: Dict[str, Any] = {
             "fold": f,
@@ -276,9 +292,9 @@ def audit_fold_integrity(fold_dfs: List[pd.DataFrame], original_len: int) -> Dic
 
         checks["folds"].append(fold_stat)
 
-    checks["total_test_evaluated"] = len(all_test_ids)
-    checks["unique_test_evaluated"] = len(set(all_test_ids))
-    if len(all_test_ids) != original_len or len(set(all_test_ids)) != original_len:
+    checks["total_test_evaluated"] = len(all_test_keys)
+    checks["unique_test_evaluated"] = len(set(all_test_keys))
+    if len(all_test_keys) != original_len or len(set(all_test_keys)) != original_len:
         checks["passed"] = False
 
     return checks

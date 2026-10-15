@@ -41,8 +41,18 @@ def generate_combined_folds(
 
     if "id" not in df.columns:
         raise ValueError("Input dataset must contain an 'id' column.")
+
+    use_composite_keys = False
     if not df["id"].is_unique:
-        raise ValueError("Global 'id' column must be unique across all rows.")
+        if "source_dataset" in df.columns and not df.duplicated(subset=["source_dataset", "id"]).any():
+            use_composite_keys = True
+            log.info("Dataset 'id' column contains non-unique IDs across sources; using (source_dataset, id) composite keys.")
+        else:
+            raise ValueError(
+                "Global 'id' column must be unique across all rows, or uniquely identified by (source_dataset, id)."
+            )
+    else:
+        log.info("Dataset 'id' column is globally unique across all %d rows.", len(df))
 
     if "source_dataset" in df.columns:
         if df.duplicated(subset=["source_dataset", "id"]).any():
@@ -50,15 +60,17 @@ def generate_combined_folds(
         log.info("Source breakdown: %s", df["source_dataset"].value_counts().to_dict())
 
     out_p = Path(out_path)
+    expected_keys = (
+        set(df["source_dataset"].astype(str) + "::" + df["id"].astype(str))
+        if use_composite_keys
+        else set(df["id"].astype(str))
+    )
+    id_col = ["source_dataset", "id"] if use_composite_keys else "id"
+
     if out_p.exists() and not force:
         log.info("Existing fold cache found at %s. Validating existing cache...", out_p)
         cached = pd.read_csv(out_p)
-        expected_keys = (
-            set(df["source_dataset"].astype(str) + "::" + df["id"].astype(str))
-            if not df["id"].is_unique and "source_dataset" in df.columns
-            else set(df["id"].astype(str))
-        )
-        validate_fold_cache(cached, expected_ids=expected_keys, folds=folds)
+        validate_fold_cache(cached, expected_ids=expected_keys, folds=folds, id_col=id_col)
         sha = compute_normalized_fold_cache_sha256(out_p)
         log.info("Existing fold cache is VALID (SHA-256 [CRLF-normalized]: %s). Use --force to regenerate.", sha)
         return cached
@@ -69,7 +81,7 @@ def generate_combined_folds(
 
     # Strict integrity audit
     log.info("Auditing fold integrity (leakage, coverage, rare classes)...")
-    audit = audit_fold_integrity(fold_dfs, len(df))
+    audit = audit_fold_integrity(fold_dfs, len(df), id_col=id_col)
     if not audit["passed"]:
         raise ValueError(f"Fold integrity audit failed: {audit}")
     log.info(
@@ -88,7 +100,7 @@ def generate_combined_folds(
 
     # Validate the generated cache table
     log.info("Validating generated fold cache table against expected IDs...")
-    validate_fold_cache(cached, expected_ids=set(df["id"].astype(str)), folds=folds)
+    validate_fold_cache(cached, expected_ids=expected_keys, folds=folds, id_col=id_col)
 
     out_p.parent.mkdir(parents=True, exist_ok=True)
     cached.to_csv(out_p, index=False)

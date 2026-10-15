@@ -264,3 +264,178 @@ def test_source_aware_composite_id_handling():
     for f in range(5):
         all_tests.extend(test_dict[f])
     assert len(all_tests) == 20
+
+
+def test_end_to_end_composite_key_generator_and_audit(tmp_path: Path):
+    """Verify end-to-end composite key handling across fold generation, cache validation, and audit."""
+    from scripts.generate_combined_folds import generate_combined_folds
+
+    # 60 total rows: 30 in source_a (ids 0..29), 30 in source_b (colliding ids 0..29)
+    records = []
+    for src in ["source_a", "source_b"]:
+        for i in range(30):
+            records.append({
+                "id": f"id_{i}",
+                "text": f"text {src} item {i}",
+                "hate": "hate" if i % 2 == 0 else "none",
+                "sarcasm": "sarcastic" if i % 3 == 0 else "not_sarcastic",
+                "target": "society" if i < 10 else "individual",
+                "severity": "high" if i < 10 else "low",
+                "source_dataset": src,
+            })
+    df = pd.DataFrame(records)
+    assert not df["id"].is_unique
+    assert not df.duplicated(subset=["source_dataset", "id"]).any()
+
+    synth_csv = tmp_path / "colliding_ids_dataset.csv"
+    df.to_csv(synth_csv, index=False)
+
+    out_csv = tmp_path / "colliding_ids_cv_folds.csv"
+    cached = generate_combined_folds(synth_csv, out_csv, folds=5, seed=42)
+
+    assert out_csv.exists()
+    assert len(cached) == 60 * 5
+    # Verify cached validation without force works
+    cached_reval = generate_combined_folds(synth_csv, out_csv, folds=5, seed=42, force=False)
+    assert len(cached_reval) == 60 * 5
+
+
+def test_unresolvable_duplicate_ids_rejected(tmp_path: Path):
+    """Verify that unresolvable duplicate IDs (within the same source) raise ValueError."""
+    from scripts.generate_combined_folds import generate_combined_folds
+
+    # Duplicates within source_a
+    records = [
+        {"id": "id_0", "text": "text 0", "hate": "none", "sarcasm": "none", "source_dataset": "source_a"},
+        {"id": "id_0", "text": "text 1", "hate": "none", "sarcasm": "none", "source_dataset": "source_a"},
+    ]
+    df = pd.DataFrame(records)
+    csv_p = tmp_path / "dup_within_source.csv"
+    df.to_csv(csv_p, index=False)
+
+    with pytest.raises(ValueError, match="Global 'id' column must be unique"):
+        generate_combined_folds(csv_p, tmp_path / "out.csv", folds=5)
+
+
+def test_cv_reconstruction_with_colliding_ids(tmp_path: Path, monkeypatch):
+    """Exercise actual run_cv() reconstruction with colliding IDs across two source datasets.
+
+    Verifies that:
+    1. Every original row appears exactly once per fold.
+    2. Split assignments match the cache precisely for each source.
+    3. No source's data receives another source's assignment.
+    4. Suffix collisions (_x, _y) do not occur.
+    5. All metadata columns survive untouched.
+    6. Mocked train_or_resume prevents any model training.
+    """
+    from scripts.generate_combined_folds import generate_combined_folds
+    from toxifusionnet.experiments.cv import run_cv
+
+    # Create dataset with colliding IDs between source_a and source_b
+    records = []
+    for src in ["source_a", "source_b"]:
+        for i in range(30):
+            records.append({
+                "id": f"id_{i}",
+                "text": f"unique text for {src} item {i}",
+                "hate": "hate" if i % 2 == 0 else "none",
+                "sarcasm": "sarcastic" if i % 3 == 0 else "not_sarcastic",
+                "target": "society" if i < 10 else "individual",
+                "severity": "high" if i < 10 else "low",
+                "source_dataset": src,
+                "meta_token": f"token_{src}_{i}",
+            })
+    df = pd.DataFrame(records)
+    synth_csv = tmp_path / "cv_colliding_dataset.csv"
+    df.to_csv(synth_csv, index=False)
+
+    folds_cache_csv = tmp_path / "cv_colliding_folds_cache.csv"
+    cached = generate_combined_folds(synth_csv, folds_cache_csv, folds=5, seed=42)
+
+    captured_fold_dfs = []
+
+    def mock_train_or_resume(cfg, d, fold_dir):
+        captured_fold_dfs.append(d.copy())
+        f_dir = Path(fold_dir)
+        f_dir.mkdir(parents=True, exist_ok=True)
+        # Create minimal dummy predictions for test split so run_cv finishes slice metrics
+        test_part = d[d["split"] == "test"].copy()
+        test_part["gold_hate"] = (test_part["hate"] == "hate").astype(int)
+        test_part["pred_hate"] = (test_part["hate"] == "hate").astype(int)
+        test_part["gold_sarcasm"] = (test_part["sarcasm"] == "sarcastic").astype(int)
+        test_part["pred_sarcasm"] = (test_part["sarcasm"] == "sarcastic").astype(int)
+        test_part.to_csv(f_dir / "preds_test.csv", index=False)
+        return {
+            "best_epoch": 1,
+            "best_step": 1,
+            "best_val_score": 0.5,
+            "total_steps": 1,
+            "successful_updates": 1,
+            "attempted_batches": 1,
+            "skipped_updates": 0,
+            "steps_budget": 1,
+            "eval_checkpoint": "dummy.pt",
+            "eval_checkpoint_type": "best",
+            "class_balancing": {},
+        }
+
+    monkeypatch.setattr("toxifusionnet.experiments.cv.train_or_resume", mock_train_or_resume)
+
+    cv_out_dir = tmp_path / "cv_run_output"
+    cv_metrics = run_cv(
+        config="configs/exp2_multidataset_text.yaml",
+        overrides=[],
+        data_path=str(synth_csv),
+        out_dir=cv_out_dir,
+        folds=5,
+        seed=42,
+        folds_cache=str(folds_cache_csv),
+    )
+
+    # 1. Verification of fold count
+    assert len(captured_fold_dfs) == 5
+
+    # 2. Per-fold integrity and correct reconstruction
+    outer_test_appearances = {}
+    for f, d in enumerate(captured_fold_dfs):
+        # Exactly 60 rows (no row dropped, no Cartesian product)
+        assert len(d) == len(df), f"Fold {f}: expected {len(df)} rows, got {len(d)}"
+
+        # Suffix collision check: no _x or _y columns
+        bad_cols = [c for c in d.columns if c.endswith("_x") or c.endswith("_y")]
+        assert not bad_cols, f"Fold {f}: found suffix collisions: {bad_cols}"
+
+        # Metadata preservation
+        assert "meta_token" in d.columns
+        for _, row in d.iterrows():
+            expected_token = f"token_{row['source_dataset']}_{row['id'].replace('id_', '')}"
+            assert row["meta_token"] == expected_token, f"Metadata corruption for {row['source_dataset']} {row['id']}"
+
+        # Distinct source data check: text belongs to correct source
+        src_a_rows = d[d["source_dataset"] == "source_a"]
+        src_b_rows = d[d["source_dataset"] == "source_b"]
+        assert len(src_a_rows) == 30
+        assert len(src_b_rows) == 30
+        assert src_a_rows["text"].str.startswith("unique text for source_a").all()
+        assert src_b_rows["text"].str.startswith("unique text for source_b").all()
+
+        # Split assignment matches cache precisely per (source_dataset, id)
+        f_cached = cached[cached["fold"] == f]
+        for _, c_row in f_cached.iterrows():
+            d_split = d.loc[(d["source_dataset"] == c_row["source_dataset"]) & (d["id"] == c_row["id"]), "split"].item()
+            assert d_split == c_row["split"], f"Fold {f}: split mismatch for ({c_row['source_dataset']}, {c_row['id']})"
+
+        # Track outer test appearances
+        test_keys = list(d[d["split"] == "test"]["source_dataset"] + "::" + d[d["split"] == "test"]["id"])
+        for k in test_keys:
+            outer_test_appearances[k] = outer_test_appearances.get(k, 0) + 1
+
+    # 3. Outer test coverage: exactly 1 test appearance per sample across all 5 folds
+    assert len(outer_test_appearances) == len(df)
+    for k, count in outer_test_appearances.items():
+        assert count == 1, f"Sample {k} appeared in outer-test {count} times (expected 1)"
+
+    # 4. Source-specific reporting generated in cv_metrics
+    assert "sources" in cv_metrics["model"]
+    assert "source_a" in cv_metrics["model"]["sources"]
+    assert "source_b" in cv_metrics["model"]["sources"]
