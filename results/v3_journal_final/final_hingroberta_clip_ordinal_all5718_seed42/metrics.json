@@ -1,0 +1,152 @@
+{
+  "full_data_training": true,
+  "train_examples": 5718,
+  "total_steps": 488,
+  "successful_updates": 488,
+  "attempted_batches": 493,
+  "skipped_updates": 5,
+  "steps_budget": 488,
+  "eval_checkpoint": "results/v3_journal_final/final_hingroberta_clip_ordinal_all5718_seed42/model.pt",
+  "eval_checkpoint_type": "last_full_data_checkpoint",
+  "pretrained_vocab": null,
+  "device": "cuda",
+  "n_params": 373587755,
+  "label_source": "{\"hate\": \"human_gold\", \"sarcasm\": \"human_gold\", \"target\": \"human_gold\", \"severity\": \"human_gold\", \"source\": \"multibully_human_annotation\"}",
+  "class_balancing": {
+    "sarcasm": {
+      "task": "sarcasm",
+      "mode": "linear_balanced",
+      "label_space": [
+        "not_sarcastic",
+        "sarcastic"
+      ],
+      "num_classes": 2,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "not_sarcastic": 3589,
+        "sarcastic": 2129
+      },
+      "total_supervised": 5718,
+      "raw_weights": [
+        0.796600724435776,
+        1.342883983090653
+      ],
+      "normalized_weights": [
+        0.7446659671213711,
+        1.2553340328786289
+      ],
+      "weights": [
+        0.7446659671213711,
+        1.2553340328786289
+      ],
+      "mean_active_weight": 1.0
+    },
+    "hate": {
+      "task": "hate",
+      "mode": "linear_balanced",
+      "label_space": [
+        "non_hate",
+        "hate"
+      ],
+      "num_classes": 2,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "non_hate": 4138,
+        "hate": 1580
+      },
+      "total_supervised": 5718,
+      "raw_weights": [
+        0.6909134847752537,
+        1.809493670886076
+      ],
+      "normalized_weights": [
+        0.552640783490731,
+        1.447359216509269
+      ],
+      "weights": [
+        0.552640783490731,
+        1.447359216509269
+      ],
+      "mean_active_weight": 1.0
+    },
+    "target": {
+      "task": "target",
+      "mode": "linear_balanced",
+      "label_space": [
+        "individual",
+        "organization",
+        "community",
+        "society"
+      ],
+      "num_classes": 4,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "individual": 1037,
+        "organization": 81,
+        "community": 251,
+        "society": 68
+      },
+      "total_supervised": 1437,
+      "raw_weights": [
+        0.34643201542912244,
+        4.435185185185185,
+        1.4312749003984064,
+        5.283088235294118
+      ],
+      "normalized_weights": [
+        0.12054022546820613,
+        1.54321251617938,
+        0.49800881996227003,
+        1.8382384383901438
+      ],
+      "weights": [
+        0.12054022546820613,
+        1.54321251617938,
+        0.49800881996227003,
+        1.8382384383901438
+      ],
+      "mean_active_weight": 1.0
+    },
+    "severity": {
+      "task": "severity",
+      "mode": "linear_balanced",
+      "label_space": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "num_classes": 3,
+      "source_filter": "multibully",
+      "max_weight": 4.0,
+      "counts": {
+        "low": 141,
+        "moderate": 1409,
+        "high": 30
+      },
+      "total_supervised": 1580,
+      "raw_weights": [
+        3.735224586288416,
+        0.3737875561864206,
+        17.555555555555557
+      ],
+      "normalized_weights": [
+        0.5172350501082925,
+        0.0517602143827319,
+        2.4310047355089752
+      ],
+      "weights": [
+        0.5172350501082925,
+        0.0517602143827319,
+        2.4310047355089752
+      ],
+      "mean_active_weight": 0.9999999999999999
+    }
+  },
+  "encoder_name": "l3cube-pune/hing-roberta",
+  "torch_version": "2.14.1+cu130",
+  "transformers_version": "5.20.0",
+  "seed": 42
+}
