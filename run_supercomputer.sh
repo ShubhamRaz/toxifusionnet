@@ -50,6 +50,28 @@ run_cv_exp() {
 }
 
 case "$EXP" in
+    cv_e1d)
+        run_cv_exp configs/exp1d_multibully_text_weighted.yaml results/v3_journal_final/e1d_text_weighted
+        ;;
+    cv_e6b)
+        echo "Launching E6b with auxiliary HOT gold (train-only)..."
+        python -m toxifusionnet.cli cv --config configs/exp6b_combined_text_gold_weighted.yaml \
+            --data data/processed/multibully.csv \
+            --aux-data data/processed/hot_gold_only.csv \
+            --folds-cache data/processed/multibully_v2_cv_folds.csv \
+            --out-dir results/v3_journal_final/e6b_text_gold_weighted \
+            --folds 5 \
+            --seed 42
+        ;;
+    validate)
+        echo "Running data integrity validation suite..."
+        python scripts/validate_cleaned_datasets.py
+        pytest tests/test_data_integrity_audit.py tests/test_matched_cv_integrity.py
+        ;;
+    smoke)
+        echo "Running pre-flight smoke test..."
+        python -m toxifusionnet.cli train --config configs/smoke_test.yaml
+        ;;
     cv_e1)
         run_cv_exp configs/exp1_multibully_text.yaml results/v2_evaluation/e1_text
         ;;
@@ -89,17 +111,20 @@ case "$EXP" in
         run_exp configs/exp4_multidataset_clip.yaml
         ;;
     all)
-        echo "Running all 4 benchmark experiments sequentially..."
-        run_exp configs/exp1_multibully_text.yaml
-        run_exp configs/exp2_multidataset_text.yaml
-        run_exp configs/exp3_multibully_clip.yaml
-        run_exp configs/exp4_multidataset_clip.yaml
+        echo "Running canonical weighted benchmark experiments (E1d, E6b)..."
+        run_cv_exp configs/exp1d_multibully_text_weighted.yaml results/v3_journal_final/e1d_text_weighted
+        python -m toxifusionnet.cli cv --config configs/exp6b_combined_text_gold_weighted.yaml \
+            --data data/processed/multibully.csv \
+            --aux-data data/processed/hot_gold_only.csv \
+            --folds-cache data/processed/multibully_v2_cv_folds.csv \
+            --out-dir results/v3_journal_final/e6b_text_gold_weighted \
+            --folds 5 \
+            --seed 42
         echo ""
-        echo "All 4 experiments completed successfully!"
-        echo "Check metrics in runs/exp*/metrics.json"
+        echo "All experiments completed successfully!"
         ;;
     *)
-        echo "Usage: bash run_supercomputer.sh [cv_e1|cv_e3|cv_e5|cv_e6|cv_e7|cv_combined|cv_all|exp1|exp2|exp3|exp4|all]"
+        echo "Usage: bash run_supercomputer.sh [cv_e1d|cv_e6b|validate|smoke|cv_e1|cv_e3|cv_e5|cv_all|all]"
         exit 1
         ;;
 esac

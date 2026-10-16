@@ -1,0 +1,25 @@
+{
+  "multibully": {
+    "origin": "MultiBully (Maity et al., SIGIR 2022)",
+    "annotation_level": "100% human gold",
+    "rows": 5718,
+    "tasks": [
+      "hate",
+      "sarcasm",
+      "target",
+      "severity"
+    ],
+    "verification": "100% exact match against raw annotations; 0 synthetic rebalancing"
+  },
+  "hot": {
+    "origin": "Hindi Offensive Tweets (HOT)",
+    "rows": 3189,
+    "hate_supervision": {
+      "class_0.0_normal": "mapped to non_hate (1,121 human gold rows)",
+      "class_1.0_hate": "mapped to hate (303 human gold rows)",
+      "class_2.0_offensive": "masked to NaN (-100 IGNORE_INDEX; 1,765 ambiguous rows)"
+    },
+    "auxiliary_tasks": "100% masked to NaN (0 pseudo-labels)",
+    "role": "Auxiliary train-only injection in combined experiments (strictly zero in val/test)"
+  }
+}
