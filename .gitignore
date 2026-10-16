@@ -5,16 +5,16 @@ __pycache__/
 runs/
 scratch/
 data/raw/*
-data/processed/*
-data/cleaned/*
-data/external/*
 !data/raw/.gitkeep
-!data/processed/.gitkeep
-!data/cleaned/.gitkeep
-!data/processed/multibully_v2_cv_folds.csv
-!data/processed/combined_multibully_hot_cv_folds.csv
-!data/processed/hot_v2.csv
+data/external/*
 !data/external/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/*.csv
+data/cleaned/*
+!data/cleaned/.gitkeep
+!data/cleaned/*.csv
 .venv/
 .DS_Store
+
 
