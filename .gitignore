@@ -6,6 +6,7 @@ runs/
 scratch/
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/*.csv
 data/external/*
 !data/external/.gitkeep
 data/processed/*

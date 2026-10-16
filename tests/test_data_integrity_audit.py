@@ -193,7 +193,12 @@ def test_multibully_text_label_vs_memehate_label_consistency():
     """Verify MultiBully Text-Label is distinct from Img-Text-Label via ID-safe 1:1 join and reconcile 1,559 vs 1,725."""
     mb_text = pd.read_csv(DATA_DIR / "multibully.csv")
     mb_meme = pd.read_csv(DATA_DIR / "multibully_memehate.csv")
-    raw_mb = pd.read_csv(Path("data/raw/multibully.csv"))
+    raw_path = Path("data/raw/multibully.csv")
+    if not raw_path.exists():
+        raw_path = Path(__file__).resolve().parent.parent / "data" / "raw" / "multibully.csv"
+    if not raw_path.exists():
+        pytest.skip("data/raw/multibully.csv not present in test environment")
+    raw_mb = pd.read_csv(raw_path)
 
     # Validate ID uniqueness in both processed files
     assert mb_text["id"].is_unique, "MultiBully text dataset must have unique IDs"

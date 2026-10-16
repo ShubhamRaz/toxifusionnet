@@ -55,23 +55,38 @@ def test_modality_presence_mask_invariance():
     print("\n[PASS] Modality presence mask strict invariance verified.")
 
 
-def test_missing_image_and_alt_extension_handling():
+def test_missing_image_and_alt_extension_handling(tmp_path):
     """Test image resolution with alternate extension fallback and missing image safety."""
     repo_root = Path(__file__).resolve().parent.parent
     proc_csv = repo_root / "data" / "processed" / "multibully.csv"
+    assert proc_csv.exists(), f"Processed multibully.csv must exist at {proc_csv}"
+
     img_dir = repo_root / "data" / "raw" / "bully_data" / "bully_data"
     if not img_dir.is_dir():
         alt_img_dir = repo_root / "data" / "raw" / "bully_data"
         if alt_img_dir.is_dir():
             img_dir = alt_img_dir
+        else:
+            # Hermetic fallback when raw image archive is not extracted on pod / CI
+            img_dir = tmp_path / "synthetic_bully_data"
+            img_dir.mkdir(parents=True, exist_ok=True)
+            from PIL import Image
+            dummy_img = Image.new("RGB", (224, 224), color=(200, 100, 50))
+            dummy_img.save(img_dir / "sample_img.jpg")
+            dummy_img.save(img_dir / "sample_alt.png")
 
-    assert proc_csv.exists(), f"Processed multibully.csv must exist at {proc_csv}"
-    assert img_dir.exists(), f"Bully data image directory must exist at {img_dir}"
-    df = pd.read_csv(proc_csv).head(20)
+    df = pd.read_csv(proc_csv).head(20).copy()
 
     # Add a synthetic missing row
     df.loc[0, "id"] = "non_existent_image_12345.jpg"
     df.loc[0, "source_dataset"] = "multibully"
+
+    if "synthetic_bully_data" in str(img_dir):
+        df.loc[1, "id"] = "sample_img.jpg"
+        df.loc[1, "source_dataset"] = "multibully"
+        # Test alternate extension (.png on disk, requested as .jpg)
+        df.loc[2, "id"] = "sample_alt.jpg"
+        df.loc[2, "source_dataset"] = "multibully"
 
     normalizer = TextNormalizer()
     words = [normalizer(t).words for t in df["text"]]
@@ -83,6 +98,10 @@ def test_missing_image_and_alt_extension_handling():
     # Row 0 had missing image -> has_image == 0.0
     assert ds[0]["has_image"] == 0.0
     assert ds[0]["pixel_values"].shape == (3, 224, 224)
+
+    if "synthetic_bully_data" in str(img_dir):
+        assert ds[1]["has_image"] == 1.0
+        assert ds[2]["has_image"] == 1.0
 
     # Check collate
     collate = make_collate(tok.pad_token_id)
