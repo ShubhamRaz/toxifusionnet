@@ -1,0 +1,168 @@
+{
+  "pipeline_version": "v3.0.0-gold-isolated",
+  "generated_date": "2026-10-16T14:15:21.984314",
+  "files": {
+    "multibully_cleaned": {
+      "path": "data\\cleaned\\multibully_cleaned.csv",
+      "rows": 5718,
+      "columns": [
+        "id",
+        "text",
+        "sarcasm",
+        "hate",
+        "target",
+        "severity",
+        "sarcasm_rationale",
+        "hate_rationale",
+        "narrative",
+        "label_source",
+        "source_dataset",
+        "split"
+      ],
+      "sha256_raw": "9511968aa8ca20ae8894ffe5fa845ff67f435f7b6d4a5fa237d3f7193e9eabcd",
+      "sha256_crlf": "0a0da5f553f970e32ebda32304e11c6cded5e6518bdb3b8680c26e17b0002884",
+      "tasks": {
+        "sarcasm": {
+          "not_sarcastic": 3589,
+          "sarcastic": 2129
+        },
+        "hate": {
+          "non_hate": 4138,
+          "hate": 1580
+        },
+        "target": {
+          "NaN": 4281,
+          "individual": 1037,
+          "community": 251,
+          "organization": 81,
+          "society": 68
+        },
+        "severity": {
+          "NaN": 4138,
+          "moderate": 1409,
+          "low": 141,
+          "high": 30
+        }
+      }
+    },
+    "hot_cleaned": {
+      "path": "data\\cleaned\\hot_cleaned.csv",
+      "rows": 3189,
+      "columns": [
+        "id",
+        "text",
+        "orig_hot_label",
+        "qwen_hate",
+        "qwen_sarcasm",
+        "qwen_target",
+        "qwen_severity",
+        "annotation_model",
+        "annotation_status",
+        "source_dataset",
+        "hate",
+        "sarcasm",
+        "target",
+        "severity",
+        "label_source",
+        "split"
+      ],
+      "sha256_raw": "871b8d238d733f1e130d2c2e1773d08d58cb59196c458aaaa48aa9606db990ca",
+      "sha256_crlf": "871b8d238d733f1e130d2c2e1773d08d58cb59196c458aaaa48aa9606db990ca",
+      "tasks": {
+        "sarcasm": {
+          "NaN": 3189
+        },
+        "hate": {
+          "NaN": 1765,
+          "non_hate": 1121,
+          "hate": 303
+        },
+        "target": {
+          "NaN": 3189
+        },
+        "severity": {
+          "NaN": 3189
+        }
+      }
+    },
+    "combined_multibully_hot_v2": {
+      "path": "data\\cleaned\\combined_multibully_hot_v2.csv",
+      "rows": 8907,
+      "columns": [
+        "id",
+        "text",
+        "sarcasm",
+        "hate",
+        "target",
+        "severity",
+        "sarcasm_rationale",
+        "hate_rationale",
+        "narrative",
+        "label_source",
+        "source_dataset",
+        "orig_hot_label",
+        "qwen_hate",
+        "qwen_sarcasm",
+        "qwen_target",
+        "qwen_severity",
+        "annotation_status",
+        "annotation_model",
+        "split"
+      ],
+      "sha256_raw": "8f6709aeb781c3c0031a4abb5bce9e6f145bf1ecf2ee34b22f72cc466eb68633",
+      "sha256_crlf": "ccfeefadfa4bddce0fb8c51eb98c026f0ae27be399f31194b8661cde3c292e3c",
+      "tasks": {
+        "sarcasm": {
+          "not_sarcastic": 3589,
+          "NaN": 3189,
+          "sarcastic": 2129
+        },
+        "hate": {
+          "non_hate": 5259,
+          "hate": 1883,
+          "NaN": 1765
+        },
+        "target": {
+          "NaN": 7470,
+          "individual": 1037,
+          "community": 251,
+          "organization": 81,
+          "society": 68
+        },
+        "severity": {
+          "NaN": 7327,
+          "moderate": 1409,
+          "low": 141,
+          "high": 30
+        }
+      }
+    },
+    "multibully_v2_cv_folds": {
+      "path": "data\\cleaned\\multibully_v2_cv_folds.csv",
+      "rows": 28590,
+      "columns": [
+        "id",
+        "split",
+        "fold",
+        "group_id"
+      ],
+      "sha256_raw": "2f3002ab81b8b03c26228edc88f9cc04613dad2e73d1b62c4869984d6febffa8",
+      "sha256_crlf": "2f3002ab81b8b03c26228edc88f9cc04613dad2e73d1b62c4869984d6febffa8",
+      "tasks": {}
+    },
+    "combined_multibully_hot_cv_folds": {
+      "path": "data\\cleaned\\combined_multibully_hot_cv_folds.csv",
+      "rows": 44535,
+      "columns": [
+        "id",
+        "source_dataset",
+        "fold",
+        "split",
+        "group_id"
+      ],
+      "sha256_raw": "78d825723147f1e8a556427f50e72c916fae79245199fd457c789f19d338f26a",
+      "sha256_crlf": "78d825723147f1e8a556427f50e72c916fae79245199fd457c789f19d338f26a",
+      "tasks": {}
+    }
+  }
+}
