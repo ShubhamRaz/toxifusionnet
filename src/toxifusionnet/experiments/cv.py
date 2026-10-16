@@ -45,6 +45,13 @@ def make_fold_splits(df: pd.DataFrame, k: int, seed: int, val_frac: float = 0.15
 CANONICAL_FOLD_CACHE_SHA256 = "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
 CANONICAL_COMBINED_FOLD_CACHE_SHA256 = "fd00161698dbfdc16381513b369b5d74d294dccf359f9cd937a70f33e7aa8ba7"
 
+# Curated, leak-free fold caches produced by scripts/build_cleaned_pipeline.py
+CURATED_FOLD_CACHE_SHA256 = "2f3002ab81b8b03c26228edc88f9cc04613dad2e73d1b62c4869984d6febffa8"
+CURATED_COMBINED_FOLD_CACHE_SHA256 = "78d825723147f1e8a556427f50e72c916fae79245199fd457c789f19d338f26a"
+
+ALLOWED_FOLD_CACHE_SHAS = {CANONICAL_FOLD_CACHE_SHA256, CURATED_FOLD_CACHE_SHA256}
+ALLOWED_COMBINED_FOLD_CACHE_SHAS = {CANONICAL_COMBINED_FOLD_CACHE_SHA256, CURATED_COMBINED_FOLD_CACHE_SHA256}
+
 
 def compute_normalized_fold_cache_sha256(cache_path: str | Path) -> str:
     """Compute the SHA-256 checksum of fold cache with in-memory CRLF line-ending normalization.
@@ -58,19 +65,27 @@ def compute_normalized_fold_cache_sha256(cache_path: str | Path) -> str:
     return hashlib.sha256(normalized).hexdigest()
 
 
-def validate_fold_cache_checksum(cache_path: str | Path, expected_sha: str = CANONICAL_FOLD_CACHE_SHA256) -> str:
+def validate_fold_cache_checksum(cache_path: str | Path, expected_sha: str | set[str] = ALLOWED_FOLD_CACHE_SHAS) -> str:
     """Verify that the fold cache matches the expected SHA-256 after in-memory CRLF normalization.
 
     Raises ValueError immediately if the checksum does not match expected_sha, preventing corrupted
     or modified fold mappings from compromising experimental reproducibility.
     """
     sha = compute_normalized_fold_cache_sha256(cache_path)
-    if sha != expected_sha:
-        raise ValueError(
-            f"Canonical fold cache checksum verification failed for '{cache_path}'! "
-            f"Expected SHA-256 (CRLF-normalized): {expected_sha}, got: {sha}. "
-            "The fold cache has been altered or corrupted. Automatic regeneration is disabled."
-        )
+    if isinstance(expected_sha, (set, list, tuple)):
+        if sha not in expected_sha:
+            raise ValueError(
+                f"Canonical fold cache checksum verification failed for '{cache_path}'! "
+                f"Expected one of SHA-256 (CRLF-normalized): {expected_sha}, got: {sha}. "
+                "The fold cache has been altered or corrupted. Automatic regeneration is disabled."
+            )
+    else:
+        if sha != expected_sha:
+            raise ValueError(
+                f"Canonical fold cache checksum verification failed for '{cache_path}'! "
+                f"Expected SHA-256 (CRLF-normalized): {expected_sha}, got: {sha}. "
+                "The fold cache has been altered or corrupted. Automatic regeneration is disabled."
+            )
     return sha
 
 
@@ -240,9 +255,9 @@ def run_cv(config: str, overrides: list[str], data_path: str, out_dir: str | Pat
             sha = compute_normalized_fold_cache_sha256(cache_p)
             log.info("Using existing canonical fold cache: %s (SHA-256 [CRLF-normalized]: %s)", folds_cache, sha)
             if cache_p.name == "multibully_v2_cv_folds.csv":
-                validate_fold_cache_checksum(cache_p, CANONICAL_FOLD_CACHE_SHA256)
+                validate_fold_cache_checksum(cache_p, ALLOWED_FOLD_CACHE_SHAS)
             elif cache_p.name == "combined_multibully_hot_cv_folds.csv":
-                validate_fold_cache_checksum(cache_p, CANONICAL_COMBINED_FOLD_CACHE_SHA256)
+                validate_fold_cache_checksum(cache_p, ALLOWED_COMBINED_FOLD_CACHE_SHAS)
             fold_assign = pd.read_csv(cache_p)
             use_comp = not df["id"].is_unique and "source_dataset" in df.columns
             expected_keys = (

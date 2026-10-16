@@ -53,6 +53,15 @@ case "$EXP" in
     cv_e1d)
         run_cv_exp configs/exp1d_multibully_text_weighted.yaml results/v3_journal_final/e1d_text_weighted
         ;;
+    cv_e1d_cleaned)
+        echo "Launching E1d on Curated Cleaned MultiBully dataset..."
+        python -m toxifusionnet.cli cv --config configs/exp1d_multibully_cleaned.yaml \
+            --data data/cleaned/multibully_cleaned.csv \
+            --folds-cache data/cleaned/multibully_v2_cv_folds.csv \
+            --out-dir results/v3_journal_final/e1d_cleaned \
+            --folds 5 \
+            --seed 42
+        ;;
     cv_e6b)
         echo "Launching E6b with auxiliary HOT gold (train-only)..."
         python -m toxifusionnet.cli cv --config configs/exp6b_combined_text_gold_weighted.yaml \
@@ -60,6 +69,16 @@ case "$EXP" in
             --aux-data data/processed/hot_gold_only.csv \
             --folds-cache data/processed/multibully_v2_cv_folds.csv \
             --out-dir results/v3_journal_final/e6b_text_gold_weighted \
+            --folds 5 \
+            --seed 42
+        ;;
+    cv_e6b_cleaned)
+        echo "Launching E6b on Curated Cleaned Combined MultiBully + HOT dataset..."
+        python -m toxifusionnet.cli cv --config configs/exp6b_combined_cleaned.yaml \
+            --data data/cleaned/multibully_cleaned.csv \
+            --aux-data data/cleaned/hot_cleaned.csv \
+            --folds-cache data/cleaned/multibully_v2_cv_folds.csv \
+            --out-dir results/v3_journal_final/e6b_cleaned \
             --folds 5 \
             --seed 42
         ;;

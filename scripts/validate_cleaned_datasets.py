@@ -102,25 +102,37 @@ def validate_cleaned_datasets(base_dir: str | Path = ".") -> Dict[str, Any]:
         results["checks"]["pipeline_integration"] = {"status": "PASS", "details": "Configs reference data/cleaned/."}
 
     # Check 3: Checksum and CV Compatibility with cv.py
-    hardcoded_mb_sha = "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5"
-    hardcoded_comb_sha = "fd00161698dbfdc16381513b369b5d74d294dccf359f9cd937a70f33e7aa8ba7"
+    try:
+        from toxifusionnet.experiments.cv import ALLOWED_FOLD_CACHE_SHAS, ALLOWED_COMBINED_FOLD_CACHE_SHAS
+    except ImportError:
+        ALLOWED_FOLD_CACHE_SHAS = {
+            "73d4dbb4858907f43765dea0acff36aa4ae21ddc01e1694c0fcf85791fb2d1a5",
+            "2f3002ab81b8b03c26228edc88f9cc04613dad2e73d1b62c4869984d6febffa8",
+        }
+        ALLOWED_COMBINED_FOLD_CACHE_SHAS = {
+            "fd00161698dbfdc16381513b369b5d74d294dccf359f9cd937a70f33e7aa8ba7",
+            "78d825723147f1e8a556427f50e72c916fae79245199fd457c789f19d338f26a",
+        }
     actual_mb_sha = compute_crlf_sha256(cleaned_dir / "multibully_v2_cv_folds.csv")
     actual_comb_sha = compute_crlf_sha256(cleaned_dir / "combined_multibully_hot_cv_folds.csv")
 
-    if actual_mb_sha != hardcoded_mb_sha or actual_comb_sha != hardcoded_comb_sha:
+    if actual_mb_sha not in ALLOWED_FOLD_CACHE_SHAS or actual_comb_sha not in ALLOWED_COMBINED_FOLD_CACHE_SHAS:
         results["checks"]["cv_checksum_compatibility"] = {
             "status": "FAIL",
             "details": (
-                f"CV fold caches in data/cleaned/ fail the hardcoded checksum checks in "
-                f"src/toxifusionnet/experiments/cv.py:45-46 & lines 242-245. "
-                f"multibully_v2_cv_folds: expected {hardcoded_mb_sha[:16]}..., observed {actual_mb_sha[:16]}...; "
-                f"combined_multibully_hot_cv_folds: expected {hardcoded_comb_sha[:16]}..., observed {actual_comb_sha[:16]}.... "
+                f"CV fold caches in data/cleaned/ fail the authorized checksum checks in "
+                f"src/toxifusionnet/experiments/cv.py. "
+                f"multibully_v2_cv_folds: observed {actual_mb_sha[:16]}...; "
+                f"combined_multibully_hot_cv_folds: observed {actual_comb_sha[:16]}.... "
                 f"Running cv.py will immediately throw ValueError."
             ),
-            "responsible_lines": "src/toxifusionnet/experiments/cv.py:45-46, 242-245"
+            "responsible_lines": "src/toxifusionnet/experiments/cv.py:45-50, 255-265"
         }
     else:
-        results["checks"]["cv_checksum_compatibility"] = {"status": "PASS", "details": "Checksums match cv.py expectations."}
+        results["checks"]["cv_checksum_compatibility"] = {
+            "status": "PASS",
+            "details": "Checksums match authorized cv.py fold cache expectations."
+        }
 
     # Check 4: Row Counts & Schema Validity
     schema_issues = []
