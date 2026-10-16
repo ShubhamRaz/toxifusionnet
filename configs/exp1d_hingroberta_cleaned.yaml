@@ -1,0 +1,39 @@
+# Experiment 1d (HingRoBERTa): MultiBully-Only Text Baseline with L3Cube HingRoBERTa on Curated Cleaned Dataset
+experiment_name: exp1d_hingroberta_cleaned
+data:
+  processed_path: data/cleaned/multibully_cleaned.csv
+  folds_cache: data/cleaned/multibully_v2_cv_folds.csv
+  max_length: 128
+labels:
+  target: [individual, organization, community, society]
+model:
+  encoder_name: l3cube-pune/hing-roberta
+  tasks: [sarcasm, hate, target, severity]
+  dropout: 0.1
+  head_hidden: 256
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  use_clip: false                # Text-only baseline
+loss:
+  weighting: fixed
+  weights: {sarcasm: 1.0, hate: 1.0, target: 1.0, severity: 1.0}
+  class_weighting: sqrt_balanced
+  max_class_weight: 4.0
+  class_weight_source: multibully
+  focal_gamma: 0.0
+  severity_loss_type: ce
+train:
+  epochs: 8
+  batch_size: 64
+  steps_per_epoch: 61
+  max_steps: 488
+  warmup_ratio: 0.10
+  encoder_lr: 1.0e-5
+  head_lr: 5.0e-4
+  weight_decay: 0.01
+  early_stopping: false
+  patience: 0
+  fp16: true
+  device: auto

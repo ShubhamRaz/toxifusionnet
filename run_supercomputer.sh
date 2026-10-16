@@ -62,6 +62,15 @@ case "$EXP" in
             --folds 5 \
             --seed 42
         ;;
+    cv_e1d_hingroberta_cleaned)
+        echo "Launching E1d on Curated Cleaned MultiBully dataset with L3Cube HingRoBERTa..."
+        python -m toxifusionnet.cli cv --config configs/exp1d_hingroberta_cleaned.yaml \
+            --data data/cleaned/multibully_cleaned.csv \
+            --folds-cache data/cleaned/multibully_v2_cv_folds.csv \
+            --out-dir results/v3_journal_final/e1d_hingroberta_cleaned \
+            --folds 5 \
+            --seed 42
+        ;;
     cv_e6b)
         echo "Launching E6b with auxiliary HOT gold (train-only)..."
         python -m toxifusionnet.cli cv --config configs/exp6b_combined_text_gold_weighted.yaml \

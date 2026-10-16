@@ -25,6 +25,8 @@ This index catalogs all historical, validated, and reproducible experiments cond
 | :--- | :--- | :--- | :--- | :---: | :--- | :---: |
 | **`E1c`** | Text Multi-Task | MultiBully Text (5,718) — Unweighted | Tiny Transformer (GloVe-Twitter-100) | `42` | `results/v3_journal_final/e1c_text_unweighted/` | **Verified Canonical** |
 | **`E1d`** | Text Multi-Task | MultiBully Text (5,718) — Dynamic Weighted | Tiny Transformer (GloVe-Twitter-100) | `42` | `results/v3_journal_final/e1d_text_weighted/` | **Verified Canonical** |
+| **`E1d-Cleaned`** | Text Multi-Task | MultiBully Cleaned (5,718) — Dynamic Weighted | XLM-RoBERTa-base | `42` | `results/v3_journal_final/e1d_cleaned/` | **Cleaned Baseline (Macro-F1: 0.512)** |
+| **`E1d-HingRoBERTa`** | Text Multi-Task | MultiBully Cleaned (5,718) — Dynamic Weighted | L3Cube HingRoBERTa (`l3cube-pune/hing-roberta`) | `42` | `results/v3_journal_final/e1d_hingroberta_cleaned/` | **Integrated / DGX-Ready** |
 | **`E6b`** | Text Multi-Task + Gold Aux | MultiBully (5,718) + HOT Gold Aux (1,424 Train-Only) | Tiny Transformer (GloVe-Twitter-100) | `42` | `results/v3_journal_final/e6b_text_gold_weighted/` | **Verified Canonical** |
 | **`E1` (Legacy)** | Text Multi-Task | MultiBully (5,718) — Text Only | Pretrained Transformer (MuRIL / XLM-R) | `42` | `results/v2_evaluation/e1_text/` | Historical Reference |
 | **`E3` (Legacy)** | Multimodal Multi-Task | MultiBully (5,718) — Text + CLIP ViT | Gated Sarcasm Fusion + CLIP Visual | `42` | `results/v2_evaluation/e3_clip/` | Historical Reference |

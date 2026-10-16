@@ -13,6 +13,7 @@ import torch
 import yaml
 from torch.utils.data import DataLoader
 from transformers import get_linear_schedule_with_warmup
+import transformers
 
 from ..data.dataset import HateSarcasmDataset, make_collate
 from ..labels import IGNORE_INDEX, LABEL_SPACES, TASKS, apply_label_config
@@ -300,7 +301,11 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
         "device": str(device),
         "n_params": sum(p.numel() for p in model.parameters()),
         "label_source": df["label_source"].iloc[0] if "label_source" in df and len(df) else None,
-        "class_balancing": balancing_meta
+        "class_balancing": balancing_meta,
+        "encoder_name": str(cfg.model.encoder_name),
+        "torch_version": torch.__version__,
+        "transformers_version": transformers.__version__,
+        "seed": int(cfg.get("seed", 42)),
     }
     for name, d, ds, dl in (("val", va_df, ds_va, dl_va), ("test", te_df, ds_te, dl_te)):
         pf = predictions_frame(d, ds, predict_loader(model, dl, device))
