@@ -1,0 +1,44 @@
+# Experiment 8: Simplified ToxiFusionNet Multimodal (HingRoBERTa + CLIP) with 4 Main Binary Categories
+# Exposes only main categories:
+# 1. Hate: Binary (non_hate, hate)
+# 2. Sarcasm: Binary (not_sarcastic, sarcastic)
+# 3. Target: Binary (target_absent, target_present)
+# 4. Severity: Binary (low, moderate_or_high)
+experiment_name: exp8_simplified_multimodal
+data:
+  processed_path: data/cleaned/multibully_simplified.csv
+  folds_cache: data/cleaned/multibully_v2_cv_folds.csv
+  image_dir: data/raw/bully_data/bully_data
+  max_length: 128
+labels:
+  target: [target_absent, target_present]
+  severity: [low, moderate_or_high]
+model:
+  encoder_name: l3cube-pune/hing-roberta
+  tasks: [sarcasm, hate, target, severity]
+  dropout: 0.1
+  head_hidden: 256
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  use_clip: true                 # Multimodal CLIP vision encoder
+  freeze_clip: true              # Frozen vision backbone to prevent overfitting
+  clip_model_name: openai/clip-vit-base-patch32
+loss:
+  weighting: fixed
+  weights: {sarcasm: 1.0, hate: 1.0, target: 1.0, severity: 1.0}
+  class_weighting: sqrt_balanced
+  max_class_weight: 4.0
+  class_weight_source: multibully
+  focal_gamma: 0.0
+  severity_loss_type: ce
+train:
+  epochs: 8
+  batch_size: 32
+  encoder_lr: 1.0e-5
+  head_lr: 5.0e-4
+  weight_decay: 0.01
+  patience: 3
+  fp16: true
+  device: auto

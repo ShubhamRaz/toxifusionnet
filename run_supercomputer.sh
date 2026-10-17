@@ -91,6 +91,39 @@ case "$EXP" in
             --folds 5 \
             --seed 42
         ;;
+    cv_simplified)
+        echo "Building simplified dataset if not present..."
+        if [ ! -f "data/cleaned/multibully_simplified.csv" ]; then
+            python scripts/build_simplified_dataset.py
+        fi
+        echo "Launching Simplified 4-Head Model (HingRoBERTa + CLIP) 5-Fold CV..."
+        python -m toxifusionnet.cli cv --config configs/exp8_simplified_multimodal.yaml \
+            --data data/cleaned/multibully_simplified.csv \
+            --folds-cache data/cleaned/multibully_v2_cv_folds.csv \
+            --out-dir results/v3_journal_final/exp8_simplified_multimodal_cv \
+            --folds 5 \
+            --seed 42
+        ;;
+    cv_simplified_text)
+        echo "Building simplified dataset if not present..."
+        if [ ! -f "data/cleaned/multibully_simplified.csv" ]; then
+            python scripts/build_simplified_dataset.py
+        fi
+        echo "Launching Simplified 4-Head Model (Text-Only HingRoBERTa) 5-Fold CV..."
+        python -m toxifusionnet.cli cv --config configs/exp8_simplified_text.yaml \
+            --data data/cleaned/multibully_simplified.csv \
+            --folds-cache data/cleaned/multibully_v2_cv_folds.csv \
+            --out-dir results/v3_journal_final/exp8_simplified_text_cv \
+            --folds 5 \
+            --seed 42
+        ;;
+    train_simplified)
+        echo "Building simplified dataset if not present..."
+        if [ ! -f "data/cleaned/multibully_simplified.csv" ]; then
+            python scripts/build_simplified_dataset.py
+        fi
+        run_exp configs/exp8_simplified_multimodal.yaml
+        ;;
     validate)
         echo "Running data integrity validation suite..."
         python scripts/validate_cleaned_datasets.py
@@ -152,7 +185,7 @@ case "$EXP" in
         echo "All experiments completed successfully!"
         ;;
     *)
-        echo "Usage: bash run_supercomputer.sh [cv_e1d|cv_e6b|validate|smoke|cv_e1|cv_e3|cv_e5|cv_all|all]"
+        echo "Usage: bash run_supercomputer.sh [cv_simplified|train_simplified|cv_simplified_text|cv_e1d|cv_e6b|validate|smoke|cv_e1|cv_e3|cv_e5|cv_all|all]"
         exit 1
         ;;
 esac

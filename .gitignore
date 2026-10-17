@@ -17,5 +17,9 @@ data/cleaned/*
 !data/cleaned/*.csv
 .venv/
 .DS_Store
+data/cache/
+data/cleaned/multibully_simplified.csv
+data/cleaned/multibully_simplified.meta.json
+results/v3_journal_final/exp8_simplified_multimodal_cv/
 
 

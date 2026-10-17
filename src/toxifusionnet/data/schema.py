@@ -30,9 +30,11 @@ TARGET_SYNONYMS = {
     "ethnicity": "demography", "race": "demography", "nationality": "demography", "region": "demography",
     "origin": "demography", "age": "demography",
     "organization": "organization", "organisation": "organization", "community": "community", "society": "society",
+    "target_present": "target_present", "target_absent": "target_absent", "present": "target_present", "absent": "target_absent",
 }
 SEVERITY_SYNONYMS = {"low": "low", "mild": "low", "0": "low", "moderate": "moderate", "medium": "moderate", "1": "moderate",
-                     "high": "high", "severe": "high", "2": "high"}
+                     "high": "high", "severe": "high", "2": "high", "harmless": "low", "partially-harmful": "moderate",
+                     "very-harmful": "high", "moderate_or_high": "moderate_or_high"}
 CANONICAL_COLUMNS = ["id", "text", "sarcasm", "hate", "target", "severity", "sarcasm_rationale", "hate_rationale",
                      "narrative", "label_source"]
 
@@ -234,7 +236,17 @@ def build_canonical(df: pd.DataFrame, schema: dict, weak_fill: bool = True) -> p
     raw = col_or_derived("target")
     if raw is not None:
         mapping = _lower_keys((derive.get("target") or {}).get("map")) or vmaps.get("target", {})
-        out["target"] = _validate_target(pd.Series([_map_value(v, mapping, TARGET_SYNONYMS) for v in raw], index=out.index, dtype=object))
+        space = set(LABEL_SPACES["target"])
+        if set(space) == {"target_absent", "target_present"}:
+            default_tgt = {
+                "target_absent": "target_absent", "absent": "target_absent", "none": "target_absent", "no": "target_absent",
+                "target_present": "target_present", "present": "target_present", "individual": "target_present",
+                "community": "target_present", "organization": "target_present", "society": "target_present",
+                "caste": "target_present", "religion": "target_present", "gender": "target_present", "demography": "target_present",
+            }
+        else:
+            default_tgt = TARGET_SYNONYMS
+        out["target"] = _validate_target(pd.Series([_map_value(v, mapping, default_tgt) for v in raw], index=out.index, dtype=object))
     else:
         out["target"] = np.nan
 
@@ -246,7 +258,19 @@ def build_canonical(df: pd.DataFrame, schema: dict, weak_fill: bool = True) -> p
         out["sarcasm"] = np.nan
     raw = col_or_derived("severity")
     if raw is not None:
-        out["severity"] = [_map_value(v, vmaps.get("severity", {}), SEVERITY_SYNONYMS) for v in raw]
+        mapping = _lower_keys((derive.get("severity") or {}).get("map")) or vmaps.get("severity", {})
+        space = set(LABEL_SPACES["severity"])
+        if set(space) in ({"low", "moderate_or_high"}, {"mild", "severe"}):
+            low_lbl = "low" if "low" in space else "mild"
+            high_lbl = "moderate_or_high" if "moderate_or_high" in space else "severe"
+            default_sev = {
+                "low": low_lbl, "mild": low_lbl, "harmless": low_lbl, "0": low_lbl,
+                "moderate_or_high": high_lbl, "severe": high_lbl, "moderate": high_lbl, "high": high_lbl,
+                "partially-harmful": high_lbl, "very-harmful": high_lbl, "1": high_lbl, "2": high_lbl,
+            }
+        else:
+            default_sev = SEVERITY_SYNONYMS
+        out["severity"] = [_map_value(v, mapping, default_sev) for v in raw]
     else:
         out["severity"] = np.nan
 

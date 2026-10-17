@@ -1,0 +1,41 @@
+# Schema for MultiBully Simplified (Main Categories Only)
+file: data/raw/multibully.csv
+text_col: Img-Text
+id_col: Img-Name
+
+# Simplified label taxonomy: 4 main binary categories
+labels:
+  target: [target_absent, target_present]
+  severity: [low, moderate_or_high]
+
+columns:
+  sarcasm: Sarcasm                      # Yes / No (gold)
+  hate: null                            # derived below
+  target: Target                        # None -> target_absent; {Individual, Community, Organization, Society} -> target_present
+  severity: Harmful-Score               # Harmless -> low; {Partially-Harmful, Very-Harmful} -> moderate_or_high
+  sarcasm_rationale: null
+  hate_rationale: null
+  narrative: null
+
+derive:
+  hate:
+    from: Text-Label
+    non_hate_values: [Nonbully]
+
+value_maps:
+  severity:
+    harmless: low
+    partially-harmful: moderate_or_high
+    very-harmful: moderate_or_high
+  target:
+    individual: target_present
+    organization: target_present
+    community: target_present
+    society: target_present
+    none: target_absent
+
+exclude:
+  - {column: Doubtful, when_not_empty: true}
+  - {column: "Unnamed: 10", when_not_empty: true}
+
+split: {val_size: 0.15, test_size: 0.15, seed: 42}

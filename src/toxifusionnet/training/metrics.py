@@ -73,7 +73,7 @@ def evaluate_predictions(df: pd.DataFrame, tasks=TASKS) -> dict:
     for t in tasks:
         if f"pred_{t}" not in df:
             continue
-        pp = df.get(f"p_{t}") if t in ("sarcasm", "hate") else None
+        pp = df.get(f"p_{t}") if f"p_{t}" in df else (df.get(f"p_{t}") if t in ("sarcasm", "hate") else None)
         res[t] = task_metrics_from_arrays(t, df[f"gold_{t}"], df[f"pred_{t}"], None if pp is None else pp.to_numpy())
     if "pred_hate" in df and "gold_sarcasm" in df and (df.gold_sarcasm != IGNORE_INDEX).any():
         res["sarcasm_subset"] = sarcasm_subset_metrics(df)

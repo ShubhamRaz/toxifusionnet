@@ -92,7 +92,9 @@ class TfidfLogReg:
             full = np.zeros((len(df), len(LABEL_SPACES[t])))
             full[:, clf.classes_] = p
             out[f"pred_{t}"] = full.argmax(1)
-            if t in ("hate", "sarcasm"):
+            if full.shape[1] == 2:
+                out[f"p_{t}"] = full[:, 1]
+            elif t in ("hate", "sarcasm"):
                 out[f"p_{t}"] = full[:, 1]
         return out
 

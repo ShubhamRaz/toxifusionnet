@@ -75,7 +75,9 @@ def predictions_frame(df: pd.DataFrame, ds: HateSarcasmDataset, pred: dict) -> p
         p = p[order]
         rows[f"pred_{t}"] = p.argmax(-1)
         rows[f"conf_{t}"] = p.max(-1)
-        if t in ("sarcasm", "hate"):
+        if p.shape[-1] == 2:
+            rows[f"p_{t}"] = p[:, 1]
+        elif t in ("sarcasm", "hate"):
             rows[f"p_{t}"] = p[:, 1]
     if pred["gate"] is not None:
         rows["fusion_gate"] = pred["gate"][order]
