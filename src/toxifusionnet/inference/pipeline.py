@@ -42,8 +42,18 @@ class ToxiFusionPipeline:
 
     # ------------------------------------------------------------------ low level
     @torch.no_grad()
-    def _forward(self, texts: list[str], batch_size: int = 64):
+    def _forward(self, texts: list[str], batch_size: int = 64, image_paths=None):
         results = []
+        if image_paths is not None:
+            if len(image_paths) != len(texts):
+                raise ValueError(
+                    "Provide exactly one image path (or None) per input text."
+                )
+            if not self.model.use_clip:
+                raise ValueError(
+                    "This checkpoint was not configured with CLIP image fusion."
+                )
+
         for s in range(0, len(texts), batch_size):
             chunk = texts[s:s + batch_size]
             nts = [self.normalizer(t) for t in chunk]
@@ -55,22 +65,91 @@ class ToxiFusionPipeline:
             for i, x in enumerate(enc["input_ids"]):
                 ids[i, :len(x)] = torch.tensor(x); mask[i, :len(x)] = 1
             cue = torch.from_numpy(np.stack([cue_vector(nt) for nt in nts]))
-            out = self.model(ids.to(self.device), mask.to(self.device), cue.to(self.device))
+
+            pixel_values = None
+            image_mask = None
+            image_used = [False] * len(chunk)
+
+            if image_paths is not None:
+                from PIL import Image
+
+                # CLIP ViT-B/32 expects 224x224 pixel inputs. The configured
+                # processor applies the correct normalization and resizing.
+                pixels = torch.zeros(
+                    (len(chunk), 3, 224, 224), dtype=torch.float32
+                )
+                image_mask = torch.zeros(
+                    (len(chunk), 1), dtype=torch.float32
+                )
+                pil_images = []
+                valid_indices = []
+
+                for i, raw_path in enumerate(image_paths[s:s + len(chunk)]):
+                    if raw_path is None or str(raw_path).strip() in ("", "-"):
+                        continue
+
+                    img_path = Path(raw_path)
+                    if not img_path.is_file():
+                        raise FileNotFoundError(
+                            f"Image does not exist: {img_path}"
+                        )
+
+                    try:
+                        with Image.open(img_path) as opened:
+                            pil_images.append(opened.convert("RGB"))
+                    except Exception as exc:
+                        raise ValueError(
+                            f"Could not read image: {img_path}"
+                        ) from exc
+
+                    valid_indices.append(i)
+
+                if pil_images:
+                    processed = self.model.clip_processor(
+                        images=pil_images, return_tensors="pt"
+                    )["pixel_values"]
+
+                    for j, i in enumerate(valid_indices):
+                        pixels[i] = processed[j]
+                        image_mask[i, 0] = 1.0
+                        image_used[i] = True
+
+                pixel_values = pixels.to(self.device)
+                image_mask = image_mask.to(self.device)
+
+            out = self.model(
+                ids.to(self.device),
+                mask.to(self.device),
+                cue.to(self.device),
+                pixel_values=pixel_values,
+                image_mask=image_mask,
+            )
             probs = {t: torch.softmax(l.float(), -1).cpu().numpy() for t, l in out["logits"].items()}
             attn = {k: v.float().cpu().numpy() for k, v in out["attn"].items()}
             for i in range(len(chunk)):
-                results.append({"nt": nts[i], "words": words[i], "word_ids": enc.word_ids(i),
-                                "probs": {t: p[i] for t, p in probs.items()},
-                                "attn": {k: a[i, :len(enc["input_ids"][i])] for k, a in attn.items()},
-                                "gate": None if out["gate"] is None else float(out["gate"][i].mean())})
+                results.append({
+                    "nt": nts[i],
+                    "words": words[i],
+                    "word_ids": enc.word_ids(i),
+                    "probs": {t: p[i] for t, p in probs.items()},
+                    "attn": {
+                        k: a[i, :len(enc["input_ids"][i])]
+                        for k, a in attn.items()
+                    },
+                    "gate": (
+                        None if out["gate"] is None
+                        else float(out["gate"][i].mean())
+                    ),
+                    "image_used": image_used[i],
+                })
         return results
 
-    def predict_proba(self, texts: list[str], batch_size: int = 64) -> dict[str, np.ndarray]:
-        r = self._forward(list(texts), batch_size)
+    def predict_proba(self, texts: list[str], batch_size: int = 64, image_paths=None) -> dict[str, np.ndarray]:
+        r = self._forward(list(texts), batch_size, image_paths=image_paths)
         return {t: np.stack([x["probs"][t] for x in r]) for t in r[0]["probs"]} if r else {}
 
-    def hate_probability(self, texts: list[str]) -> np.ndarray:
-        return self.predict_proba(texts)["hate"][:, 1]
+    def hate_probability(self, texts: list[str], image_paths=None) -> np.ndarray:
+        return self.predict_proba(texts, image_paths=image_paths)["hate"][:, 1]
 
     @staticmethod
     def _word_scores(attn: np.ndarray, word_ids, n_words: int) -> np.ndarray:
@@ -81,14 +160,15 @@ class ToxiFusionPipeline:
         return s
 
     # ------------------------------------------------------------------ public API
-    def predict(self, texts, explain: bool = True, top_k: int = 5, batch_size: int = 64) -> list[dict]:
+    def predict(self, texts, explain: bool = True, top_k: int = 5, batch_size: int = 64, image_paths=None) -> list[dict]:
         single = isinstance(texts, str)
         texts = [texts] if single else list(texts)
         outs = []
-        for r in self._forward(texts, batch_size):
+        for r in self._forward(texts, batch_size, image_paths=image_paths):
             nt, P = r["nt"], r["probs"]
             res: dict = {
                 "text": nt.raw, "normalized_text": nt.text,
+                "image_used": bool(r.get("image_used", False)),
                 "language": {"tags": [f"{w}/{g}" for w, g in zip(nt.words, nt.lang_tags)],
                              "code_mixing_index": round(nt.cmi, 1), "switches": nt.switches,
                              "dominant": Counter(g for g in nt.lang_tags if g in ("hi", "en")).most_common(1)[0][0] if any(g in ("hi", "en") for g in nt.lang_tags) else "unk"},

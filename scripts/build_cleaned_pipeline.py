@@ -86,7 +86,11 @@ def build_multibully_cleaned(
             hate = "hate" if str(r["Text-Label"]).strip() == "Bully" else "non_hate"
             sarcasm = "sarcastic" if str(r["Sarcasm"]).strip() == "Yes" else "not_sarcastic"
             if hate == "hate":
-                target = str(r["Target"]).strip().lower()
+                raw_target = r["Target"]
+                if pd.isna(raw_target) or str(raw_target).strip().lower() in {"", "nan", "none", "null"}:
+                    target = np.nan
+                else:
+                    target = str(raw_target).strip().lower()
                 sev_raw = str(r["Harmful-Score"]).strip()
                 sev_map = {"Harmless": "low", "Partially-Harmful": "moderate", "Very-Harmful": "high"}
                 severity = sev_map.get(sev_raw, np.nan)

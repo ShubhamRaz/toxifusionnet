@@ -1,0 +1,74 @@
+seed: 42
+experiment_name: exp1d_hingroberta_cleaned
+output_dir: runs
+data:
+  processed_path: data/cleaned/multibully_cleaned.csv
+  max_length: 128
+  val_size: 0.1
+  test_size: 0.1
+  folds_cache: data/cleaned/multibully_v2_cv_folds.csv
+  image_dir: data/raw/bully_data/bully_data
+preprocess:
+  normalize: true
+  transliterate_devanagari: true
+  demojize: true
+  expand_slang: true
+  collapse_repeats: true
+  canonical_spelling: true
+model:
+  encoder_name: l3cube-pune/hing-roberta
+  tasks:
+  - sarcasm
+  - hate
+  - target
+  - severity
+  dropout: 0.1
+  head_hidden: 256
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  detach_gate_prob: false
+  use_clip: true
+  freeze_clip: true
+  clip_model_name: openai/clip-vit-base-patch32
+loss:
+  weighting: fixed
+  weights:
+    sarcasm: 1.0
+    hate: 1.0
+    target: 1.0
+    severity: 1.0
+  class_weighting: linear_balanced
+  focal_gamma: 0.0
+  attention_lambda: 0.1
+  max_class_weight: 4.0
+  class_weight_source: multibully
+  severity_loss_type: ordinal
+  ordinal_penalty: 0.5
+rationale:
+  enabled: false
+  temperature: 0.5
+  mode: text
+  use_sarcasm_rationale: true
+train:
+  epochs: 8
+  batch_size: 64
+  encoder_lr: 5e-6
+  head_lr: 0.0005
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_clip: 1.0
+  patience: 2
+  fp16: true
+  device: auto
+  num_workers: 0
+  steps_per_epoch: 61
+  max_steps: 488
+  early_stopping: true
+labels:
+  target:
+  - individual
+  - organization
+  - community
+  - society

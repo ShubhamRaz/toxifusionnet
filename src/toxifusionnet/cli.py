@@ -73,8 +73,16 @@ def cmd_train(args):
     cfg = _load_cfg(args)
     df = pd.read_csv(cfg.data.processed_path)
     run_dir = Path(args.run_dir or Path(cfg.output_dir) / cfg.experiment_name)
-    res = train_run(cfg, df, run_dir)
-    print(json.dumps(res["test_flat"], indent=2))
+    res = train_run(cfg, df, run_dir, full_data=args.all_data)
+    if args.all_data:
+        summary_keys = (
+            "full_data_training", "train_examples", "total_steps",
+            "successful_updates", "skipped_updates", "eval_checkpoint",
+        )
+        print(json.dumps({k: res.get(k) for k in summary_keys}, indent=2))
+        print("Full-data fit completed without independent validation/test metrics.")
+    else:
+        print(json.dumps(res["test_flat"], indent=2))
     print(f"run saved in {run_dir}")
 
 
@@ -86,7 +94,19 @@ def _pipeline(args):
 def cmd_predict(args):
     pipe = _pipeline(args)
     texts = args.text or [l.rstrip("\n") for l in open(args.file, encoding="utf-8") if l.strip()]
-    for r in pipe.predict(texts, explain=not args.no_explain):
+
+    image_paths = None
+    if args.image is not None:
+        if len(args.image) != len(texts):
+            raise SystemExit(
+                f"Provide one --image entry per text: {len(texts)} text(s), "
+                f"{len(args.image)} image entry/entries. Use '-' for text-only items."
+            )
+        image_paths = [None if p == "-" else p for p in args.image]
+
+    for r in pipe.predict(
+        texts, explain=not args.no_explain, image_paths=image_paths
+    ):
         print(json.dumps(r, indent=2, ensure_ascii=False))
 
 
@@ -218,12 +238,12 @@ def build_parser():
     s.add_argument("--out", default="data/processed/dataset.csv"); s.add_argument("--val-size", type=float, default=None)
     s.add_argument("--test-size", type=float, default=None); s.add_argument("--seed", type=int, default=None)
     s.add_argument("--no-weak", action="store_true", help="do not create weak sarcasm/severity labels"); s.set_defaults(fn=cmd_prepare)
-    s = sub.add_parser("train", help="train ToxiFusionNet"); add_cfg(s); s.add_argument("--run-dir", default=None); s.set_defaults(fn=cmd_train)
+    s = sub.add_parser("train", help="train ToxiFusionNet"); add_cfg(s); s.add_argument("--run-dir", default=None); s.add_argument("--all-data", action="store_true", help="fit on every row; do not report validation/test metrics"); s.set_defaults(fn=cmd_train)
     def add_run(sp):
         sp.add_argument("--run-dir", required=True); sp.add_argument("--device", default="cpu")
 
     s = sub.add_parser("predict", help="run the full flow-chart pipeline on text"); add_run(s)
-    s.add_argument("--text", nargs="*"); s.add_argument("--file"); s.add_argument("--no-explain", action="store_true"); s.set_defaults(fn=cmd_predict)
+    s.add_argument("--text", nargs="*"); s.add_argument("--file"); s.add_argument("--image", nargs="*", default=None, help="one image path per text; use - for a text-only item"); s.add_argument("--no-explain", action="store_true"); s.set_defaults(fn=cmd_predict)
     s = sub.add_parser("baselines", help="keyword / sentiment / TF-IDF baselines"); s.add_argument("--data", default="data/processed/dataset.csv")
     s.add_argument("--out", default="runs/baselines/baselines.csv"); s.set_defaults(fn=cmd_baselines)
     s = sub.add_parser("ablate", help="train all ablation variants (and standard-transformer baseline)"); add_cfg(s)

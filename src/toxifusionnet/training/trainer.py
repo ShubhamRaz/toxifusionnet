@@ -82,14 +82,24 @@ def predictions_frame(df: pd.DataFrame, ds: HateSarcasmDataset, pred: dict) -> p
     return rows
 
 
-def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
+def train_run(cfg, df: pd.DataFrame, run_dir: str | Path, full_data: bool = False) -> dict:
     run_dir = Path(run_dir); run_dir.mkdir(parents=True, exist_ok=True)
     apply_label_config(cfg.get("labels"))   # target taxonomy must be fixed BEFORE the model / datasets are built
     set_seed(int(cfg.seed))
     device = pick_device(cfg.train.get("device", "auto"))
     tasks = list(cfg.model.tasks)
     normalizer = TextNormalizer.from_config(cfg.preprocess)
-    tr_df, va_df, te_df = (df[df.split == s].reset_index(drop=True) for s in ("train", "val", "test"))
+    if full_data:
+        # Every row participates in gradient updates. Empty evaluation partitions
+        # are deliberate: this mode must not claim an independent test score.
+        tr_df = df.reset_index(drop=True).copy()
+        va_df = df.iloc[0:0].copy().reset_index(drop=True)
+        te_df = df.iloc[0:0].copy().reset_index(drop=True)
+    else:
+        tr_df, va_df, te_df = (
+            df[df.split == s].reset_index(drop=True)
+            for s in ("train", "val", "test")
+        )
 
     # Exclude auxiliary rows whose labels across all tasks are completely masked/NaN (zero supervision)
     if "source_dataset" in tr_df.columns:
@@ -184,7 +194,7 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
     attempted_batches = 0
     skipped_updates = 0
     train_iter = iter(dl_tr)
-    use_early_stopping = bool(cfg.train.get("early_stopping", True)) and int(cfg.train.get("patience", 0)) > 0
+    use_early_stopping = (not full_data) and bool(cfg.train.get("early_stopping", True)) and int(cfg.train.get("patience", 0)) > 0
     if not use_early_stopping:
         log.info("Fixed-budget mode active: early stopping is DISABLED. Training will complete all %d planned optimizer updates.", total_steps)
 
@@ -247,18 +257,36 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
                     )
 
         epoch_loss = run_loss / max(1, epoch_successful)
-        pred = predict_loader(model, dl_va, device)
-        va_res = evaluate_predictions(predictions_frame(va_df, ds_va, pred), model.tasks)
-        score = va_res["mean_macro_f1"]
-        is_best = score > best
-        if is_best:
-            best, best_epoch, best_step, bad = score, epoch + 1, global_step, 0
-            torch.save({"state_dict": model.state_dict(), "cfg": cfg.to_dict()}, run_dir / "model.pt")
+
+        if full_data:
+            # No validation set exists in all-data mode. Save the latest completed
+            # epoch so the final checkpoint reflects the fixed training budget.
+            score = float("nan")
+            is_best = None
+            best_epoch, best_step, bad = epoch + 1, global_step, 0
+            va_res = None
+            torch.save(
+                {"state_dict": model.state_dict(), "cfg": cfg.to_dict()},
+                run_dir / "model.pt",
+            )
         else:
-            bad += 1
-            if use_early_stopping and bad >= int(cfg.train.patience):
-                log.info("early stopping at epoch %d (step %d)", epoch + 1, global_step)
-                break
+            pred = predict_loader(model, dl_va, device)
+            va_res = evaluate_predictions(
+                predictions_frame(va_df, ds_va, pred), model.tasks
+            )
+            score = va_res["mean_macro_f1"]
+            is_best = score > best
+            if is_best:
+                best, best_epoch, best_step, bad = score, epoch + 1, global_step, 0
+                torch.save(
+                    {"state_dict": model.state_dict(), "cfg": cfg.to_dict()},
+                    run_dir / "model.pt",
+                )
+            else:
+                bad += 1
+                if use_early_stopping and bad >= int(cfg.train.patience):
+                    log.info("early stopping at epoch %d (step %d)", epoch + 1, global_step)
+                    break
 
         history.append({
             "epoch": epoch + 1,
@@ -270,20 +298,55 @@ def train_run(cfg, df: pd.DataFrame, run_dir: str | Path) -> dict:
             "epoch_successful": epoch_successful,
             "epoch_skipped": epoch_skipped,
             "train_loss": epoch_loss,
-            "val_mean_macro_f1": score,
+            "val_mean_macro_f1": None if full_data else score,
             "is_best": is_best,
-            **{f"val_{k}": v for k, v in flatten_metrics(va_res).items() if k != "mean_macro_f1"},
+            **({f"val_{k}": v for k, v in flatten_metrics(va_res).items() if k != "mean_macro_f1"} if va_res is not None else {}),
             "seconds": time.time() - t0
         })
-        log.info(
-            "epoch %d (step %d/%d, attempted %d, skipped %d)  loss %.4f  val mean macro-F1 %.4f %s (%.1fs)",
-            epoch + 1, global_step, total_steps, attempted_batches, skipped_updates, epoch_loss, score,
-            "[BEST]" if is_best else "", history[-1]["seconds"]
-        )
+        if full_data:
+            log.info(
+                "epoch %d (step %d/%d, attempted %d, skipped %d) "
+                "loss %.4f [FULL-DATA FIT] (%.1fs)",
+                epoch + 1, global_step, total_steps, attempted_batches,
+                skipped_updates, epoch_loss, history[-1]["seconds"],
+            )
+        else:
+            log.info(
+                "epoch %d (step %d/%d, attempted %d, skipped %d)  loss %.4f  val mean macro-F1 %.4f %s (%.1fs)",
+                epoch + 1, global_step, total_steps, attempted_batches, skipped_updates, epoch_loss, score,
+                "[BEST]" if is_best else "", history[-1]["seconds"]
+            )
 
         if global_step >= total_steps:
             break
     pd.DataFrame(history).to_csv(run_dir / "history.csv", index=False)
+
+    if full_data:
+        # All rows were used for fitting. Do not evaluate an empty partition
+        # or emit misleading validation/test metrics.
+        results = {
+            "full_data_training": True,
+            "train_examples": int(len(tr_df)),
+            "total_steps": int(global_step),
+            "successful_updates": int(global_step),
+            "attempted_batches": int(attempted_batches),
+            "skipped_updates": int(skipped_updates),
+            "steps_budget": int(total_steps),
+            "eval_checkpoint": str(run_dir / "model.pt"),
+            "eval_checkpoint_type": "last_full_data_checkpoint",
+            "pretrained_vocab": getattr(encoder, "pretrained_vocab_stats", None),
+            "device": str(device),
+            "n_params": sum(p.numel() for p in model.parameters()),
+            "label_source": df["label_source"].iloc[0] if "label_source" in df and len(df) else None,
+            "class_balancing": balancing_meta,
+            "encoder_name": str(cfg.model.encoder_name),
+            "torch_version": torch.__version__,
+            "transformers_version": transformers.__version__,
+            "seed": int(cfg.get("seed", 42)),
+        }
+        (run_dir / "metrics.json").write_text(json.dumps(results, indent=2))
+        (run_dir / "config.yaml").write_text(yaml.safe_dump(cfg.to_dict(), sort_keys=False))
+        return results
 
     model.load_state_dict(torch.load(run_dir / "model.pt", map_location=device)["state_dict"])
     results = {
