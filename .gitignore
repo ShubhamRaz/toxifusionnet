@@ -17,5 +17,7 @@ data/cleaned/*
 !data/cleaned/*.csv
 .venv/
 .DS_Store
+*.zip
+bully_data/
 
 

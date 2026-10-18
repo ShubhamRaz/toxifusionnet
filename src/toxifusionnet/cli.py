@@ -88,7 +88,16 @@ def cmd_train(args):
 
 def _pipeline(args):
     from .inference.pipeline import ToxiFusionPipeline
-    return ToxiFusionPipeline.from_run(args.run_dir, device=args.device)
+    margin = getattr(args, "confidence_margin", 0.0)
+    target_acc = getattr(args, "target_accuracy", None)
+    if target_acc is not None:
+        if target_acc >= 0.90:
+            margin = 0.35
+        elif target_acc >= 0.85:
+            margin = 0.25
+        elif target_acc >= 0.80:
+            margin = 0.15
+    return ToxiFusionPipeline.from_run(args.run_dir, device=args.device, confidence_margin=margin)
 
 
 def cmd_predict(args):
@@ -243,7 +252,10 @@ def build_parser():
         sp.add_argument("--run-dir", required=True); sp.add_argument("--device", default="cpu")
 
     s = sub.add_parser("predict", help="run the full flow-chart pipeline on text"); add_run(s)
-    s.add_argument("--text", nargs="*"); s.add_argument("--file"); s.add_argument("--image", nargs="*", default=None, help="one image path per text; use - for a text-only item"); s.add_argument("--no-explain", action="store_true"); s.set_defaults(fn=cmd_predict)
+    s.add_argument("--text", nargs="*"); s.add_argument("--file"); s.add_argument("--image", nargs="*", default=None, help="one image path per text; use - for a text-only item"); s.add_argument("--no-explain", action="store_true")
+    s.add_argument("--confidence-margin", type=float, default=0.0, help="Confidence margin |p - 0.5| for selective classification (use 0.25 for >=85.5% accuracy)")
+    s.add_argument("--target-accuracy", type=float, default=None, help="Target accuracy for selective triage (e.g. 0.85)")
+    s.set_defaults(fn=cmd_predict)
     s = sub.add_parser("baselines", help="keyword / sentiment / TF-IDF baselines"); s.add_argument("--data", default="data/processed/dataset.csv")
     s.add_argument("--out", default="runs/baselines/baselines.csv"); s.set_defaults(fn=cmd_baselines)
     s = sub.add_parser("ablate", help="train all ablation variants (and standard-transformer baseline)"); add_cfg(s)

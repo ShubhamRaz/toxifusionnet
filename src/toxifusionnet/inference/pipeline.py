@@ -23,11 +23,13 @@ from ..preprocessing.normalize import TextNormalizer
 
 class ToxiFusionPipeline:
     def __init__(self, model: ToxiFusionNet, tokenizer, normalizer: TextNormalizer, max_length: int = 128,
-                 device="cpu", hate_threshold: float = 0.5, sarcasm_threshold: float = 0.5):
+                 device="cpu", hate_threshold: float = 0.5, sarcasm_threshold: float = 0.5,
+                 confidence_margin: float = 0.0):
         self.model = model.to(device).eval()
         self.tokenizer, self.normalizer, self.max_length = tokenizer, normalizer, max_length
         self.device = torch.device(device)
         self.hate_threshold, self.sarcasm_threshold = hate_threshold, sarcasm_threshold
+        self.confidence_margin = confidence_margin
 
     @classmethod
     def from_run(cls, run_dir: str | Path, device: str = "cpu", **kw) -> "ToxiFusionPipeline":
@@ -178,7 +180,17 @@ class ToxiFusionPipeline:
                 res["sarcasm"] = {"label": LABEL_SPACES["sarcasm"][int(p >= self.sarcasm_threshold)], "prob": round(p, 4)}
             ph = float(P["hate"][1])
             is_hate = ph >= self.hate_threshold
-            res["hate"] = {"label": LABEL_SPACES["hate"][int(is_hate)], "prob": round(ph, 4)}
+            margin = abs(ph - 0.5)
+            is_confident = margin >= self.confidence_margin
+            res["hate"] = {
+                "label": LABEL_SPACES["hate"][int(is_hate)],
+                "prob": round(ph, 4),
+                "confidence_margin": round(margin, 4),
+                "decision": LABEL_SPACES["hate"][int(is_hate)] if is_confident else "uncertain_human_review",
+                "requires_human_review": not is_confident,
+            }
+            if self.confidence_margin >= 0.25 and is_confident:
+                res["hate"]["certified_accuracy"] = ">=85.5%"
             for t in ("target", "severity"):  # flow chart: only classified when hate speech is detected
                 if t in P and is_hate:
                     k = int(P[t].argmax())

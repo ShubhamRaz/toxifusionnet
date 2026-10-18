@@ -68,5 +68,12 @@ def rebuild_encoder_from_dir(run_dir: str | Path):
     """Rebuild the (randomly initialised) encoder architecture + tokenizer saved by the trainer (no hub access needed)."""
     run_dir = Path(run_dir)
     cfg = AutoConfig.from_pretrained(run_dir / "encoder_config")
-    tok = AutoTokenizer.from_pretrained(run_dir / "tokenizer")
+    try:
+        tok = AutoTokenizer.from_pretrained(run_dir / "tokenizer")
+    except Exception:
+        from transformers import PreTrainedTokenizerFast
+        tok = PreTrainedTokenizerFast(tokenizer_file=str(run_dir / "tokenizer" / "tokenizer.json"))
+        if tok.pad_token is None:
+            tok.pad_token = "[PAD]"
+            tok.pad_token_id = 0
     return AutoModel.from_config(cfg), tok
