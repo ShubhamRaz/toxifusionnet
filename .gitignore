@@ -19,5 +19,8 @@ data/cleaned/*
 .DS_Store
 *.zip
 bully_data/
+*.safetensors
+*.bin
+models/pretrained_weights/**/*.safetensors
 
 
