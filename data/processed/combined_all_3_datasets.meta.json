@@ -1,0 +1,62 @@
+{
+  "total_records": 56907,
+  "sources": {
+    "hinglish_balanced": 48000,
+    "multibully": 5718,
+    "hot": 3189
+  },
+  "splits": {
+    "overall": {
+      "train": 39879,
+      "val": 8515,
+      "test": 8513
+    },
+    "multibully": {
+      "train": 4002,
+      "test": 858,
+      "val": 858
+    },
+    "hot": {
+      "train": 2277,
+      "val": 457,
+      "test": 455
+    },
+    "hinglish_balanced": {
+      "train": 33600,
+      "val": 7200,
+      "test": 7200
+    }
+  },
+  "labels": {
+    "target": [
+      "individual",
+      "organization",
+      "community",
+      "society"
+    ]
+  },
+  "tasks": {
+    "hate": {
+      "non_hate": 30323,
+      "hate": 26584
+    },
+    "sarcasm": {
+      "not_sarcastic": 29264,
+      "sarcastic": 26911,
+      "NaN": 732
+    },
+    "target": {
+      "NaN": 30435,
+      "individual": 7729,
+      "community": 6581,
+      "organization": 6087,
+      "society": 6075
+    },
+    "severity": {
+      "NaN": 30307,
+      "moderate": 9716,
+      "high": 8743,
+      "low": 8141
+    }
+  }
+}
