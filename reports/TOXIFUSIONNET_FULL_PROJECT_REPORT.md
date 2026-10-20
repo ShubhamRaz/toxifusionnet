@@ -147,18 +147,33 @@ A rigorous data-centric approach was undertaken across three experimental stages
                        │
                        ▼
   Stage 3: Unified Tri-Dataset Merge (N = 56,907)  <-- FINAL PRODUCTION BENCHMARK
-  ├── MultiBully (5,718): Real-world multimodal memes (Maity et al., SIGIR 2022)
-  ├── HOT Corpus (3,189): Real-world Hinglish tweets with Qwen3 pseudo-labels
-  └── Hinglish Balanced (48,000): Synthetically balanced multi-task anchor
+  ├── MultiBully (5,718): Real-world multimodal memes (Maity et al., ACM SIGIR 2022)
+  ├── HOT Corpus (3,189): Real-world Hinglish tweets (HASOC / Aggarwal et al.)
+  └── Hinglish Toxic Hate Dataset (48,000): Synthetically balanced multi-task anchor (Kaggle)
 ```
 
-### Unified Corpus Partition Table
+### 4.1 Detailed Dataset Provenance & Academic References
+
+1. **Hinglish Toxic Hate Dataset ($48,000$ rows):**
+   - **Repository:** Kaggle Dataset Repository
+   - **URL:** [https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data)
+   - **Role:** Serves as the mathematical anchor for multi-task class balancing, providing 1:1 parity between hate/non-hate ($24,000 / 24,000$), balanced benign sarcasm vs. toxic sarcasm ($12,000 / 12,000$), uniform target class distribution ($6,000$ per target category), and uniform severity ($8,000$ per level).
+
+2. **MultiBully Dataset ($5,718$ rows):**
+   - **Citation:** Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR '22), pp. 2933–2943, 2022.
+   - **Role:** Provides real-world OCR text extracted from cyberbullying and non-bullying social media memes with gold human annotations for cyberbullying, sarcasm, victim target, and harm severity.
+
+3. **HOT (Hindi Offensive Tweet) Dataset ($3,189$ rows):**
+   - **Citation:** Aggarwal et al., *"Overview of the HASOC Track at FIRE: Hate Speech and Offensive Content Identification in Indo-European Languages"*, Forum for Information Retrieval Evaluation (FIRE), 2019–2021.
+   - **Role:** Supplies authentic Twitter/X social media linguistic diversity, colloquial Hinglish spelling variations, and real-world offensive speech, augmented with structured Qwen multi-task annotations.
+
+### 4.2 Unified Corpus Partition Table
 
 | Component Source | Train ($70\%$) | Validation ($15\%$) | Test ($15\%$) | Total Posts | Role in Model Training |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Hinglish Balanced** | 33,600 | 7,200 | 7,200 | **48,000** | Balanced sarcasm disentanglement & rare-class support |
-| **MultiBully Gold** | 4,002 | 858 | 858 | **5,718** | Gold real-world meme text & natural socio-cultural phrasing |
-| **HOT Tweet Corpus**| 2,277 | 457 | 455 | **3,189** | Gold real-world social media Twitter/X vocabulary |
+| **Hinglish Balanced (Kaggle)** | 33,600 | 7,200 | 7,200 | **48,000** | Balanced sarcasm disentanglement & rare-class support |
+| **MultiBully Gold (SIGIR '22)** | 4,002 | 858 | 858 | **5,718** | Gold real-world meme text & natural socio-cultural phrasing |
+| **HOT Tweet Corpus (FIRE)** | 2,277 | 457 | 455 | **3,189** | Gold real-world social media Twitter/X vocabulary |
 | **Total Unified** | **39,879** | **8,515** | **8,513** | **56,907** | **Zero leakage; strictly stratified partitions** |
 
 ---

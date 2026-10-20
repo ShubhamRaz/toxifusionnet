@@ -57,7 +57,25 @@ ToxiFusionNet was trained and evaluated on the unified **Tri-Dataset Merge** ($N
 | **Hate Detection on Sarcastic Posts** | **`0.9699`** | — | — | — | **FNR: `3.84%`** |
 | **Hate Detection on Non-Sarcastic Posts**| **`0.9628`** | — | — | — | **FNR: `2.87%`** |
 
-*For complete training dynamics, cross-dataset split details, and ablation comparisons, see [STAGE_3_FINAL_REPORT.md](STAGE_3_FINAL_REPORT.md).*
+*For complete training dynamics, cross-dataset split details, and ablation comparisons, see [STAGE_3_FINAL_REPORT.md](STAGE_3_FINAL_REPORT.md) and [TOXIFUSIONNET_FULL_PROJECT_REPORT.md](reports/TOXIFUSIONNET_FULL_PROJECT_REPORT.md).*
+
+---
+
+## Dataset Provenance & References
+
+The unified **56,907** row corpus combines three curated sources:
+
+1. **Hinglish Toxic Hate Dataset ($48,000$ rows):**
+   - **Repository / URL:** [Kaggle: Hinglish Toxic Hate Dataset](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data)
+   - **Characteristics:** Synthetically balanced anchor corpus engineered for 1:1 balance across sarcasm ($P(\text{hate}\mid\text{sarcasm})=0.50$), all 4 target classes, and all 3 severity ratings to prevent majority-class collapse.
+
+2. **MultiBully Dataset ($5,718$ rows):**
+   - **Reference:** Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, ACM SIGIR 2022.
+   - **Characteristics:** Real-world multimodal memes with gold human annotations for cyberbullying, sarcasm, victim target, and harm score.
+
+3. **HOT (Hindi Offensive Tweet) Dataset ($3,189$ rows):**
+   - **Reference:** Aggarwal et al. / HASOC Shared Tasks on Twitter/X Hinglish offensive text detection.
+   - **Characteristics:** Real-world code-mixed Twitter/X posts, enriched with Qwen multi-task annotations for target and severity.
 
 ---
 

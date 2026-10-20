@@ -42,10 +42,15 @@ The dataset integrates three complementary data distributions into a unified sch
 
 ```
 Total Corpus: 56,907 Posts
-├── Hinglish Balanced (48,000 / 84.3%) : Balanced sarcasm disentanglement & rare target/severity warmup
-├── MultiBully        ( 5,718 / 10.1%) : Gold human-annotated multimodal meme text OCR
-└── HOT Tweets        ( 3,189 /  5.6%) : Gold human-annotated real-world Twitter/X Hinglish posts
+├── Hinglish Toxic Hate Dataset (48,000 / 84.3%) : Balanced sarcasm disentanglement (Kaggle)
+├── MultiBully                  ( 5,718 / 10.1%) : Gold human-annotated memes (SIGIR 2022)
+└── HOT Tweets                  ( 3,189 /  5.6%) : Gold human-annotated Hinglish tweets (FIRE/HASOC)
 ```
+
+### Dataset Citations & Provenance
+1. **Hinglish Toxic Hate Dataset ($48,000$ rows):** [Kaggle Dataset Link](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data). Curated balanced dataset providing 1:1 multi-task parity and sarcasm disentanglement.
+2. **MultiBully Dataset ($5,718$ rows):** Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, ACM SIGIR 2022. Real-world meme text with gold cyberbullying, sarcasm, target, and severity tags.
+3. **HOT Tweet Corpus ($3,189$ rows):** Aggarwal et al. / HASOC (FIRE 2019-2021). Real-world code-mixed Twitter/X posts enriched with Qwen annotations.
 
 ### Disjoint Split Isolation
 
