@@ -160,11 +160,15 @@ A rigorous data-centric approach was undertaken across three experimental stages
    - **Role:** Serves as the mathematical anchor for multi-task class balancing, providing 1:1 parity between hate/non-hate ($24,000 / 24,000$), balanced benign sarcasm vs. toxic sarcasm ($12,000 / 12,000$), uniform target class distribution ($6,000$ per target category), and uniform severity ($8,000$ per level).
 
 2. **MultiBully Dataset ($5,718$ rows):**
+   - **Repository:** Kaggle Dataset Repository
+   - **URL:** [https://www.kaggle.com/datasets/pranee5/multi-bully](https://www.kaggle.com/datasets/pranee5/multi-bully)
    - **Citation:** Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR '22), pp. 2933–2943, 2022.
    - **Role:** Provides real-world OCR text extracted from cyberbullying and non-bullying social media memes with gold human annotations for cyberbullying, sarcasm, victim target, and harm severity.
 
 3. **HOT (Hindi Offensive Tweet) Dataset ($3,189$ rows):**
-   - **Citation:** Aggarwal et al., *"Overview of the HASOC Track at FIRE: Hate Speech and Offensive Content Identification in Indo-European Languages"*, Forum for Information Retrieval Evaluation (FIRE), 2019–2021.
+   - **Repository:** GitHub Repository
+   - **URL:** [https://github.com/ramitsawhney27/OffensiveHinglishTweetClassification/blob/master/HOT_Dataset_modified.csv](https://github.com/ramitsawhney27/OffensiveHinglishTweetClassification/blob/master/HOT_Dataset_modified.csv)
+   - **Reference Project:** Ramit Sawhney et al., *Offensive Hinglish Tweet Classification*.
    - **Role:** Supplies authentic Twitter/X social media linguistic diversity, colloquial Hinglish spelling variations, and real-world offensive speech, augmented with structured Qwen multi-task annotations.
 
 ### 4.2 Unified Corpus Partition Table

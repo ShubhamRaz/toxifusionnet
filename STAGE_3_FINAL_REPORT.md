@@ -48,9 +48,9 @@ Total Corpus: 56,907 Posts
 ```
 
 ### Dataset Citations & Provenance
-1. **Hinglish Toxic Hate Dataset ($48,000$ rows):** [Kaggle Dataset Link](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data). Curated balanced dataset providing 1:1 multi-task parity and sarcasm disentanglement.
-2. **MultiBully Dataset ($5,718$ rows):** Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, ACM SIGIR 2022. Real-world meme text with gold cyberbullying, sarcasm, target, and severity tags.
-3. **HOT Tweet Corpus ($3,189$ rows):** Aggarwal et al. / HASOC (FIRE 2019-2021). Real-world code-mixed Twitter/X posts enriched with Qwen annotations.
+1. **Hinglish Toxic Hate Dataset ($48,000$ rows):** [Kaggle: Hinglish Toxic Hate Dataset](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data). Curated balanced dataset providing 1:1 multi-task parity and sarcasm disentanglement.
+2. **MultiBully Dataset ($5,718$ rows):** [Kaggle: Multi-Bully Dataset](https://www.kaggle.com/datasets/pranee5/multi-bully). Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, ACM SIGIR 2022. Real-world meme text with gold cyberbullying, sarcasm, target, and severity tags.
+3. **HOT Tweet Corpus ($3,189$ rows):** [GitHub: HOT_Dataset_modified.csv](https://github.com/ramitsawhney27/OffensiveHinglishTweetClassification/blob/master/HOT_Dataset_modified.csv). Ramit Sawhney et al. Real-world code-mixed Twitter/X posts enriched with Qwen annotations.
 
 ### Disjoint Split Isolation
 
