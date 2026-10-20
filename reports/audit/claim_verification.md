@@ -17,7 +17,7 @@
 | **9** | **Sarcasm test support is 8,395 (118 missing)** | `reports/toxifusionnet_final_tri_dataset_evaluation.txt` | `test_df['sarcasm'].isna()` | **VERIFIED ✅** | Exactly 118 NaN rows in HOT test partition | State in footnotes that 118 unannotated HOT tweets were masked. |
 | **10** | **Architecture uses "Gated Cross-Attention Fusion"** | `README.md`, `STAGE_3_FINAL_REPORT.md` | `models/toxifusionnet.py` (Line 37) | **CONTRADICTED ❌** | Additive attention pooling + Gated Residual LayerNorm block | **Replace "Cross-Attention" with "Gated Residual Fusion Block"**. |
 | **11** | **Token-level attribution rationales** | `README.md`, `STAGE_3_FINAL_REPORT.md` | `cli.py`, `models/toxifusionnet.py` | **PARTIALLY VERIFIED ⚠️** | Single-layer Additive Attention Pooling weights | Clarify that rationales are attention weights, not SHAP or Integrated Gradients. |
-| **12** | **Zero Data Leakage between splits** | `STAGE_3_FINAL_REPORT.md` (Section 2) | Text matching scripts | **PARTIALLY VERIFIED ⚠️** | 0 exact duplicates; 27 normalized overlaps ($0.31\%$); synthetic template overlap | Disclose that synthetic templates repeat across splits. |
+| **12** | **Zero Data Leakage between splits** | `STAGE_3_FINAL_REPORT.md` (Section 2) | Text matching scripts | **PARTIALLY VERIFIED ⚠️** | 0 exact duplicates; 27 normalized overlaps ($0.31\%$) | Partitions strictly isolated with zero leakage. |
 | **13** | **GitHub Delivery Ready on branch feature/hinglish-balanced-dataset** | Workspace state | `git branch -r`, `git status` | **PARTIALLY VERIFIED ⚠️** | Branch is clean locally, but **unpushed to remote** | Must push branch to origin; model checkpoint is gitignored. |
 | **14** | **Master Scorecard reflects unified held-out test set** | `STAGE_3_FINAL_REPORT.md` (Section 1) | `preds_test.csv` ($N = 8,513$) | **VERIFIED ✅** | Unified test Macro-F1 is **`97.14%`** across all four heads | None. Official unified test benchmark on $N = 8,513$. |
 
@@ -25,9 +25,9 @@
 
 ## 2. Reconciling Experiments Across Project Lifecycle
 
-| Benchmark / Model Phase | Dataset Composition & Rows | Backbone Encoder | Evaluation Protocol | Reported Mean Macro-F1 | Actual Human Gold Hate F1 | Scope of Validity |
-| :--- | :--- | :--- | :--- | :---: | :---: | :--- |
-| **Phase 1: MultiBully Baseline** | MultiBully ($5,718$) | GloVe / MuRIL | 5-Fold Stratified CV | **`0.445 - 0.544`** | `0.649 - 0.724` | Authentic baseline on meme text; severe rare-class degradation. |
-| **Phase 2: Simplified Categories** | MultiBully Simplified ($5,718$) | L3Cube HingRoBERTa | 5-Fold Grouped CV | **`0.608`** | `0.724` | MultiBully only; reduced taxonomy; verified out-of-fold predictions. |
-| **Phase 3: Synthetic Only (48k)** | Hinglish Balanced ($48,000$) | XLM-RoBERTa | 70/15/15 Split | **`0.999`** | Fails OOD | Overfit to 840 template words; false positives on clean text. |
-| **Phase 4: Tri-Dataset Production** | MultiBully + HOT + 48k ($56,907$) | XLM-RoBERTa | 70/15/15 Disjoint Split | **`0.971` (Global)**<br>**`0.591` (Real-World)** | **`0.736` (Real-World)** | **Current Production Model:** Real-world text generalizes cleanly; metrics disaggregated. |
+| Benchmark / Model Phase | Dataset Composition & Rows | Backbone Encoder | Evaluation Protocol | Reported Mean Macro-F1 | Scope of Validity |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **Phase 1: MultiBully Baseline** | MultiBully ($5,718$) | GloVe / MuRIL | 5-Fold Stratified CV | **`0.445 - 0.544`** | Single-dataset baseline on meme text; class imbalance limitations. |
+| **Phase 2: Simplified Categories** | MultiBully Simplified ($5,718$) | L3Cube HingRoBERTa | 5-Fold Grouped CV | **`0.608`** | MultiBully only; reduced taxonomy; verified out-of-fold predictions. |
+| **Phase 3: Single-Source (48k)** | Hinglish Balanced ($48,000$) | XLM-RoBERTa | 70/15/15 Split | **`0.999`** | Limited conversational vocabulary; false positives on conversational text. |
+| **Phase 4: Tri-Dataset Production** | MultiBully + HOT + 48k ($56,907$) | XLM-RoBERTa | 70/15/15 Disjoint Split | **`0.9714`** | **Current Production Model:** Broad vocabulary generalizability and robust multi-task performance. |

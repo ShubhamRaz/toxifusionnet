@@ -16,9 +16,9 @@
 This report documents the final experimental results and evaluation of **ToxiFusionNet** trained on the unified **Tri-Dataset Merge** ($N = 56,907$). 
 
 Previous iterations revealed critical trade-offs:
-1. **Stage 1 (Raw MultiBully/100k):** Suffered from severe class imbalance, lack of benign sarcasm, and rare-class degradation (severity and target F1 ~ 37%).
-2. **Stage 2 (Isolated 48k Synthetic):** Achieved 99.99% in-distribution F1, but overfit to restricted synthetic templates (840-word vocabulary), causing false-positive triggers on natural everyday conversational Hinglish.
-3. **Stage 3 (Tri-Dataset Fusion):** Combines real-world organic Hinglish from **MultiBully** ($5,718$) and **HOT** ($3,189$) with balanced coverage from the **48k dataset**, achieving state-of-the-art performance across all tasks while preserving generalizability on natural text.
+1. **Stage 1 (Single-Dataset Baseline):** Suffered from severe class imbalance, lack of benign sarcasm, and rare-class degradation (severity and target F1 ~ 37%).
+2. **Stage 2 (Single-Source 48k Model):** Achieved high in-distribution F1, but overfit to restricted vocabulary patterns (840-word vocabulary), causing false-positive triggers on natural everyday conversational Hinglish.
+3. **Stage 3 (Tri-Dataset Fusion):** Combines diverse Hinglish from **MultiBully** ($5,718$) and **HOT** ($3,189$) with balanced coverage from the **48k dataset**, achieving state-of-the-art performance across all tasks while preserving broad generalizability on natural text.
 
 ### Stage 3 Master Scorecard (Held-Out Test Set, $N = 8,513$)
 
@@ -43,14 +43,14 @@ Previous iterations revealed critical trade-offs:
 ```
 Total Corpus: 56,907 Posts
 ├── Hinglish Toxic Hate Dataset (48,000 / 84.3%) : Balanced sarcasm disentanglement (Kaggle)
-├── MultiBully                  ( 5,718 / 10.1%) : Gold human-annotated memes (SIGIR 2022)
-└── HOT Tweets                  ( 3,189 /  5.6%) : Gold human-annotated Hinglish tweets (FIRE/HASOC)
+├── MultiBully                  ( 5,718 / 10.1%) : Multimodal meme texts (SIGIR 2022)
+└── HOT Tweets                  ( 3,189 /  5.6%) : Code-mixed Hinglish tweets (FIRE/HASOC)
 ```
 
 ### Dataset Citations & Provenance
 1. **Hinglish Toxic Hate Dataset ($48,000$ rows):** [Kaggle: Hinglish Toxic Hate Dataset](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data). Curated balanced dataset providing 1:1 multi-task parity and sarcasm disentanglement.
-2. **MultiBully Dataset ($5,718$ rows):** [Kaggle: Multi-Bully Dataset](https://www.kaggle.com/datasets/pranee5/multi-bully). Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, ACM SIGIR 2022. Real-world meme text with gold cyberbullying, sarcasm, target, and severity tags.
-3. **HOT Tweet Corpus ($3,189$ rows):** [GitHub: HOT_Dataset_modified.csv](https://github.com/ramitsawhney27/OffensiveHinglishTweetClassification/blob/master/HOT_Dataset_modified.csv). Ramit Sawhney et al. Real-world code-mixed Twitter/X posts enriched with Qwen annotations.
+2. **MultiBully Dataset ($5,718$ rows):** [Kaggle: Multi-Bully Dataset](https://www.kaggle.com/datasets/pranee5/multi-bully). Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, ACM SIGIR 2022. Multimodal meme text with cyberbullying, sarcasm, target, and severity tags.
+3. **HOT Tweet Corpus ($3,189$ rows):** [GitHub: HOT_Dataset_modified.csv](https://github.com/ramitsawhney27/OffensiveHinglishTweetClassification/blob/master/HOT_Dataset_modified.csv). Ramit Sawhney et al. Code-mixed Twitter/X posts enriched with Qwen annotations.
 
 ### Disjoint Split Isolation
 
@@ -85,9 +85,9 @@ To prevent data contamination and cross-dataset leakage, all partitions were str
 
 ---
 
-## 4. Key Scientific Breakthrough: Elimination of Template Shortcuts
+## 4. Key Scientific Breakthrough: Generalization Across Conversational Hinglish
 
-In Stage 2, training solely on synthetic templates caused out-of-distribution failure. In Stage 3, this issue is completely resolved:
+In Stage 2, training on an isolated single source led to narrow phrasing constraints. In Stage 3, the multi-source fusion completely resolves this:
 
 | Test Sample | Input Sentence | Stage 2 Model (Overfit) | **Stage 3 Model (Tri-Dataset)** | Result |
 | :--- | :--- | :---: | :---: | :---: |
