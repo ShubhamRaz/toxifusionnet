@@ -1,0 +1,48 @@
+{
+  "total_records": 8907,
+  "sources": {
+    "multibully": 5718,
+    "hot": 3189
+  },
+  "splits": {
+    "overall": {
+      "train": 6279,
+      "val": 1315,
+      "test": 1313
+    },
+    "multibully": {
+      "train": 4002,
+      "test": 858,
+      "val": 858
+    },
+    "hot": {
+      "train": 2277,
+      "val": 457,
+      "test": 455
+    }
+  },
+  "tasks": {
+    "hate": {
+      "non_hate": 6323,
+      "hate": 2584
+    },
+    "sarcasm": {
+      "not_sarcastic": 5264,
+      "sarcastic": 2911,
+      "NaN": 732
+    },
+    "target": {
+      "NaN": 6435,
+      "individual": 1729,
+      "community": 581,
+      "organization": 87,
+      "society": 75
+    },
+    "severity": {
+      "NaN": 6307,
+      "moderate": 1716,
+      "high": 743,
+      "low": 141
+    }
+  }
+}
