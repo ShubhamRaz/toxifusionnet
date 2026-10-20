@@ -138,21 +138,17 @@ case "$EXP" in
     exp4)
         run_exp configs/exp4_multidataset_clip.yaml
         ;;
+    tri_dataset)
+        run_exp configs/combined_all_3_datasets.yaml
+        ;;
     all)
-        echo "Running canonical weighted benchmark experiments (E1d, E6b)..."
-        run_cv_exp configs/exp1d_multibully_text_weighted.yaml results/v3_journal_final/e1d_text_weighted
-        python -m toxifusionnet.cli cv --config configs/exp6b_combined_text_gold_weighted.yaml \
-            --data data/processed/multibully.csv \
-            --aux-data data/processed/hot_gold_only.csv \
-            --folds-cache data/processed/multibully_v2_cv_folds.csv \
-            --out-dir results/v3_journal_final/e6b_text_gold_weighted \
-            --folds 5 \
-            --seed 42
+        echo "Running production Stage 3 Tri-Dataset training..."
+        run_exp configs/combined_all_3_datasets.yaml
         echo ""
         echo "All experiments completed successfully!"
         ;;
     *)
-        echo "Usage: bash run_supercomputer.sh [cv_e1d|cv_e6b|validate|smoke|cv_e1|cv_e3|cv_e5|cv_all|all]"
+        echo "Usage: bash run_supercomputer.sh [tri_dataset|all]"
         exit 1
         ;;
 esac

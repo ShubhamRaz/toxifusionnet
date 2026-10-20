@@ -1,38 +1,49 @@
+# One-click launch script to train ToxiFusionNet from scratch on the unified Tri-Dataset
 $ErrorActionPreference = "Stop"
-Set-Location "c:/Users/SHUBHAM RAJ/Desktop/Others/Toxic/toxifusionnet/toxifusionnet"
-.\.venv\Scripts\activate
+
+Write-Host "==========================================================" -ForegroundColor Cyan
+Write-Host " ToxiFusionNet: End-to-End Training from Scratch          " -ForegroundColor Cyan
+Write-Host "==========================================================" -ForegroundColor Cyan
+
+# 1. Activate Virtual Environment
+if (Test-Path ".\.venv\Scripts\Activate.ps1") {
+    Write-Host "[1/4] Activating virtual environment..." -ForegroundColor Green
+    .\.venv\Scripts\Activate.ps1
+} elseif (Test-Path ".\.venv\Scripts\activate.bat") {
+    Write-Host "[1/4] Activating virtual environment..." -ForegroundColor Green
+    cmd /c .\.venv\Scripts\activate.bat
+} else {
+    Write-Host "[1/4] Creating virtual environment (.venv)..." -ForegroundColor Yellow
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    Write-Host "Installing dependencies..." -ForegroundColor Yellow
+    pip install -e .
+}
+
 $env:PYTHONPATH="src"
 
-$CFG="configs/multibully.yaml"
-$RAW="data/raw/multibully.csv"
-$DATA="data/processed/multibully.csv"
-$OUT="runs/multibully"
-$RUN="$OUT/full/seed42"
+# 2. Check Hardware / Device
+Write-Host "[2/4] Detecting compute hardware..." -ForegroundColor Green
+python -c "import torch; dev = 'CUDA: ' + torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU (No GPU detected)'; print('Compute Device:', dev)"
 
-Write-Host "Preparing data..." -ForegroundColor Green
-python -m toxifusionnet.cli prepare --schema configs/schema_multibully.yaml --raw $RAW --out $DATA
-python -m toxifusionnet.cli describe --data $DATA --out results/data_report.md
-python -m toxifusionnet.cli baselines --data $DATA --out results/baselines.csv
+# 3. Train from Scratch
+$CONFIG = "configs/combined_all_3_datasets.yaml"
+$OUT = "runs/exp_tri_dataset_xlmr"
 
-Write-Host "Training models (this will take a while, you will see progress per epoch)..." -ForegroundColor Green
-python -m toxifusionnet.cli ablate --config $CFG --override model.encoder_name=google/muril-base-cased --out-dir $OUT --seeds 42
+Write-Host "[3/4] Launching training with config: $CONFIG..." -ForegroundColor Green
+Write-Host "      Trained checkpoint will be saved to: $OUT" -ForegroundColor Gray
+python -m toxifusionnet.cli train --config $CONFIG
 
-Write-Host "Running robustness checks..." -ForegroundColor Green
-python -m toxifusionnet.cli robust --run-dir $RUN --data $DATA --device cuda
+# 4. Verify Model with Sample Predictions
+Write-Host "[4/4] Verifying trained model with sample predictions..." -ForegroundColor Green
+python -m toxifusionnet.cli predict `
+    --run-dir $OUT `
+    --text "Congrats bro, strict diet ke beech spicy golgappe ne prove kar diya ki hope pe world kayam hai" `
+           "Saale ye lobby ke log itna disgusting aur pathetic harkat karta hai" `
+           "Aloo paratha bahut tasty tha yaar"
 
-Write-Host "Generating explanations..." -ForegroundColor Green
-python -m toxifusionnet.cli explain --run-dir $RUN --data $DATA --device cuda
-
-Write-Host "Benchmarking speed..." -ForegroundColor Green
-python -m toxifusionnet.cli bench --run-dir $RUN --device cpu
-
-Write-Host "Generating figures..." -ForegroundColor Green
-python -m toxifusionnet.cli figures --run-dir $RUN
-
-Write-Host "Running Cross-Validation (this will train 5 more models)..." -ForegroundColor Green
-python -m toxifusionnet.cli cv --config $CFG --override model.encoder_name=google/muril-base-cased --data $DATA --out-dir "$OUT/cv"
-
-Write-Host "Generating final report..." -ForegroundColor Green
-python -m toxifusionnet.cli report --run-dir $RUN --ablation-dir $OUT --baselines results/baselines.csv --data-report results/data_report.md --cv-dir "$OUT/cv" --out results/RESULTS.md
-
-Write-Host "Done! Check results/RESULTS.md for the final metrics." -ForegroundColor Green
+Write-Host "==========================================================" -ForegroundColor Cyan
+Write-Host " Training & Verification Complete!                        " -ForegroundColor Cyan
+Write-Host " Master Report: STAGE_3_FINAL_REPORT.md                   " -ForegroundColor Cyan
+Write-Host " Checkpoints & Metrics: $OUT                              " -ForegroundColor Cyan
+Write-Host "==========================================================" -ForegroundColor Cyan
