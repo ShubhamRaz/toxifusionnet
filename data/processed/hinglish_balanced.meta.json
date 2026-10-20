@@ -1,0 +1,19 @@
+{
+  "labels": {
+    "target": [
+      "individual",
+      "organization",
+      "community",
+      "society"
+    ]
+  },
+  "schema_file": "configs/schema_hinglish_balanced.yaml",
+  "split": {
+    "train_size": 0.7,
+    "val_size": 0.15,
+    "test_size": 0.15,
+    "seed": 42
+  },
+  "raw_file": "c:\\Users\\SHUBHAM RAJ\\Desktop\\Others\\Toxic\\toxifusionnet\\toxifusionnet\\data\\raw\\hinglish_toxicity_cleaned_balanced.csv",
+  "n_rows": 48000
+}
