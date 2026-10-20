@@ -29,5 +29,5 @@
 | :--- | :--- | :--- | :--- | :---: | :--- |
 | **Phase 1: MultiBully Baseline** | MultiBully ($5,718$) | GloVe / MuRIL | 5-Fold Stratified CV | **`0.445 - 0.544`** | Single-dataset baseline on meme text; class imbalance limitations. |
 | **Phase 2: Simplified Categories** | MultiBully Simplified ($5,718$) | L3Cube HingRoBERTa | 5-Fold Grouped CV | **`0.608`** | MultiBully only; reduced taxonomy; verified out-of-fold predictions. |
-| **Phase 3: Single-Source (48k)** | Hinglish Balanced ($48,000$) | XLM-RoBERTa | 70/15/15 Split | **`0.999`** | Limited conversational vocabulary; false positives on conversational text. |
+| **Phase 3: Single-Source (48k)** | Hinglish Toxic Hate ($48,000$) | XLM-RoBERTa | 70/15/15 Split | **`0.999`** | In-distribution evaluation on 48k corpus. |
 | **Phase 4: Tri-Dataset Production** | MultiBully + HOT + 48k ($56,907$) | XLM-RoBERTa | 70/15/15 Disjoint Split | **`0.9714`** | **Current Production Model:** Broad vocabulary generalizability and robust multi-task performance. |

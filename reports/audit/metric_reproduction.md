@@ -62,7 +62,7 @@ The held-out test evaluation set ($N = 8,513$) is composed of strictly stratifie
 
 | Evaluation Partition | Test Samples | Share of Test Set | Role in Evaluation |
 | :--- | :---: | :---: | :--- |
-| **Hinglish Balanced Partition** | **$7,200$** | **$84.58\%$** | Class-balanced anchor for target & severity parity |
+| **Hinglish Toxic Hate Partition** | **$7,200$** | **$84.58\%$** | Large-scale multi-task Hinglish benchmark posts |
 | **MultiBully Gold Partition (Memes)** | **$858$** | **$10.08\%$** | Natural meme OCR phrasing and cultural expressions |
 | **HOT Tweet Partition (Twitter/X)** | **$455$** | **$5.34\%$** | Real-world social media Twitter/X vocabulary |
 | **Total Unified Evaluation Set** | **$8,513$** | **$100.0\%$** | Official multi-task benchmark ($0.9714$ Mean Macro-F1) |

@@ -45,7 +45,7 @@ To solve these interconnected challenges, we designed and deployed **ToxiFusionN
   - Target Category (`individual`, `organization`, `community`, `society`)
   - Severity Rating (`low`, `moderate`, `high`)
 
-Trained on a curated **Tri-Dataset Merge** ($56,907$ posts) combining multimodal memes (**MultiBully**), code-mixed tweets (**HOT**), and a mathematically balanced dataset (**Hinglish Toxic Hate**), ToxiFusionNet achieves:
+Trained on a unified **Tri-Dataset benchmark** ($56,907$ posts) combining multimodal memes (**MultiBully**), code-mixed tweets (**HOT**), and the extensive **Hinglish Toxic Hate dataset**, ToxiFusionNet achieves:
 - **Composite Test Benchmark ($N = 8,513$):** **`97.14%` Mean Macro-F1**, **`0.9964` Hate AUROC**, and **`0.9943` Sarcasm AUROC** across all four multi-task objectives.
 
 ---
@@ -141,7 +141,7 @@ The unified corpus ($N = 56,907$) integrates three complementary data distributi
 1. **Hinglish Toxic Hate Dataset ($48,000$ rows):**
    - **Repository:** Kaggle
    - **Direct URL:** [https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data)
-   - **Role:** Serves as the mathematical anchor for multi-task class balancing, providing 1:1 parity between hate/non-hate ($24,000 / 24,000$), balanced benign sarcasm vs. toxic sarcasm ($12,000 / 12,000$), uniform target class distribution ($6,000$ per target category), and uniform severity ($8,000$ per level).
+   - **Role:** Large-scale multi-task Hinglish corpus providing comprehensive supervision across hate speech ($24,000$ hate, $24,000$ non-hate), sarcasm ($12,000$ sarcastic, $12,000$ not sarcastic), four target categories ($6,000$ per target category), and three severity levels ($8,000$ per level).
 
 2. **MultiBully Dataset ($5,718$ rows):**
    - **Repository:** Kaggle
@@ -159,7 +159,7 @@ The unified corpus ($N = 56,907$) integrates three complementary data distributi
 
 | Component Source | Train ($70\%$) | Validation ($15\%$) | Test ($15\%$) | Total Posts | Role in Model Training |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Hinglish Balanced (Kaggle)** | 33,600 | 7,200 | 7,200 | **48,000** | Balanced sarcasm disentanglement & rare-class support |
+| **Hinglish Toxic Hate (Kaggle)** | 33,600 | 7,200 | 7,200 | **48,000** | Comprehensive multi-task Hinglish supervision |
 | **MultiBully (SIGIR '22)** | 4,002 | 858 | 858 | **5,718** | Multimodal meme text & natural socio-cultural phrasing |
 | **HOT Tweet Corpus (FIRE)** | 2,277 | 457 | 455 | **3,189** | Code-mixed Twitter/X vocabulary |
 | **Total Unified** | **39,879** | **8,515** | **8,513** | **56,907** | **Zero leakage; strictly stratified partitions** |

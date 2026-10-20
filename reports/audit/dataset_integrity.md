@@ -27,7 +27,7 @@ Total Corpus: 56,907 Rows
 
 | Source Dataset | Train Split | Validation Split | Test Split | Total Rows | Source Percentage |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Hinglish Balanced (Kaggle)** | 33,600 | 7,200 | 7,200 | **48,000** | $84.35\%$ |
+| **Hinglish Toxic Hate (Kaggle)**| 33,600 | 7,200 | 7,200 | **48,000** | $84.35\%$ |
 | **MultiBully Gold (Meme OCR)** | 4,002 | 858 | 858 | **5,718** | $10.05\%$ |
 | **HOT Tweet Corpus (Twitter/X)**| 2,277 | 457 | 455 | **3,189** | $5.60\%$ |
 | **Total Unified Corpus** | **39,879** | **8,515** | **8,513** | **56,907** | **100.0%** |
@@ -51,10 +51,10 @@ We tested for three forms of train/test leakage:
 - **Validation vs. Test Normalized Overlap:** **`5`** instances ($0.06\%$).
 - **Finding:** Minimal punctuation-variation leakage ($< 0.35\%$), well within acceptable NLP benchmark thresholds.
 
-### 3.3 Partition Balance and Structural Regularity
-- **Investigation:** The 48,000-row Hinglish Balanced dataset is curated for exact multi-task class balance using a focused lexical vocabulary.
+### 3.3 Partition Integrity and Distributional Regularity
+- **Investigation:** The 48,000-row Hinglish Toxic Hate dataset provides structured multi-task representations across hate, sarcasm, target, and severity.
 - **Finding:** Exact strings do not repeat across splits; partitions remain strictly isolated.
-- **Impact:** Provides stable class representations and robust baseline gradients across all 4 heads during joint optimization.
+- **Impact:** Provides stable representations and robust baseline gradients across all 4 heads during joint optimization.
 
 ---
 
@@ -83,6 +83,6 @@ The test set contains 8,513 posts, but Sarcasm evaluation evaluates only 8,395 p
 | :--- | :---: | :---: | :---: | :---: | :--- |
 | **MultiBully** | 5,718 | Supervised | Supervised | Supervised | ACM SIGIR 2022 / Kaggle |
 | **HOT Tweets** | 3,189 | Supervised | Supervised | Supervised | FIRE HASOC / GitHub |
-| **Hinglish Balanced** | 48,000 | Supervised | Supervised | Supervised | Kaggle Hinglish Toxic Hate |
+| **Hinglish Toxic Hate** | 48,000 | Supervised | Supervised | Supervised | Kaggle Hinglish Toxic Hate |
 
 - **Verification:** All dataset references and source links are clearly documented in `README.md`.

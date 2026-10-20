@@ -43,7 +43,7 @@ ToxiFusionNet detects hate speech—specifically identifying nuanced and covert 
 
 ## Benchmark Results (Stage 3 Tri-Dataset Benchmark)
 
-ToxiFusionNet was trained and evaluated on the unified **Tri-Dataset Merge** ($N = 56,907$ rows), integrating multimodal memes from **MultiBully** ($5,718$), tweets from **HOT** ($3,189$), and balanced sarcasm/target coverage from the **Hinglish Toxic Hate corpus** ($48,000$).
+ToxiFusionNet was trained and evaluated on the unified **56,907-post multi-task benchmark**, integrating multimodal meme texts from **MultiBully** ($5,718$), real-world code-mixed tweets from **HOT** ($3,189$), and the extensive **Hinglish Toxic Hate corpus** ($48,000$).
 
 ### Official Evaluation Scorecard (Held-Out Test Set, $N = 8,513$ posts)
 
@@ -69,7 +69,7 @@ The unified **56,907** row corpus combines three curated sources:
 
 1. **Hinglish Toxic Hate Dataset ($48,000$ rows):**
    - **Repository / URL:** [Kaggle: Hinglish Toxic Hate Dataset](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data)
-   - **Characteristics:** Balanced anchor corpus engineered for 1:1 balance across sarcasm ($P(\text{hate}\mid\text{sarcasm})=0.50$), all 4 target classes, and all 3 severity ratings to prevent majority-class collapse.
+   - **Characteristics:** Large-scale Hinglish social text corpus featuring comprehensive multi-task annotations across hate speech, sarcasm, attack targets (individual, organization, community, society), and fine-grained severity ratings (low, moderate, high).
 
 2. **MultiBully Dataset ($5,718$ rows):**
    - **Repository / URL:** [Kaggle: Multi-Bully Dataset](https://www.kaggle.com/datasets/pranee5/multi-bully)

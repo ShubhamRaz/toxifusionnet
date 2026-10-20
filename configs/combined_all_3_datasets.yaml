@@ -1,5 +1,5 @@
-# Experiment: ToxiFusionNet on Tri-Dataset Merge (MultiBully + HOT + Hinglish Balanced, 56.9k)
-# Evaluates unified training across real-world memes, social tweets, and balanced Hinglish
+# Experiment: ToxiFusionNet on Tri-Dataset Merge (MultiBully + HOT + Hinglish Toxic Hate, 56.9k)
+# Evaluates unified training across real-world memes, social tweets, and extensive Hinglish text
 experiment_name: exp_tri_dataset_xlmr
 data:
   processed_path: data/processed/combined_all_3_datasets.csv

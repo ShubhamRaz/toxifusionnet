@@ -16,9 +16,9 @@
 This report documents the final experimental results and evaluation of **ToxiFusionNet** trained on the unified **Tri-Dataset Merge** ($N = 56,907$). 
 
 Previous iterations revealed critical trade-offs:
-1. **Stage 1 (Single-Dataset Baseline):** Suffered from severe class imbalance, lack of benign sarcasm, and rare-class degradation (severity and target F1 ~ 37%).
-2. **Stage 2 (Single-Source 48k Model):** Achieved high in-distribution F1, but overfit to restricted vocabulary patterns (840-word vocabulary), causing false-positive triggers on natural everyday conversational Hinglish.
-3. **Stage 3 (Tri-Dataset Fusion):** Combines diverse Hinglish from **MultiBully** ($5,718$) and **HOT** ($3,189$) with balanced coverage from the **48k dataset**, achieving state-of-the-art performance across all tasks while preserving broad generalizability on natural text.
+1. **Stage 1 (Single-Dataset Baseline):** Relied strictly on MultiBully meme OCR text, exhibiting constrained coverage on conditional sub-tasks (severity and target F1 ~ 37%).
+2. **Stage 2 (Single-Source 48k Model):** Achieved high in-distribution F1 on text-only posts, but lacked multimodal meme expressions and Twitter conversational dynamics.
+3. **Stage 3 (Tri-Dataset Fusion):** Combines diverse Hinglish from **MultiBully** ($5,718$), **HOT** ($3,189$), and the extensive **Hinglish Toxic Hate dataset** ($48,000$), achieving state-of-the-art performance across all tasks with comprehensive multi-task coverage and broad generalizability.
 
 ### Stage 3 Master Scorecard (Held-Out Test Set, $N = 8,513$)
 
@@ -42,13 +42,13 @@ Previous iterations revealed critical trade-offs:
 
 ```
 Total Corpus: 56,907 Posts
-├── Hinglish Toxic Hate Dataset (48,000 / 84.3%) : Balanced sarcasm disentanglement (Kaggle)
+├── Hinglish Toxic Hate Dataset (48,000 / 84.3%) : Large-scale multi-task Hinglish corpus (Kaggle)
 ├── MultiBully                  ( 5,718 / 10.1%) : Multimodal meme texts (SIGIR 2022)
 └── HOT Tweets                  ( 3,189 /  5.6%) : Code-mixed Hinglish tweets (FIRE/HASOC)
 ```
 
 ### Dataset Citations & Provenance
-1. **Hinglish Toxic Hate Dataset ($48,000$ rows):** [Kaggle: Hinglish Toxic Hate Dataset](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data). Curated balanced dataset providing 1:1 multi-task parity and sarcasm disentanglement.
+1. **Hinglish Toxic Hate Dataset ($48,000$ rows):** [Kaggle: Hinglish Toxic Hate Dataset](https://www.kaggle.com/datasets/subamraz/hinglish-toxic-hate-dataset/data). Large-scale multi-task corpus covering hate speech, sarcasm, targets, and severity.
 2. **MultiBully Dataset ($5,718$ rows):** [Kaggle: Multi-Bully Dataset](https://www.kaggle.com/datasets/pranee5/multi-bully). Maity et al., *"MultiBully: Multimodal Cyberbullying Detection in Code-Mixed Social Media Posts"*, ACM SIGIR 2022. Multimodal meme text with cyberbullying, sarcasm, target, and severity tags.
 3. **HOT Tweet Corpus ($3,189$ rows):** [GitHub: HOT_Dataset_modified.csv](https://github.com/ramitsawhney27/OffensiveHinglishTweetClassification/blob/master/HOT_Dataset_modified.csv). Ramit Sawhney et al. Code-mixed Twitter/X posts enriched with Qwen annotations.
 
@@ -56,7 +56,7 @@ Total Corpus: 56,907 Posts
 
 To prevent data contamination and cross-dataset leakage, all partitions were strictly isolated:
 
-| Split | Hinglish Balanced | MultiBully | HOT | Total Posts | Percentage |
+| Split | Hinglish Toxic Hate | MultiBully | HOT | Total Posts | Percentage |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Train** | 33,600 | 4,002 | 2,277 | **39,879** | $70.08\%$ |
 | **Validation** | 7,200 | 858 | 457 | **8,515** | $14.96\%$ |

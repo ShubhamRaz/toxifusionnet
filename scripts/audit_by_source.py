@@ -19,7 +19,8 @@ df = pd.read_csv(preds_path)
 
 for src in ["hinglish_balanced", "multibully", "hot"]:
     sub = df[df["source_dataset"] == src]
-    print(f"=== Source: {src} (N={len(sub)}) ===")
+    display_name = "Hinglish Toxic Hate (Kaggle)" if src == "hinglish_balanced" else ("MultiBully (SIGIR '22)" if src == "multibully" else "HOT Tweets (FIRE)")
+    print(f"=== Source: {display_name} (N={len(sub)}) ===")
     
     # Hate
     sub_h = sub[sub["gold_hate"] != -100]
