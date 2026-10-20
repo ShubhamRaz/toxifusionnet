@@ -1,0 +1,75 @@
+TOXIFUSIONNET — STAGE 3 TRI-DATASET FINAL TEST EVALUATION
+Model Run: runs/exp_tri_dataset_xlmr (XLM-RoBERTa + Gated Sarcasm Fusion)
+Training Dataset: data/processed/combined_all_3_datasets.csv (MultiBully + HOT + Hinglish Balanced, N=56,907)
+Test Split Rows: 8,513
+Mean macro-F1 across four tasks: 0.9714
+
+
+===== SARCASM (n=8395) =====
+Macro-F1: 0.9548
+AUROC: 0.9943
+Balanced Accuracy: 0.9540
+
+                  precision    recall  f1-score   support
+
+not_sarcastic        0.9388    0.9774    0.9577      4378
+sarcastic            0.9742    0.9305    0.9519      4017
+
+accuracy                                 0.9550      8395
+macro avg            0.9565    0.9540    0.9548      8395
+weighted avg                             0.9549      8395
+
+
+===== HATE (n=8513) =====
+Macro-F1: 0.9665
+AUROC: 0.9964
+Balanced Accuracy: 0.9665
+
+                  precision    recall  f1-score   support
+
+non_hate             0.9683    0.9691    0.9687      4533
+hate                 0.9648    0.9638    0.9643      3980
+
+accuracy                                 0.9666      8513
+macro avg            0.9665    0.9665    0.9665      8513
+weighted avg                             0.9666      8513
+
+
+===== TARGET (n=3961) =====
+Macro-F1: 0.9822
+
+Balanced Accuracy: 0.9820
+
+                  precision    recall  f1-score   support
+
+individual           0.9723    0.9715    0.9719      1157
+organization         0.9956    0.9901    0.9929       912
+community            0.9648    0.9786    0.9717       981
+society              0.9967    0.9879    0.9923       911
+
+accuracy                                 0.9813      3961
+macro avg            0.9824    0.9820    0.9822      3961
+weighted avg                             0.9814      3961
+
+
+===== SEVERITY (n=3982) =====
+Macro-F1: 0.9821
+
+Balanced Accuracy: 0.9821
+
+                  precision    recall  f1-score   support
+
+low                  0.9926    0.9828    0.9877      1221
+moderate             0.9785    0.9711    0.9748      1455
+high                 0.9752    0.9923    0.9837      1306
+
+accuracy                                 0.9817      3982
+macro avg            0.9821    0.9821    0.9821      3982
+weighted avg                             0.9817      3982
+
+
+===== HATE DETECTION ON SARCASTIC SUBSET =====
+Hate F1 on sarcastic posts: 0.0000
+Miss rate (False Negative Rate) on sarcastic posts: 0.00%
+Hate F1 on non-sarcastic posts: 0.0000
+Miss rate (False Negative Rate) on non-sarcastic posts: 0.00%
