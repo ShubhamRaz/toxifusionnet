@@ -1,0 +1,70 @@
+{
+  "labels": {
+    "target": [
+      "target_absent",
+      "target_present"
+    ],
+    "severity": [
+      "low",
+      "moderate_or_high"
+    ]
+  },
+  "dataset": "multibully_simplified",
+  "n_rows": 5718,
+  "source_cleaned": "data\\cleaned\\multibully_cleaned.csv",
+  "tasks": [
+    "sarcasm",
+    "hate",
+    "target",
+    "severity"
+  ],
+  "task_types": {
+    "sarcasm": "binary",
+    "hate": "binary",
+    "target": "binary_hate_conditional",
+    "severity": "binary_hate_conditional"
+  },
+  "counts_before": {
+    "hate": {
+      "non_hate": 4138,
+      "hate": 1580
+    },
+    "sarcasm": {
+      "not_sarcastic": 3589,
+      "sarcastic": 2129
+    },
+    "target": {
+      "nan": 4281,
+      "individual": 1037,
+      "community": 251,
+      "organization": 81,
+      "society": 68
+    },
+    "severity": {
+      "nan": 4138,
+      "moderate": 1409,
+      "low": 141,
+      "high": 30
+    }
+  },
+  "counts_after": {
+    "hate": {
+      "non_hate": 4138,
+      "hate": 1580
+    },
+    "sarcasm": {
+      "not_sarcastic": 3589,
+      "sarcastic": 2129
+    },
+    "target": {
+      "nan": 4138,
+      "target_present": 1437,
+      "target_absent": 143
+    },
+    "severity": {
+      "nan": 4138,
+      "moderate_or_high": 1439,
+      "low": 141
+    }
+  }
+}

@@ -1,0 +1,63 @@
+seed: 42
+experiment_name: exp_tri_dataset_xlmr
+output_dir: runs
+data:
+  processed_path: data/processed/combined_all_3_datasets.csv
+  max_length: 128
+  val_size: 0.1
+  test_size: 0.1
+preprocess:
+  normalize: true
+  transliterate_devanagari: true
+  demojize: true
+  expand_slang: true
+  collapse_repeats: true
+  canonical_spelling: true
+model:
+  encoder_name: xlm-roberta-base
+  tasks:
+  - sarcasm
+  - hate
+  - target
+  - severity
+  dropout: 0.1
+  head_hidden: 256
+  use_sarcasm_branch: true
+  use_fusion: true
+  use_cue_features: true
+  cue_hidden: 32
+  detach_gate_prob: false
+  use_clip: false
+loss:
+  weighting: fixed
+  weights:
+    sarcasm: 1.0
+    hate: 1.0
+    target: 1.0
+    severity: 1.0
+  class_weighting: balanced
+  focal_gamma: 2.0
+  attention_lambda: 0.1
+rationale:
+  enabled: false
+  temperature: 0.5
+  mode: text
+  use_sarcasm_rationale: true
+train:
+  epochs: 5
+  batch_size: 16
+  encoder_lr: 1.0e-05
+  head_lr: 0.0005
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_clip: 1.0
+  patience: 3
+  fp16: true
+  device: auto
+  num_workers: 0
+labels:
+  target:
+  - individual
+  - organization
+  - community
+  - society

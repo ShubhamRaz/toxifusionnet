@@ -5,8 +5,8 @@
 ## 1. Reproduction Methodology & Artifact Provenance
 
 All metrics were re-computed from raw prediction records without relying on pre-aggregated JSON files.
-- **Source Artifact:** [`runs/exp_tri_dataset_xlmr/preds_test.csv`](file:///c:/Users/SHUBHAM%20RAJ/Desktop/Others/Toxic/toxifusionnet/toxifusionnet/runs/exp_tri_dataset_xlmr/preds_test.csv) ($8,513$ rows).
-- **Execution Script:** `scratch/audit_metrics.py`.
+- **Source Artifact:** [`results/stage3_tri_dataset/preds_test.csv`](file:///c:/Users/SHUBHAM%20RAJ/Desktop/Others/Toxic/toxifusionnet/toxifusionnet/results/stage3_tri_dataset/preds_test.csv) ($8,513$ rows, also mirrored at `runs/exp_tri_dataset_xlmr/preds_test.csv`).
+- **Execution Script:** [`scripts/audit_metrics.py`](file:///c:/Users/SHUBHAM%20RAJ/Desktop/Others/Toxic/toxifusionnet/toxifusionnet/scripts/audit_metrics.py).
 - **Python Environment:** Python 3.13, `scikit-learn 1.6.0`, `pandas 3.0.6`, `numpy 2.5.3`.
 
 ---

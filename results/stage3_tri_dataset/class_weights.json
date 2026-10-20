@@ -1,0 +1,133 @@
+{
+  "sarcasm": {
+    "task": "sarcasm",
+    "mode": "balanced",
+    "label_space": [
+      "not_sarcastic",
+      "sarcastic"
+    ],
+    "num_classes": 2,
+    "source_filter": "multibully",
+    "max_weight": 4.0,
+    "counts": {
+      "not_sarcastic": 2485,
+      "sarcastic": 1517
+    },
+    "total_supervised": 4002,
+    "raw_weights": [
+      0.8052313883299799,
+      1.3190507580751483
+    ],
+    "normalized_weights": [
+      0.758120939530235,
+      1.2418790604697652
+    ],
+    "weights": [
+      0.758120939530235,
+      1.2418790604697652
+    ],
+    "mean_active_weight": 1.0
+  },
+  "hate": {
+    "task": "hate",
+    "mode": "balanced",
+    "label_space": [
+      "non_hate",
+      "hate"
+    ],
+    "num_classes": 2,
+    "source_filter": "multibully",
+    "max_weight": 4.0,
+    "counts": {
+      "non_hate": 2896,
+      "hate": 1106
+    },
+    "total_supervised": 4002,
+    "raw_weights": [
+      0.6909530386740331,
+      1.8092224231464737
+    ],
+    "normalized_weights": [
+      0.5527236381809095,
+      1.4472763618190905
+    ],
+    "weights": [
+      0.5527236381809095,
+      1.4472763618190905
+    ],
+    "mean_active_weight": 1.0
+  },
+  "target": {
+    "task": "target",
+    "mode": "balanced",
+    "label_space": [
+      "individual",
+      "organization",
+      "community",
+      "society"
+    ],
+    "num_classes": 4,
+    "source_filter": "multibully",
+    "max_weight": 4.0,
+    "counts": {
+      "individual": 726,
+      "organization": 57,
+      "community": 175,
+      "society": 48
+    },
+    "total_supervised": 1006,
+    "raw_weights": [
+      0.3464187327823691,
+      4.412280701754386,
+      1.437142857142857,
+      5.239583333333333
+    ],
+    "normalized_weights": [
+      0.12117388338380347,
+      1.543372619941076,
+      0.5026985104950933,
+      1.8327549861800274
+    ],
+    "weights": [
+      0.12117388338380347,
+      1.543372619941076,
+      0.5026985104950933,
+      1.8327549861800274
+    ],
+    "mean_active_weight": 1.0
+  },
+  "severity": {
+    "task": "severity",
+    "mode": "balanced",
+    "label_space": [
+      "low",
+      "moderate",
+      "high"
+    ],
+    "num_classes": 3,
+    "source_filter": "multibully",
+    "max_weight": 4.0,
+    "counts": {
+      "low": 98,
+      "moderate": 981,
+      "high": 27
+    },
+    "total_supervised": 1106,
+    "raw_weights": [
+      3.761904761904762,
+      0.3758069996602107,
+      13.654320987654321
+    ],
+    "normalized_weights": [
+      0.6343128098282922,
+      0.0633666211653136,
+      2.302320569006394
+    ],
+    "weights": [
+      0.6343128098282922,
+      0.0633666211653136,
+      2.302320569006394
+    ],
+    "mean_active_weight": 0.9999999999999999
+  }
+}

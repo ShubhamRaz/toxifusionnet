@@ -54,10 +54,11 @@ A direct `git fetch origin` was performed. Inspection of remote branches reveals
 | `data/processed/combined_all_3_datasets.csv` | 15.6 MB | **YES** | No (`!data/processed/*.csv`) | Committed in `71f6ea1` |
 | `data/processed/combined_all_3_datasets.meta.json` | 1.1 KB | **YES** | No | Committed in `71f6ea1` |
 | `configs/combined_all_3_datasets.yaml` | 1.2 KB | **YES** | No | Committed in `71f6ea1` |
-| `runs/exp_tri_dataset_xlmr/model.pt` | 1.13 GB | **NO** | **YES (Line 5: `runs/`)** | Local Only |
-| `runs/exp_tri_dataset_xlmr/metrics.json` | 72.5 KB | **NO** | **YES (Line 5: `runs/`)** | Local Only |
-| `runs/exp_tri_dataset_xlmr/preds_test.csv` | 1.81 MB | **NO** | **YES (Line 5: `runs/`)** | Local Only |
-| `runs/exp_tri_dataset_xlmr/history.csv` | 2.9 KB | **NO** | **YES (Line 5: `runs/`)** | Local Only |
+| `results/stage3_tri_dataset/metrics.json` | 72.5 KB | **YES** | No | Tracked (Full test/val metrics) |
+| `results/stage3_tri_dataset/preds_test.csv` | 1.81 MB | **YES** | No | Tracked (Full test predictions, 8,513 rows) |
+| `results/stage3_tri_dataset/history.csv` | 2.9 KB | **YES** | No | Tracked (Training epoch loss/F1 curves) |
+| `scripts/audit_metrics.py` | 5.5 KB | **YES** | No | Tracked (Zero-dependency verification script) |
+| `runs/exp_tri_dataset_xlmr/model.pt` | 1.13 GB | **NO** | **YES (Line 5: `runs/`)** | Local Only (>100MB GitHub limit) |
 | `reports/TOXIFUSIONNET_FULL_PROJECT_REPORT.md`| 24.1 KB | **YES** | No | Committed in `b9ed1f7` |
 | `reports/STAGE_3_FINAL_REPORT.md` | 7.6 KB | **YES** | No | Committed in `da4994d` |
 | `reports/toxifusionnet_final_tri_dataset_evaluation.txt` | 2.5 KB | **YES** | No | Committed in `da4994d` |
@@ -65,7 +66,6 @@ A direct `git fetch origin` was performed. Inspection of remote branches reveals
 | `run.ps1` | 2.0 KB | **YES** | No | Committed in `11bfb3d` |
 
 ### Key Reproducibility Implication
-- Because `runs/` is gitignored, pushing `feature/hinglish-balanced-dataset` will push the dataset, configs, training scripts, and reports, but **not the binary weights checkpoint (`model.pt`) or prediction CSVs**.
-- An external user cloning the repository from GitHub cannot run inference immediately using `python -m toxifusionnet.cli predict --run-dir runs/exp_tri_dataset_xlmr` until they either:
-  1. Train from scratch using `python -m toxifusionnet.cli train --config configs/combined_all_3_datasets.yaml` (which works out of the box because `combined_all_3_datasets.csv` is tracked), OR
-  2. Download `model.pt` from an external release asset (e.g., GitHub Releases or Hugging Face Hub).
+- The dataset (`combined_all_3_datasets.csv`), full test predictions (`results/stage3_tri_dataset/preds_test.csv`), epoch histories, configs, evaluation scripts (`scripts/audit_metrics.py`), and audited reports are all tracked in Git and pushed to GitHub.
+- Any researcher or reviewer cloning the repository can immediately verify and reproduce all exact test metrics, confusion matrices, and disaggregated performance metrics by running `python scripts/audit_metrics.py` without needing GPUs.
+- The 1.13 GB binary model weights checkpoint (`runs/exp_tri_dataset_xlmr/model.pt`) is excluded from Git to comply with GitHub's 100MB file limit. Users can train from scratch in 1 click using `python -m toxifusionnet.cli train --config configs/combined_all_3_datasets.yaml` (or `.\run.ps1`) or download published weights from GitHub Releases.

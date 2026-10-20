@@ -117,6 +117,19 @@ The output returns JSON predictions containing:
 
 ---
 
+## Reproducing Audited Metrics
+
+To verify and reproduce all official test metrics, confusion matrices, and per-source performance from the held-out test set ($N = 8,513$) without needing GPUs:
+
+```bash
+python scripts/audit_metrics.py
+python scripts/audit_by_source.py
+```
+
+The full test predictions, validation predictions, and training history curves are permanently preserved in `results/stage3_tri_dataset/`.
+
+---
+
 ## Reproducing Training
 
 To re-run training on the unified tri-dataset from scratch:
@@ -139,13 +152,18 @@ toxifusionnet/
 │   └── processed/
 │       ├── combined_all_3_datasets.csv # Canonical unified 56.9k dataset
 │       └── combined_all_3_datasets.meta.json
-├── runs/
-│   └── exp_tri_dataset_xlmr/
-│       ├── model.pt                    # 1.13 GB trained weights checkpoint
-│       ├── metrics.json                # Complete evaluation metrics
+├── results/
+│   └── stage3_tri_dataset/             # Permanent test predictions & metrics
+│       ├── metrics.json                # Complete test evaluation metrics
 │       ├── history.csv                 # Per-epoch loss and validation metrics
-│       ├── preds_test.csv              # Test prediction dump
-│       └── tokenizer/                  # XLM-RoBERTa tokenizer
+│       └── preds_test.csv              # Test prediction dump (8,513 rows)
+├── reports/
+│   ├── STAGE_3_FINAL_REPORT.md         # Comprehensive scientific evaluation report
+│   ├── TOXIFUSIONNET_FULL_PROJECT_REPORT.md # Unabridged full project report
+│   └── audit/                          # 6-part scientific and audit reports
+├── scripts/
+│   ├── audit_metrics.py                # Reproducible test metrics verification script
+│   └── audit_by_source.py              # Disaggregated source breakdown script
 ├── src/
 │   └── toxifusionnet/                  # Core package modules
 │       ├── models/                     # ToxiFusionNet architecture & losses
