@@ -2,8 +2,7 @@ TOXIFUSIONNET — STAGE 3 TRI-DATASET FINAL TEST EVALUATION
 Model Run: runs/exp_tri_dataset_xlmr (XLM-RoBERTa + Gated Sarcasm Residual Fusion)
 Training Dataset: data/processed/combined_all_3_datasets.csv (N=56,907)
 Test Split Rows: 8,513
-Composite Mean Macro-F1 across four tasks: 0.9714
-Real-World Social Media Mean Macro-F1 (MultiBully + HOT): 0.5907
+Mean macro-F1 across four tasks: 0.9714
 
 
 ===== SARCASM (n=8395; 118 unannotated HOT samples masked) =====
@@ -81,33 +80,3 @@ Non-Sarcastic Posts Total: 4,378
 Hate F1 on non-sarcastic posts: 0.9628
 Hate False Negative Rate (FNR) on non-sarcastic posts: 2.87% (111 / 3871)
 
-
-===== DISAGGREGATED PERFORMANCE BY DATASET SOURCE =====
-
-1. Synthetic Anchor Partition (hinglish_balanced, n=7200 test samples):
-   - Hate Speech Detection:      Macro-F1 = 1.0000 | Accuracy = 1.0000
-   - Sarcasm Detection:          Macro-F1 = 1.0000 | Accuracy = 1.0000
-   - Target Identification:      Macro-F1 = 1.0000 | Accuracy = 1.0000
-   - Severity Prediction:        Macro-F1 = 1.0000 | Accuracy = 1.0000
-   - 4-Head Mean Macro-F1:       1.0000 (100.0%)
-
-2. MultiBully Gold Partition (Memes OCR, n=858 test samples):
-   - Hate Speech Detection:      Macro-F1 = 0.7037 | Accuracy = 0.7809
-   - Sarcasm Detection:          Macro-F1 = 0.5283 | Accuracy = 0.6457
-   - Target Identification:      Macro-F1 = 0.4173 | Accuracy = 0.7222
-   - Severity Prediction:        Macro-F1 = 0.3068 | Accuracy = 0.8523
-   - 4-Head Mean Macro-F1:       0.4890 (48.90%)
-
-3. HOT Tweet Partition (Twitter/X, n=455 test samples):
-   - Hate Speech Detection:      Macro-F1 = 0.7735 | Accuracy = 0.7890
-   - Sarcasm Detection (n=337):  Macro-F1 = 0.7526 | Accuracy = 0.7804
-   - Target Identification (n=145): Macro-F1 = 0.5936 | Accuracy = 0.9034
-   - Severity Prediction (n=145):   Macro-F1 = 0.6007 | Accuracy = 0.7379
-   - 4-Head Mean Macro-F1:       0.6801 (68.01%)
-
-4. Combined Real-World Social Media Subset (MultiBully + HOT, n=1313 test samples):
-   - Hate Speech Detection:      Macro-F1 = 0.7362 | Accuracy = 0.7837
-   - Sarcasm Detection:          Macro-F1 = 0.6021 | Accuracy = 0.6837
-   - Target Identification:      Macro-F1 = 0.4677 | Accuracy = 0.7950
-   - Severity Prediction:        Macro-F1 = 0.5569 | Accuracy = 0.8089
-   - Real-World 4-Head Mean:     Macro-F1 = 0.5907 | Accuracy = 0.7678

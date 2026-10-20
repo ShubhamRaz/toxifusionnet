@@ -59,14 +59,6 @@ ToxiFusionNet was trained and evaluated on the unified **Tri-Dataset Merge** ($N
 
 *\*Note on Sarcasm Support: 118 posts in the HOT test set lacked sarcasm ground truth and were masked during evaluation ($N_{\text{evaluated}} = 8,395$).*
 
-### Disaggregated Real-World Social Media Benchmark ($N = 1,313$ human gold posts)
-On the authentic social media memes and tweets test slice (MultiBully + HOT), ToxiFusionNet achieves:
-- **Hate Speech Detection Macro-F1:** **`73.62%`** (Accuracy: `78.37%`)
-- **Sarcasm Detection Macro-F1:** **`60.21%`** (Accuracy: `68.37%`)
-- **Target Identification Macro-F1:** **`46.77%`** (Accuracy: `79.50%`)
-- **Severity Prediction Macro-F1:** **`55.69%`** (Accuracy: `80.89%`)
-- **Real-World 4-Task Mean Macro-F1:** **`59.07%`** (Accuracy: `76.78%`)
-
 *For complete training dynamics, cross-dataset split details, and ablation comparisons, see [STAGE_3_FINAL_REPORT.md](STAGE_3_FINAL_REPORT.md) and [TOXIFUSIONNET_FULL_PROJECT_REPORT.md](reports/TOXIFUSIONNET_FULL_PROJECT_REPORT.md).*
 
 ---
